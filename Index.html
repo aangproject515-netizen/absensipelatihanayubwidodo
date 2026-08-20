@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Absensi Pelatihan Ayub Widodo</title>
+  <!-- Material Design Icons & Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Library QR Code Generator (Zxing Replacement) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background-color: #F8F9FA;
+      color: #333333;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* Container HP / Desktop Layout Wrapper */
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: #FFFFFF;
+      min-height: 100vh;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Page Visibility */
+    .page {
+      display: none;
+      flex-direction: column;
+      padding: 24dp;
+      padding: 24px;
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .page.active {
+      display: flex;
+    }
+
+    /* Primary Maroon Theme */
+    .bg-maroon {
+      background-color: #800000 !important;
+      color: #FFFFFF;
+    }
+
+    .text-maroon {
+      color: #800000 !important;
+    }
+
+    /* Form Inputs (Outlined Material Style) */
+    .form-group {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-size: 11px;
+      font-weight: bold;
+      color: #666666;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 48px;
+      padding: 10px 14px;
+      border: 1px solid #CCCCCC;
+      border-radius: 4px;
+      font-size: 15px;
+      outline: none;
+      background-color: #FFFFFF;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: #800000;
+      border-width: 2px;
+    }
+
+    .form-control:disabled {
+      background-color: #F0F0F0;
+      color: #777777;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      height: 56px;
+      background-color: #800000;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 24px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn:disabled {
+      background-color: #CCCCCC;
+      cursor: not-allowed;
+    }
+
+    .btn-navy {
+      background-color: #1A237E;
+    }
+
+    /* Top Headers for Leaderboard & Koreksi */
+    .header-banner {
+      background-color: #800000;
+      color: #FFFFFF;
+      padding: 28px 24px 24px 24px;
+      margin: -24px -24px 20px -24px;
+    }
+
+    .header-banner-center {
+      text-align: center;
+      padding: 30px 24px 26px 24px;
+    }
+
+    .sub-title-gold {
+      color: #FFD54F;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    /* Cards */
+    .card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    /* Menu Grid Cards */
+    .menu-grid {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .menu-item {
+      width: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .menu-card {
+      width: 80px;
+      height: 80px;
+      background-color: #800000;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+    }
+
+    .menu-title {
+      font-size: 11px;
+      font-weight: bold;
+      color: #000000;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    /* Quiz Radio Options */
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #DDD;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .radio-option input {
+      margin-right: 12px;
+      accent-color: #800000;
+    }
+
+    /* Loading Overlay */
+    .loader {
+      display: none;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #800000;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      margin: 16px auto 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Modal / Dialog */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- ============================================================== -->
+  <!-- 1. PAGE: MENU UTAMA (activity_menu.xml) -->
+  <!-- ============================================================== -->
+  <div id="pageMenu" class="page active">
+    <h2 style="font-size: 18px; text-align: center; margin-top: 24px; margin-bottom: 32px; font-weight: bold;">
+      APLIKASI ABSENSI PELATIHAN AYUB WIDODO
+    </h2>
+
+    <div class="menu-grid">
+      <!-- Absensi Pelatihan BHD -->
+      <div class="menu-item" onclick="navigateTo('pageMain')">
+        <div class="menu-card">
+          <span class="material-icons" style="font-size:36px;">assignment</span>
+        </div>
+        <div class="menu-title">Absensi pelatihan bhd</div>
+      </div>
+
+      <!-- Evaluasi -->
+      <div class="menu-item" onclick="navigateTo('pageEvaluasiCode')">
+        <div class="menu-card">
+          <span class="material-icons" style="font-size:36px;">edit</span>
+        </div>
+        <div class="menu-title">evaluasi</div>
+      </div>
+
+      <!-- Trainer Setting -->
+      <div class="menu-item" onclick="navigateTo('pageTrainerLogin')">
+        <div class="menu-card">
+          <span class="material-icons" style="font-size:36px;">settings</span>
+        </div>
+        <div class="menu-title">trainer setting</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 2. PAGE: MAIN ABSENSI (activity_main.xml) -->
+  <!-- ============================================================== -->
+  <div id="pageMain" class="page">
+    <div style="font-size: 14px; font-weight: bold; color: #333333;">APLIKASI ABSENSI PELATIHAN AYUB WIDODO</div>
+    <div style="font-size: 22px; font-weight: bold; color: #1A237E; margin-top: 4px;">Absensi pelatihan</div>
+
+    <div class="form-group" style="margin-top: 24px;">
+      <label>NAMA LENGKAP :</label>
+      <input type="text" id="etNama" class="form-control" placeholder="Masukkan nama">
+    </div>
+
+    <div class="form-group">
+      <label>TANGGAL PELATIHAN :</label>
+      <input type="date" id="etTanggal" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>PENGAJAR :</label>
+      <input type="text" id="etPengajar" class="form-control" value="Ayub widodo" disabled>
+    </div>
+
+    <div class="form-group">
+      <label>EMAIL PESERTA :</label>
+      <input type="email" id="etEmail" class="form-control" placeholder="Masukkan email">
+    </div>
+
+    <button id="btnKirim" class="btn btn-navy" onclick="kirimDataAbsensi()">KIRIM ABSENSI</button>
+    <div id="progressBarMain" class="loader"></div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 3. PAGE: EVALUASI CODE / QR (activity_evaluasi_code.xml) -->
+  <!-- ============================================================== -->
+  <div id="pageEvaluasiCode" class="page">
+    <h2 class="text-maroon" style="font-size: 22px;">Evaluasi</h2>
+
+    <button class="btn" onclick="alert('Fitur Scan QR via Kamera Browser dapat disesuaikan. Silakan ketik kode jika ada.')">SCAN QR EVALUASI DISINI</button>
+
+    <div style="font-size: 12px; color: #666666; margin-top: 16px;">
+      fieldtext ini adalah kode yang bisa di isi ketika hp peserta bermasalah untuk scan
+    </div>
+
+    <div class="form-group" style="margin-top: 8px;">
+      <label>masukan kode anda di sini</label>
+      <input type="text" id="etKodeEvaluasi" class="form-control">
+    </div>
+
+    <button class="btn" onclick="submitKodeEvaluasi()">KIRIM KODE</button>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 4. PAGE: EVALUASI FORM (activity_evaluasi_form.xml) -->
+  <!-- ============================================================== -->
+  <div id="pageEvaluasiForm" class="page">
+    <h2 class="text-maroon" style="font-size: 22px;">Evaluasi</h2>
+
+    <div class="form-group" style="margin-top: 20px;">
+      <label>NAMA LENGKAP :</label>
+      <input type="text" id="etNamaEvaluasi" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>LOKASI :</label>
+      <select id="spLokasi" class="form-control">
+        <option value="">Memuat lokasi...</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>TANGGAL PELATIHAN :</label>
+      <input type="text" id="etTanggalEvaluasi" class="form-control" readonly>
+    </div>
+
+    <div class="form-group">
+      <label>PENGAJAR :</label>
+      <input type="text" id="etPengajarEvaluasi" class="form-control" value="Ayub widodo" readonly>
+    </div>
+
+    <button class="btn" onclick="mulaiEvaluasi()">MULAI EVALUASI</button>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 5. PAGE: QUIZ (activity_quiz.xml) -->
+  <!-- ============================================================== -->
+  <div id="pageQuiz" class="page">
+    <div style="display: flex; justify-content: space-between; font-weight: bold;">
+      <div id="tvSoalKe" style="font-size: 16px;">Soal 1/10</div>
+      <div id="tvTimer" class="text-maroon" style="font-size: 18px;">30:00</div>
+    </div>
+
+    <div id="tvTeksSoal" style="font-size: 18px; margin: 24px 0; font-weight: 500;">
+      Memuat soal...
+    </div>
+
+    <div class="radio-group" id="rgPilihan">
+      <label class="radio-option">
+        <input type="radio" name="pilihan" value="A" id="rbA">
+        <span id="labelA">A. </span>
+      </label>
+      <label class="radio-option">
+        <input type="radio" name="pilihan" value="B" id="rbB">
+        <span id="labelB">B. </span>
+      </label>
+      <label class="radio-option">
+        <input type="radio" name="pilihan" value="C" id="rbC">
+        <span id="labelC">C. </span>
+      </label>
+    </div>
+
+    <div style="flex: 1;"></div>
+    <button id="btnLanjut" class="btn" onclick="nextSoal()">SELANJUTNYA</button>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 6. PAGE: LEADERBOARD (activity_leaderboard.xml) -->
+  <!-- ============================================================== -->
+  <div id="pageLeaderboard" class="page" style="padding-top: 0; background-color: #F6F7F9;">
+    <div class="header-banner header-banner-center">
+      <div class="sub-title-gold">EVALUASI PELATIHAN</div>
+      <div style="font-size: 28px; font-weight: bold; margin-top: 4px;">Papan Peringkat</div>
+      <div style="font-size: 14px; color: #F5DADA; margin-top: 4px;">Peserta dengan nilai terbaik</div>
+    </div>
+
+    <div class="card" style="text-align: center; padding: 20px; margin: 0 0 16px 0;">
+      <div style="font-size: 11px; font-weight: bold; color: #888888; letter-spacing: 1.5px;">NILAI ANDA</div>
+      <div id="tvSkorSaya" class="text-maroon" style="font-size: 38px; font-weight: bold; margin-top: 2px;">0</div>
+      <div style="font-size: 12px; color: #999999;">Skor Evaluasi</div>
+    </div>
+
+    <div id="containerLeaderboard" style="flex: 1; overflow-y: auto;">
+      <!-- Item Leaderboard disuntikkan via JS -->
+    </div>
+
+    <button class="btn" style="margin-top: 8px; margin-bottom: 20px;" onclick="navigateTo('pageKoreksi')">KOREKSI JAWABAN SAYA</button>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 7. PAGE: KOREKSI JAWABAN (activity_koreksi.xml) -->
+  <!-- ============================================================== -->
+  <div id="pageKoreksi" class="page" style="padding-top: 0; background-color: #F6F7F9;">
+    <div class="header-banner">
+      <div class="sub-title-gold">HASIL EVALUASI</div>
+      <div style="font-size: 27px; font-weight: bold; margin-top: 5px;">Koreksi Jawaban Saya</div>
+      <div style="font-size: 14px; color: #F5DADA; margin-top: 5px;">Periksa kembali jawaban dan kunci Anda</div>
+    </div>
+
+    <div id="containerKoreksi" style="flex: 1; overflow-y: auto;">
+      <!-- Card Koreksi disuntikkan via JS -->
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 8. PAGE: TRAINER LOGIN (activity_trainer_login.xml) -->
+  <!-- ============================================================== -->
+  <div id="pageTrainerLogin" class="page" style="justify-content: center;">
+    <h2 class="text-maroon" style="font-size: 22px; text-align: center; margin-bottom: 24px;">Login Trainer</h2>
+
+    <div class="form-group">
+      <label>Username / Akun</label>
+      <input type="text" id="etAkunTrainer" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="etPassTrainer" class="form-control">
+    </div>
+
+    <button class="btn" onclick="loginTrainer()">LOGIN</button>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 9. PAGE: TRAINER SETTING (activity_trainer_setting.xml) -->
+  <!-- ============================================================== -->
+  <div id="pageTrainerSetting" class="page" style="align-items: center;">
+    <h2 class="text-maroon" style="font-size: 22px; margin-bottom: 24px;">Trainer Setting</h2>
+
+    <div id="qrcode" style="width:250px; height:250px; margin-top: 16px; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd;"></div>
+
+    <div id="tvKodeEvaluasiTrainer" style="font-size: 16px; font-weight: bold; margin-top: 16px;">
+      KODE EVALUASI: -
+    </div>
+
+    <button id="btnGenerateQr" class="btn" onclick="generateKodeDariAppsScript()">GENERATE QR CODE</button>
+  </div>
+
+</div>
+
+<!-- DIALOG SUCCESS MODAL (dialog_success.xml) -->
+<div id="modalSuccess" class="modal">
+  <div class="modal-content">
+    <h3 class="text-maroon">Berhasil!</h3>
+    <p style="margin-top: 10px;">Data absensi berhasil dikirim.</p>
+    <button class="btn" style="margin-top: 16px; height: 40px;" onclick="closeModal()">TUTUP</button>
+  </div>
+</div>
+
+<script>
+  // ==========================================
+  // API & CONSTANTS (ApiConfig.kt)
+  // ==========================================
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLiToGeL4_20vO64N6fEVtIwyjgoYzY1hGFtWok4PyqLxkEV35dzEZyYPTGycseEHtHA/exec";
+
+  // App State variables
+  let evaluasiNama = "";
+  let evaluasiLokasi = "";
+  let evaluasiTanggal = "";
+  let soalList = [];
+  let jawabanUser = {};
+  let currentIndex = 0;
+  let timerInterval = null;
+  let detailJawabanGlobal = [];
+
+  // Init Date On Load
+  window.onload = function() {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    document.getElementById('etTanggalEvaluasi').value = `${dd}/${mm}/${yyyy}`;
+  };
+
+  // Navigation Logic
+  function navigateTo(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+  }
+
+  // ==========================================
+  // MAIN ABSENSI LOGIC (MainActivity.kt)
+  // ==========================================
+  function kirimDataAbsensi() {
+    const nama = document.getElementById('etNama').value.trim();
+    const tanggal = document.getElementById('etTanggal').value.trim();
+    const pengajar = document.getElementById('etPengajar').value.trim();
+    const email = document.getElementById('etEmail').value.trim();
+
+    if (!nama || !tanggal || !pengajar || !email) {
+      alert("Mohon lengkapi semua data");
+      return;
+    }
+
+    setLoading('progressBarMain', 'btnKirim', true);
+
+    const payload = { nama, tanggal, pengajar, email };
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(resJson => {
+      if (resJson.result === "success") {
+        document.getElementById('etNama').value = "";
+        document.getElementById('etTanggal').value = "";
+        document.getElementById('etEmail').value = "";
+        document.getElementById('modalSuccess').style.display = 'flex';
+      } else {
+        alert("Gagal: " + (resJson.message || "Terjadi kesalahan"));
+      }
+    })
+    .catch(err => alert("Terjadi kesalahan: " + err.message))
+    .finally(() => setLoading('progressBarMain', 'btnKirim', false));
+  }
+
+  function closeModal() {
+    document.getElementById('modalSuccess').style.display = 'none';
+  }
+
+  // ==========================================
+  // EVALUASI CODE & FORM LOGIC
+  // ==========================================
+  function submitKodeEvaluasi() {
+    const kode = document.getElementById('etKodeEvaluasi').value.trim();
+    if (!kode) {
+      alert("Masukkan kode evaluasi!");
+      return;
+    }
+    lanjutKeForm(kode);
+  }
+
+  function lanjutKeForm(kode) {
+    navigateTo('pageEvaluasiForm');
+    loadLokasiData();
+  }
+
+  function loadLokasiData() {
+    const select = document.getElementById('spLokasi');
+    select.innerHTML = "<option value=''>Memuat lokasi...</option>";
+
+    fetch(`${SCRIPT_URL}?action=getLocations`)
+    .then(res => res.json())
+    .then(resJson => {
+      select.innerHTML = "";
+      const locations = resJson.locations || [];
+      locations.forEach(loc => {
+        let opt = document.createElement('option');
+        opt.value = loc;
+        opt.innerHTML = loc;
+        select.appendChild(opt);
+      });
+    })
+    .catch(() => {
+      // Fallback data
+      select.innerHTML = "";
+      ["Auditorium Utama", "Ruang Pelatihan BHD", "Klinik Utama"].forEach(loc => {
+        let opt = document.createElement('option');
+        opt.value = loc;
+        opt.innerHTML = loc;
+        select.appendChild(opt);
+      });
+    });
+  }
+
+  function mulaiEvaluasi() {
+    evaluasiNama = document.getElementById('etNamaEvaluasi').value.trim();
+    evaluasiLokasi = document.getElementById('spLokasi').value.trim();
+    evaluasiTanggal = document.getElementById('etTanggalEvaluasi').value.trim();
+
+    if (!evaluasiNama || !evaluasiLokasi) {
+      alert("Mohon lengkapi Nama dan Lokasi");
+      return;
+    }
+
+    navigateTo('pageQuiz');
+    loadSoal();
+    startTimer(30 * 60);
+  }
+
+  // ==========================================
+  // QUIZ LOGIC (QuizActivity.kt)
+  // ==========================================
+  function startTimer(duration) {
+    let timer = duration, minutes, seconds;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      minutes = parseInt(timer / 60, 10);
+      seconds = parseInt(timer % 60, 10);
+
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      document.getElementById('tvTimer').innerText = `${minutes}:${seconds}`;
+
+      if (--timer < 0) {
+        clearInterval(timerInterval);
+        selesaikanQuiz();
+      }
+    }, 1000);
+  }
+
+  function loadSoal() {
+    fetch(`${SCRIPT_URL}?action=getQuestions`)
+    .then(res => res.json())
+    .then(resJson => {
+      soalList = resJson.questions || (resJson.result === "success" ? resJson.questions : []);
+      if (soalList && soalList.length > 0) {
+        currentIndex = 0;
+        tampilkanSoal(0);
+      } else {
+        alert(resJson.message || "Daftar soal kosong");
+      }
+    })
+    .catch(e => alert("Gagal memuat soal: " + e.message));
+  }
+
+  function tampilkanSoal(index) {
+    if (index < 0 || index >= soalList.length) return;
+    
+    // Reset selection
+    document.querySelectorAll('input[name="pilihan"]').forEach(el => el.checked = false);
+
+    const obj = soalList[index];
+    document.getElementById('tvSoalKe').innerText = `Soal ${index + 1}/${soalList.length}`;
+    document.getElementById('tvTeksSoal').innerText = obj.soal || "";
+    document.getElementById('labelA').innerText = "A. " + (obj.pilihanA || "");
+    document.getElementById('labelB').innerText = "B. " + (obj.pilihanB || "");
+    document.getElementById('labelC').innerText = "C. " + (obj.pilihanC || "");
+
+    document.getElementById('btnLanjut').innerText = (index === soalList.length - 1) ? "SELESAIKAN QUIZ" : "SELANJUTNYA";
+  }
+
+  function nextSoal() {
+    if (soalList.length === 0) {
+      alert("Soal belum dimuat!");
+      return;
+    }
+
+    const selectedOption = document.querySelector('input[name="pilihan"]:checked');
+    if (!selectedOption) {
+      alert("Pilih jawaban terlebih dahulu!");
+      return;
+    }
+
+    jawabanUser[currentIndex] = selectedOption.value;
+
+    if (currentIndex < soalList.length - 1) {
+      currentIndex++;
+      tampilkanSoal(currentIndex);
+    } else {
+      selesaikanQuiz();
+    }
+  }
+
+  function selesaikanQuiz() {
+    clearInterval(timerInterval);
+    let benar = 0;
+    detailJawabanGlobal = [];
+
+    for (let i = 0; i < soalList.length; i++) {
+      const kunci = soalList[i].kunci || "A";
+      const userAns = jawabanUser[i] || "";
+      if (userAns.toLowerCase() === kunci.toLowerCase()) {
+        benar++;
+      }
+      detailJawabanGlobal.push({
+        no: i + 1,
+        jawabanUser: userAns,
+        kunci: kunci
+      });
+    }
+
+    const salah = soalList.length - benar;
+    const nilai = soalList.length > 0 ? Math.floor((benar * 100) / soalList.length) : 0;
+
+    kirimHasil(benar, salah, nilai, detailJawabanGlobal);
+  }
+
+  function kirimHasil(benar, salah, nilai, detail) {
+    const payload = {
+      action: "submitEvaluasi",
+      nama: evaluasiNama,
+      lokasi: evaluasiLokasi,
+      tanggal: evaluasiTanggal,
+      waktuSelesai: document.getElementById('tvTimer').innerText,
+      jumlahBenar: benar,
+      jumlahSalah: salah,
+      nilai: nilai,
+      detailJawaban: detail
+    };
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      document.getElementById('tvSkorSaya').innerText = nilai;
+      navigateTo('pageLeaderboard');
+      loadLeaderboard();
+      renderKoreksi(detail);
+    })
+    .catch(e => alert("Gagal mengirim data: " + e.message));
+  }
+
+  // ==========================================
+  // LEADERBOARD & KOREKSI LOGIC
+  // ==========================================
+  function loadLeaderboard() {
+    const container = document.getElementById('containerLeaderboard');
+    container.innerHTML = "<div style='text-align:center; padding:20px; color:gray;'>Memuat...</div>";
+
+    fetch(`${SCRIPT_URL}?action=getLeaderboard`)
+    .then(res => res.json())
+    .then(json => {
+      if (json.result === "success") {
+        tampilkanLeaderboard(json.leaderboard || []);
+      } else {
+        container.innerHTML = "<div style='text-align:center; color:red;'>Gagal memuat papan peringkat</div>";
+      }
+    })
+    .catch(() => {
+      container.innerHTML = "<div style='text-align:center; color:red;'>Gagal memuat papan peringkat</div>";
+    });
+  }
+
+  function tampilkanLeaderboard(array) {
+    const container = document.getElementById('containerLeaderboard');
+    container.innerHTML = "";
+
+    if (array.length === 0) {
+      container.innerHTML = "<div style='text-align:center; color:gray; padding:20px;'>Belum ada peserta di papan peringkat.</div>";
+      return;
+    }
+
+    array.forEach((obj, i) => {
+      const medali = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}`;
+      const peringkatText = i === 0 ? "JUARA 1" : i === 1 ? "JUARA 2" : i === 2 ? "JUARA 3" : `PERINGKAT ${i + 1}`;
+
+      const card = document.createElement('div');
+      card.className = "card";
+      card.style.display = "flex";
+      card.style.alignItems = "center";
+      card.innerHTML = `
+        <div style="width: 48px; height: 48px; display:flex; align-items:center; justify-content:center; font-size: ${i < 3 ? '27px' : '16px'}; font-weight:bold;">
+          ${medali}
+        </div>
+        <div style="flex: 1; margin-left: 12px;">
+          <div style="font-size: 16px; font-weight: bold; color: #282828;">${obj.nama || "Peserta"}</div>
+          <div style="font-size: 11px; font-weight: bold; color: #800000; margin-top: 3px;">${peringkatText}</div>
+        </div>
+        <div style="width: 55px; text-align: center; font-size: 22px; font-weight: bold; color: #800000;">
+          ${obj.nilai || 0}
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function renderKoreksi(detail) {
+    const container = document.getElementById('containerKoreksi');
+    container.innerHTML = "";
+
+    detail.forEach(obj => {
+      const benar = (obj.jawabanUser || "").toLowerCase() === (obj.kunci || "").toLowerCase();
+      const statusText = benar ? "✓ BENAR" : "✕ SALAH";
+      const statusColor = benar ? "rgb(27,125,75)" : "rgb(190,45,45)";
+
+      const card = document.createElement('div');
+      card.className = "card";
+      card.innerHTML = `
+        <div style="display: flex; align-items: center;">
+          <div style="width: 42px; height: 42px; background-color: #800000; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+            ${String(obj.no).padStart(2, '0')}
+          </div>
+          <div style="margin-left: 12px; font-size: 12px; font-weight: bold; color: ${statusColor};">
+            ${statusText}
+          </div>
+        </div>
+
+        <div style="font-size: 11px; font-weight: bold; color: gray; margin-top: 16px;">JAWABAN ANDA</div>
+        <div style="font-size: 15px; font-weight: bold; padding: 12px 14px; margin-top: 4px; color: ${benar ? 'rgb(25,105,65)' : 'rgb(170,40,40)'}; background-color: ${benar ? 'rgb(235,248,240)' : 'rgb(253,239,239)'};">
+          ${obj.jawabanUser || "Tidak menjawab"}
+        </div>
+
+        <div style="font-size: 11px; font-weight: bold; color: gray; margin-top: 14px;">KUNCI JAWABAN</div>
+        <div style="font-size: 15px; font-weight: bold; padding: 12px 14px; margin-top: 4px; color: rgb(25,105,65); background-color: rgb(235,248,240);">
+          ${obj.kunci}
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  // ==========================================
+  // TRAINER SETTING LOGIC
+  // ==========================================
+  function loginTrainer() {
+    const akun = document.getElementById('etAkunTrainer').value.trim();
+    const pass = document.getElementById('etPassTrainer').value.trim();
+
+    if (akun === "ayubwidodo" && pass === "trainer123") {
+      navigateTo('pageTrainerSetting');
+    } else {
+      alert("Akun atau Password Trainer Salah!");
+    }
+  }
+
+  function generateKodeDariAppsScript() {
+    const btn = document.getElementById('btnGenerateQr');
+    const tvKode = document.getElementById('tvKodeEvaluasiTrainer');
+
+    btn.disabled = true;
+    tvKode.innerText = "Membuat kode...";
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: "generateQRCode" })
+    })
+    .then(res => res.json())
+    .then(json => {
+      if (json.result === "success" && json.kode) {
+        tvKode.innerText = `KODE EVALUASI: ${json.kode}`;
+        buatQRCode(json.kode);
+        alert("Kode berhasil dibuat");
+      } else {
+        tvKode.innerText = "Gagal membuat kode";
+        alert(json.message || "Apps Script tidak mengirim kode");
+      }
+    })
+    .catch(e => {
+      tvKode.innerText = "Gagal membuat kode";
+      alert("Error: " + e.message);
+    })
+    .finally(() => btn.disabled = false);
+  }
+
+  function buatQRCode(kode) {
+    const container = document.getElementById('qrcode');
+    container.innerHTML = "";
+    new QRCode(container, {
+      text: kode,
+      width: 250,
+      height: 250
+    });
+  }
+
+  // Helper Utilities
+  function setLoading(loaderId, btnId, isLoading) {
+    document.getElementById(loaderId).style.display = isLoading ? 'block' : 'none';
+    document.getElementById(btnId).disabled = isLoading;
+  }
+</script>
+
+</body>
+</html>
