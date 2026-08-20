@@ -7,7 +7,7 @@
   <!-- Material Design Icons & Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <!-- Library QR Code Generator (Zxing Replacement) -->
+  <!-- Library QR Code Generator -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
@@ -42,7 +42,6 @@
     .page {
       display: none;
       flex-direction: column;
-      padding: 24dp;
       padding: 24px;
       width: 100%;
       height: 100%;
@@ -64,7 +63,7 @@
       color: #800000 !important;
     }
 
-    /* Form Inputs (Outlined Material Style) */
+    /* Form Inputs */
     .form-group {
       margin-top: 12px;
       display: flex;
@@ -257,9 +256,7 @@
 
 <div class="app-container">
 
-  <!-- ============================================================== -->
-  <!-- 1. PAGE: MENU UTAMA (activity_menu.xml) -->
-  <!-- ============================================================== -->
+  <!-- 1. PAGE: MENU UTAMA -->
   <div id="pageMenu" class="page active">
     <h2 style="font-size: 18px; text-align: center; margin-top: 24px; margin-bottom: 32px; font-weight: bold;">
       APLIKASI ABSENSI PELATIHAN AYUB WIDODO
@@ -292,9 +289,7 @@
     </div>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- 2. PAGE: MAIN ABSENSI (activity_main.xml) -->
-  <!-- ============================================================== -->
+  <!-- 2. PAGE: MAIN ABSENSI -->
   <div id="pageMain" class="page">
     <div style="font-size: 14px; font-weight: bold; color: #333333;">APLIKASI ABSENSI PELATIHAN AYUB WIDODO</div>
     <div style="font-size: 22px; font-weight: bold; color: #1A237E; margin-top: 4px;">Absensi pelatihan</div>
@@ -323,9 +318,7 @@
     <div id="progressBarMain" class="loader"></div>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- 3. PAGE: EVALUASI CODE / QR (activity_evaluasi_code.xml) -->
-  <!-- ============================================================== -->
+  <!-- 3. PAGE: EVALUASI CODE / QR -->
   <div id="pageEvaluasiCode" class="page">
     <h2 class="text-maroon" style="font-size: 22px;">Evaluasi</h2>
 
@@ -343,9 +336,7 @@
     <button class="btn" onclick="submitKodeEvaluasi()">KIRIM KODE</button>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- 4. PAGE: EVALUASI FORM (activity_evaluasi_form.xml) -->
-  <!-- ============================================================== -->
+  <!-- 4. PAGE: EVALUASI FORM -->
   <div id="pageEvaluasiForm" class="page">
     <h2 class="text-maroon" style="font-size: 22px;">Evaluasi</h2>
 
@@ -374,9 +365,7 @@
     <button class="btn" onclick="mulaiEvaluasi()">MULAI EVALUASI</button>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- 5. PAGE: QUIZ (activity_quiz.xml) -->
-  <!-- ============================================================== -->
+  <!-- 5. PAGE: QUIZ -->
   <div id="pageQuiz" class="page">
     <div style="display: flex; justify-content: space-between; font-weight: bold;">
       <div id="tvSoalKe" style="font-size: 16px;">Soal 1/10</div>
@@ -406,9 +395,7 @@
     <button id="btnLanjut" class="btn" onclick="nextSoal()">SELANJUTNYA</button>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- 6. PAGE: LEADERBOARD (activity_leaderboard.xml) -->
-  <!-- ============================================================== -->
+  <!-- 6. PAGE: LEADERBOARD -->
   <div id="pageLeaderboard" class="page" style="padding-top: 0; background-color: #F6F7F9;">
     <div class="header-banner header-banner-center">
       <div class="sub-title-gold">EVALUASI PELATIHAN</div>
@@ -429,9 +416,7 @@
     <button class="btn" style="margin-top: 8px; margin-bottom: 20px;" onclick="navigateTo('pageKoreksi')">KOREKSI JAWABAN SAYA</button>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- 7. PAGE: KOREKSI JAWABAN (activity_koreksi.xml) -->
-  <!-- ============================================================== -->
+  <!-- 7. PAGE: KOREKSI JAWABAN -->
   <div id="pageKoreksi" class="page" style="padding-top: 0; background-color: #F6F7F9;">
     <div class="header-banner">
       <div class="sub-title-gold">HASIL EVALUASI</div>
@@ -444,9 +429,7 @@
     </div>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- 8. PAGE: TRAINER LOGIN (activity_trainer_login.xml) -->
-  <!-- ============================================================== -->
+  <!-- 8. PAGE: TRAINER LOGIN -->
   <div id="pageTrainerLogin" class="page" style="justify-content: center;">
     <h2 class="text-maroon" style="font-size: 22px; text-align: center; margin-bottom: 24px;">Login Trainer</h2>
 
@@ -463,9 +446,7 @@
     <button class="btn" onclick="loginTrainer()">LOGIN</button>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- 9. PAGE: TRAINER SETTING (activity_trainer_setting.xml) -->
-  <!-- ============================================================== -->
+  <!-- 9. PAGE: TRAINER SETTING -->
   <div id="pageTrainerSetting" class="page" style="align-items: center;">
     <h2 class="text-maroon" style="font-size: 22px; margin-bottom: 24px;">Trainer Setting</h2>
 
@@ -480,7 +461,7 @@
 
 </div>
 
-<!-- DIALOG SUCCESS MODAL (dialog_success.xml) -->
+<!-- DIALOG SUCCESS MODAL -->
 <div id="modalSuccess" class="modal">
   <div class="modal-content">
     <h3 class="text-maroon">Berhasil!</h3>
@@ -491,7 +472,7 @@
 
 <script>
   // ==========================================
-  // API & CONSTANTS (ApiConfig.kt)
+  // API & CONSTANTS
   // ==========================================
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLiToGeL4_20vO64N6fEVtIwyjgoYzY1hGFtWok4PyqLxkEV35dzEZyYPTGycseEHtHA/exec";
 
@@ -505,23 +486,48 @@
   let timerInterval = null;
   let detailJawabanGlobal = [];
 
-  // Init Date On Load
+  // Init Date On Load & Initial State History
   window.onload = function() {
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
     document.getElementById('etTanggalEvaluasi').value = `${dd}/${mm}/${yyyy}`;
+
+    // Set state awal di browser history
+    history.replaceState({ page: 'pageMenu' }, "", "");
   };
 
-  // Navigation Logic
-  function navigateTo(pageId) {
+  // ==========================================
+  // NAVIGATION LOGIC WITH BROWSER HISTORY
+  // ==========================================
+  function showPageDOM(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
+    const target = document.getElementById(pageId);
+    if (target) {
+      target.classList.add('active');
+    }
   }
 
+  function navigateTo(pageId) {
+    showPageDOM(pageId);
+    // Tambahkan entry ke history browser
+    if (pageId !== 'pageMenu') {
+      history.pushState({ page: pageId }, "", "#" + pageId);
+    }
+  }
+
+  // Tangkap event tombol BACK browser/HP
+  window.addEventListener('popstate', function(event) {
+    if (event.state && event.state.page) {
+      showPageDOM(event.state.page);
+    } else {
+      showPageDOM('pageMenu');
+    }
+  });
+
   // ==========================================
-  // MAIN ABSENSI LOGIC (MainActivity.kt)
+  // MAIN ABSENSI LOGIC
   // ==========================================
   function kirimDataAbsensi() {
     const nama = document.getElementById('etNama').value.trim();
@@ -595,7 +601,6 @@
       });
     })
     .catch(() => {
-      // Fallback data
       select.innerHTML = "";
       ["Auditorium Utama", "Ruang Pelatihan BHD", "Klinik Utama"].forEach(loc => {
         let opt = document.createElement('option');
@@ -622,7 +627,7 @@
   }
 
   // ==========================================
-  // QUIZ LOGIC (QuizActivity.kt)
+  // QUIZ LOGIC
   // ==========================================
   function startTimer(duration) {
     let timer = duration, minutes, seconds;
@@ -661,7 +666,6 @@
   function tampilkanSoal(index) {
     if (index < 0 || index >= soalList.length) return;
     
-    // Reset selection
     document.querySelectorAll('input[name="pilihan"]').forEach(el => el.checked = false);
 
     const obj = soalList[index];
@@ -884,7 +888,9 @@
     new QRCode(container, {
       text: kode,
       width: 250,
-      height: 250
+      height: 250,
+      colorDark: "#000000",
+      colorLight: "#ffffff"
     });
   }
 
