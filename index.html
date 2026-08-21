@@ -167,20 +167,21 @@
       margin-bottom: 12px;
     }
 
-    /* Menu Grid Cards */
+    /* Menu Grid Cards (Grid 2 Kolom Agar Rapi 4 Menu) */
     .menu-grid {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
       margin-top: 20px;
+      justify-items: center;
     }
 
     .menu-item {
-      width: 100px;
       display: flex;
       flex-direction: column;
       align-items: center;
       cursor: pointer;
+      width: 100%;
     }
 
     .menu-card {
@@ -192,6 +193,7 @@
       align-items: center;
       justify-content: center;
       color: #FFFFFF;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
     .menu-title {
@@ -200,6 +202,7 @@
       color: #000000;
       text-align: center;
       margin-top: 6px;
+      text-transform: lowercase;
     }
 
     /* Quiz Radio Options */
@@ -286,14 +289,14 @@
 
 <div class="app-container">
 
-  <!-- 1. PAGE: MENU UTAMA -->
+  <!-- 1. PAGE: MENU UTAMA (SEKARANG BERSISI 4 MENU) -->
   <div id="pageMenu" class="page active">
-    <h2 style="font-size: 18px; text-align: center; margin-top: 24px; margin-bottom: 32px; font-weight: bold;">
+    <h2 style="font-size: 18px; text-align: center; margin-top: 24px; margin-bottom: 28px; font-weight: bold;">
       APLIKASI ABSENSI PELATIHAN AYUB WIDODO
     </h2>
 
     <div class="menu-grid">
-      <!-- Absensi Pelatihan BHD -->
+      <!-- 1. Absensi Pelatihan BHD -->
       <div class="menu-item" onclick="navigateTo('pageMain')">
         <div class="menu-card">
           <span class="material-icons" style="font-size:36px;">assignment</span>
@@ -301,7 +304,7 @@
         <div class="menu-title">Absensi pelatihan bhd</div>
       </div>
 
-      <!-- Evaluasi -->
+      <!-- 2. Evaluasi -->
       <div class="menu-item" onclick="navigateTo('pageEvaluasiCode')">
         <div class="menu-card">
           <span class="material-icons" style="font-size:36px;">edit</span>
@@ -309,12 +312,20 @@
         <div class="menu-title">evaluasi</div>
       </div>
 
-      <!-- Trainer Setting -->
-      <div class="menu-item" onclick="navigateTo('pageTrainerLogin')">
+      <!-- 3. Trainer Setting -->
+      <div class="menu-item" onclick="bukaTrainerLogin('trainer_setting')">
         <div class="menu-card">
           <span class="material-icons" style="font-size:36px;">settings</span>
         </div>
         <div class="menu-title">trainer setting</div>
+      </div>
+
+      <!-- 4. Editor Soal (MENU BARU DI HALAMAN UTAMA) -->
+      <div class="menu-item" onclick="bukaTrainerLogin('editor_soal')">
+        <div class="menu-card">
+          <span class="material-icons" style="font-size:36px;">quiz</span>
+        </div>
+        <div class="menu-title">editor soal</div>
       </div>
     </div>
   </div>
@@ -570,7 +581,8 @@
   let currentIndex = 0;
   let timerInterval = null;
   let detailJawabanGlobal = [];
-  let activeEditObj = null; // Menyimpan data soal yang sedang di-edit
+  let activeEditObj = null; 
+  let targetPageAfterLogin = 'pageTrainerSetting'; // Menentukan tujuan setelah login
 
   // Init Date On Load & Initial State History
   window.onload = function() {
@@ -580,7 +592,6 @@
     const yyyy = today.getFullYear();
     document.getElementById('etTanggalEvaluasi').value = `${dd}/${mm}/${yyyy}`;
 
-    // Set state awal di browser history
     history.replaceState({ page: 'pageMenu' }, "", "");
   };
 
@@ -612,6 +623,16 @@
       showPageDOM('pageMenu');
     }
   });
+
+  // Navigasi dengan Akses Trainer Login
+  function bukaTrainerLogin(tujuan) {
+    if (tujuan === 'editor_soal') {
+      targetPageAfterLogin = 'pageQuestionEditor';
+    } else {
+      targetPageAfterLogin = 'pageTrainerSetting';
+    }
+    navigateTo('pageTrainerLogin');
+  }
 
   // ==========================================
   // MAIN ABSENSI LOGIC
@@ -934,7 +955,7 @@
     const pass = document.getElementById('etPassTrainer').value.trim();
 
     if (akun === "ayubwidodo" && pass === "trainer123") {
-      navigateTo('pageTrainerSetting');
+      navigateTo(targetPageAfterLogin);
     } else {
       alert("Akun atau Password Trainer Salah!");
     }
@@ -982,7 +1003,7 @@
   }
 
   // ==========================================
-  // QUESTION EDITOR LOGIC (NEW)
+  // QUESTION EDITOR LOGIC
   // ==========================================
   function loadDaftarSoalEditor() {
     const container = document.getElementById('containerSoalEditor');
