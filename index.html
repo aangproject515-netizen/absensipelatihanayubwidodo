@@ -1326,31 +1326,89 @@
   }
 
   function simpanSoalDialog() {
-    const soal = document.getElementById('etDialogSoal').value.trim();
-    const a = document.getElementById('etDialogA').value.trim();
-    const b = document.getElementById('etDialogB').value.trim();
-    const c = document.getElementById('etDialogC').value.trim();
-    const kunci = document.getElementById('etDialogKunci').value.trim().toUpperCase();
+  const soal = document.getElementById('etDialogSoal').value.trim();
+  const a = document.getElementById('etDialogA').value.trim();
+  const b = document.getElementById('etDialogB').value.trim();
+  const c = document.getElementById('etDialogC').value.trim();
+  const kunci = document.getElementById('etDialogKunci').value.trim().toUpperCase();
 
-    if (!soal || !a || !b || !c || !kunci) {
-      alert("Mohon isi seluruh field pertanyaan, pilihan, dan kunci!");
-      return;
-    }
+  if (!soal || !a || !b || !c || !kunci) {
+    alert("Mohon isi seluruh field pertanyaan, pilihan, dan kunci!");
+    return;
+  }
 
-    if (!['A', 'B', 'C'].includes(kunci)) {
-      alert("Kunci jawaban harus A, B, atau C!");
-      return;
+  if (!['A', 'B', 'C'].includes(kunci)) {
+    alert("Kunci jawaban harus A, B, atau C!");
+    return;
+  }
+
+  // ==========================================
+  // PAYLOAD
+  // ==========================================
+  const payload = {
+    action: activeEditObj ? "updateQuestion" : "addQuestion",
+
+    // ID tetap dikirim
+    id: activeEditObj ? activeEditObj.id : null,
+
+    // INI YANG SEBELUMNYA HILANG
+    rowIndex: activeEditObj ? activeEditObj.rowIndex : null,
+
+    soal: soal,
+    pilihanA: a,
+    pilihanB: b,
+    pilihanC: c,
+    kunci: kunci
+  };
+
+  console.log("DATA SOAL YANG DIKIRIM:", payload);
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  })
+  .then(res => res.json())
+  .then(resJson => {
+    console.log("RESPON APPS SCRIPT:", resJson);
+
+    if (resJson.result === "success") {
+      alert(
+        activeEditObj
+          ? "Soal berhasil diperbarui!"
+          : "Soal berhasil ditambahkan!"
+      );
+
+      tutupModalSoal();
+      loadDaftarSoalEditor();
+
+    } else {
+      alert(
+        "Gagal menyimpan: " +
+        (resJson.message || "Terjadi kesalahan")
+      );
     }
+  })
+  .catch(err => {
+    console.error("ERROR:", err);
+    alert("Terjadi kesalahan: " + err.message);
+  });
+}
+ function konfirmasiHapusSingle() {
+  if (!activeEditObj) return;
+
+  if (confirm("Apakah Anda yakin ingin menghapus soal ini?")) {
 
     const payload = {
-      action: activeEditObj ? "updateQuestion" : "addQuestion",
-      id: activeEditObj ? activeEditObj.id : null,
-      soal: soal,
-      pilihanA: a,
-      pilihanB: b,
-      pilihanC: c,
-      kunci: kunci
+      action: "deleteQuestion",
+
+      // Tetap kirim ID
+      id: activeEditObj.id,
+
+      // Kirim nomor baris Google Sheet
+      rowIndex: activeEditObj.rowIndex
     };
+
+    console.log("DATA HAPUS:", payload);
 
     fetch(SCRIPT_URL, {
       method: 'POST',
@@ -1358,41 +1416,30 @@
     })
     .then(res => res.json())
     .then(resJson => {
+
+      console.log("RESPON HAPUS:", resJson);
+
       if (resJson.result === "success") {
+
+        alert("Soal berhasil dihapus!");
+
         tutupModalSoal();
         loadDaftarSoalEditor();
+
       } else {
-        alert("Gagal menyimpan: " + (resJson.message || "Terjadi kesalahan"));
+
+        alert(
+          "Gagal menghapus: " +
+          (resJson.message || "Terjadi kesalahan")
+        );
       }
     })
-    .catch(err => alert("Terjadi kesalahan: " + err.message));
+    .catch(err => {
+      console.error("ERROR HAPUS:", err);
+      alert("Terjadi kesalahan: " + err.message);
+    });
   }
-
-  function konfirmasiHapusSingle() {
-    if (!activeEditObj) return;
-    if (confirm("Apakah Anda yakin ingin menghapus soal ini?")) {
-      const payload = {
-        action: "deleteQuestion",
-        id: activeEditObj.id
-      };
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(resJson => {
-        if (resJson.result === "success") {
-          tutupModalSoal();
-          loadDaftarSoalEditor();
-        } else {
-          alert("Gagal menghapus: " + (resJson.message || "Terjadi kesalahan"));
-        }
-      })
-      .catch(err => alert("Terjadi kesalahan: " + err.message));
-    }
-  }
-
+}
   function konfirmasiHapusSemuaSoal() {
     if (confirm("PERINGATAN: Apakah Anda yakin ingin menghapus SELURUH soal yang ada?")) {
       const payload = { action: "deleteAllQuestions" };
