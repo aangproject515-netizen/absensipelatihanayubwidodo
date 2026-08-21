@@ -96,7 +96,7 @@
       border-width: 2px;
     }
 
-    .form-control:disabled {
+    .form-control:disabled, .form-control[readonly] {
       background-color: #F0F0F0;
       color: #777777;
     }
@@ -289,7 +289,7 @@
 
 <div class="app-container">
 
-  <!-- 1. PAGE: MENU UTAMA (SEKARANG BERSISI 4 MENU) -->
+  <!-- 1. PAGE: MENU UTAMA -->
   <div id="pageMenu" class="page active">
     <h2 style="font-size: 18px; text-align: center; margin-top: 24px; margin-bottom: 28px; font-weight: bold;">
       APLIKASI ABSENSI PELATIHAN AYUB WIDODO
@@ -320,7 +320,7 @@
         <div class="menu-title">trainer setting</div>
       </div>
 
-      <!-- 4. Editor Soal (MENU BARU DI HALAMAN UTAMA) -->
+      <!-- 4. Editor Soal -->
       <div class="menu-item" onclick="bukaTrainerLogin('editor_soal')">
         <div class="menu-card">
           <span class="material-icons" style="font-size:36px;">quiz</span>
@@ -383,7 +383,7 @@
 
     <div class="form-group" style="margin-top: 20px;">
       <label>NAMA LENGKAP :</label>
-      <input type="text" id="etNamaEvaluasi" class="form-control">
+      <input type="text" id="etNamaEvaluasi" class="form-control" readonly>
     </div>
 
     <div class="form-group">
@@ -450,9 +450,7 @@
       <div style="font-size: 12px; color: #999999;">Skor Evaluasi</div>
     </div>
 
-    <div id="containerLeaderboard" style="flex: 1; overflow-y: auto;">
-      <!-- Item Leaderboard disuntikkan via JS -->
-    </div>
+    <div id="containerLeaderboard" style="flex: 1; overflow-y: auto;"></div>
 
     <button class="btn" style="margin-top: 8px; margin-bottom: 20px;" onclick="navigateTo('pageKoreksi')">KOREKSI JAWABAN SAYA</button>
   </div>
@@ -465,9 +463,7 @@
       <div style="font-size: 14px; color: #F5DADA; margin-top: 5px;">Periksa kembali jawaban dan kunci Anda</div>
     </div>
 
-    <div id="containerKoreksi" style="flex: 1; overflow-y: auto;">
-      <!-- Card Koreksi disuntikkan via JS -->
-    </div>
+    <div id="containerKoreksi" style="flex: 1; overflow-y: auto;"></div>
   </div>
 
   <!-- 8. PAGE: TRAINER LOGIN -->
@@ -509,9 +505,7 @@
 
     <div id="pbEditor" class="loader"></div>
 
-    <div id="containerSoalEditor" style="flex: 1; overflow-y: auto; margin-bottom: 60px;">
-      <!-- Item Soal disuntikkan via JS -->
-    </div>
+    <div id="containerSoalEditor" style="flex: 1; overflow-y: auto; margin-bottom: 60px;"></div>
 
     <!-- Floating Action Button untuk Tambah Soal -->
     <div class="fab" onclick="bukaDialogSoal(null)">
@@ -570,7 +564,7 @@
   // ==========================================
   // API & CONSTANTS
   // ==========================================
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyExFSjJHhFR-DC4XjtqUT2KhdJDrLh2RRvSeiLYs28sRCakOwXLH45urHPVvomVN2LkQ/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybZZPD80NqS0ZgjCwIyS23de8TrWaYYOPyd6mXJW9eZmR7o1Ka0-VrHC6VNCwhTF5sfQ/exec";
 
   // App State variables
   let evaluasiNama = "";
@@ -582,7 +576,15 @@
   let timerInterval = null;
   let detailJawabanGlobal = [];
   let activeEditObj = null; 
-  let targetPageAfterLogin = 'pageTrainerSetting'; // Menentukan tujuan setelah login
+  let targetPageAfterLogin = 'pageTrainerSetting';
+
+  // Helper UI Loading
+  function setLoading(loaderId, btnId, isSpinner) {
+    const loader = document.getElementById(loaderId);
+    const btn = document.getElementById(btnId);
+    if (loader) loader.style.display = isSpinner ? 'block' : 'none';
+    if (btn) btn.disabled = isSpinner;
+  }
 
   // Init Date On Load & Initial State History
   window.onload = function() {
@@ -624,7 +626,6 @@
     }
   });
 
-  // Navigasi dengan Akses Trainer Login
   function bukaTrainerLogin(tujuan) {
     if (tujuan === 'editor_soal') {
       targetPageAfterLogin = 'pageQuestionEditor';
@@ -659,9 +660,9 @@
     .then(res => res.json())
     .then(resJson => {
       if (resJson.result === "success") {
-        document.getElementById('etNama').value = "";
-        document.getElementById('etTanggal').value = "";
-        document.getElementById('etEmail').value = "";
+        // Autofill ke Form Evaluasi
+        document.getElementById('etNamaEvaluasi').value = nama;
+        
         document.getElementById('modalSuccess').style.display = 'flex';
       } else {
         alert("Gagal: " + (resJson.message || "Terjadi kesalahan"));
@@ -673,6 +674,7 @@
 
   function closeModal() {
     document.getElementById('modalSuccess').style.display = 'none';
+    navigateTo('pageMenu');
   }
 
   // ==========================================
@@ -1015,112 +1017,135 @@
     .then(res => res.json())
     .then(resJson => {
       pb.style.display = "none";
-      const array = resJson.questions || [];
-      if (array.length > 0) {
-        array.forEach((obj, i) => renderCardSoalEditor(obj, i + 1));
-      } else {
-        container.innerHTML = "<div style='text-align:center; padding: 20px; color: gray;'>Belum ada soal tersedia.</div>";
+      const list = resJson.questions || [];
+      if (list.length === 0) {
+        container.innerHTML = "<div style='text-align:center; color:gray; margin-top:20px;'>Belum ada soal tersedia.</div>";
+        return;
       }
+      list.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = "card";
+        card.style.cursor = "pointer";
+        card.onclick = () => bukaDialogSoal(item);
+        card.innerHTML = `
+          <div style="font-weight:bold; color:#800000; font-size:14px;">Soal #${index + 1}</div>
+          <div style="font-size:15px; margin-top:4px; font-weight:500;">${item.soal}</div>
+          <div style="font-size:12px; color:gray; margin-top:8px;">Kunci: <b>${item.kunci}</b></div>
+        `;
+        container.appendChild(card);
+      });
     })
-    .catch(e => {
+    .catch(err => {
       pb.style.display = "none";
-      alert("Gagal memuat soal: " + e.message);
+      container.innerHTML = "<div style='text-align:center; color:red;'>Gagal memuat soal.</div>";
     });
   }
 
-  function renderCardSoalEditor(obj, no) {
-    const container = document.getElementById('containerSoalEditor');
-    const card = document.createElement('div');
-    card.className = "card";
-    card.innerHTML = `
-      <div style="font-size: 12px; color: gray;">Soal #${no}</div>
-      <div style="font-size: 16px; font-weight: bold; color: black; margin: 8px 0 12px 0;">${obj.soal || ""}</div>
-      <button class="btn" style="height: 40px; font-size: 12px; margin-top: 0;">EDIT SOAL</button>
-    `;
-    card.querySelector('button').onclick = () => bukaDialogSoal(obj);
-    container.appendChild(card);
-  }
+  function bukaDialogSoal(obj) {
+    activeEditObj = obj;
+    const modal = document.getElementById('modalEditSoal');
+    const title = document.getElementById('modalSoalTitle');
+    const btnDel = document.getElementById('btnDialogDelete');
 
-  function bukaDialogSoal(soalObj) {
-    activeEditObj = soalObj;
-    const isEdit = soalObj !== null;
-
-    document.getElementById('modalSoalTitle').innerText = isEdit ? "Edit Soal" : "Tambah Soal";
-    document.getElementById('etDialogSoal').value = isEdit ? (soalObj.soal || "") : "";
-    document.getElementById('etDialogA').value = isEdit ? (soalObj.pilihanA || "") : "";
-    document.getElementById('etDialogB').value = isEdit ? (soalObj.pilihanB || "") : "";
-    document.getElementById('etDialogC').value = isEdit ? (soalObj.pilihanC || "") : "";
-    document.getElementById('etDialogKunci').value = isEdit ? (soalObj.kunci || "") : "";
-    
-    document.getElementById('btnDialogDelete').style.display = isEdit ? "block" : "none";
-    document.getElementById('modalEditSoal').style.display = "flex";
+    if (obj) {
+      title.innerText = "Edit Soal";
+      document.getElementById('etDialogSoal').value = obj.soal || "";
+      document.getElementById('etDialogA').value = obj.pilihanA || "";
+      document.getElementById('etDialogB').value = obj.pilihanB || "";
+      document.getElementById('etDialogC').value = obj.pilihanC || "";
+      document.getElementById('etDialogKunci').value = obj.kunci || "";
+      btnDel.style.display = "block";
+    } else {
+      title.innerText = "Tambah Soal";
+      document.getElementById('etDialogSoal').value = "";
+      document.getElementById('etDialogA').value = "";
+      document.getElementById('etDialogB').value = "";
+      document.getElementById('etDialogC').value = "";
+      document.getElementById('etDialogKunci').value = "";
+      btnDel.style.display = "none";
+    }
+    modal.style.display = "flex";
   }
 
   function tutupModalSoal() {
     document.getElementById('modalEditSoal').style.display = "none";
-    activeEditObj = null;
   }
 
   function simpanSoalDialog() {
-    const isEdit = activeEditObj !== null;
+    const soal = document.getElementById('etDialogSoal').value.trim();
+    const a = document.getElementById('etDialogA').value.trim();
+    const b = document.getElementById('etDialogB').value.trim();
+    const c = document.getElementById('etDialogC').value.trim();
+    const kunci = document.getElementById('etDialogKunci').value.trim().toUpperCase();
+
+    if (!soal || !a || !b || !c || !kunci) {
+      alert("Lengkapi semua field soal!");
+      return;
+    }
+
     const payload = {
-      action: isEdit ? "updateQuestion" : "addQuestion",
-      soal: document.getElementById('etDialogSoal').value.trim(),
-      pilihanA: document.getElementById('etDialogA').value.trim(),
-      pilihanB: document.getElementById('etDialogB').value.trim(),
-      pilihanC: document.getElementById('etDialogC').value.trim(),
-      kunci: document.getElementById('etDialogKunci').value.trim().toUpperCase()
+      action: "saveQuestion",
+      id: activeEditObj ? activeEditObj.id : null,
+      soal: soal,
+      pilihanA: a,
+      pilihanB: b,
+      pilihanC: c,
+      kunci: kunci
     };
-
-    if (isEdit) {
-      payload.rowIndex = activeEditObj.rowIndex;
-    }
-
-    tutupModalSoal();
-    kirimRequestEditor(payload, "Data berhasil disimpan");
-  }
-
-  function konfirmasiHapusSingle() {
-    if (!activeEditObj || !activeEditObj.rowIndex) return;
-    if (confirm("Apakah Anda yakin ingin menghapus soal ini?")) {
-      const rowIndex = activeEditObj.rowIndex;
-      tutupModalSoal();
-      kirimRequestEditor({ action: "deleteQuestion", rowIndex: rowIndex }, "Soal berhasil dihapus");
-    }
-  }
-
-  function konfirmasiHapusSemuaSoal() {
-    if (confirm("Apakah Anda yakin ingin menghapus SELURUH SOAL yang ada? Tindakan ini tidak dapat dibatalkan.")) {
-      kirimRequestEditor({ action: "deleteAllQuestions" }, "Semua soal berhasil dihapus");
-    }
-  }
-
-  function kirimRequestEditor(payload, pesanSukses) {
-    const pb = document.getElementById('pbEditor');
-    pb.style.display = "block";
 
     fetch(SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify(payload)
     })
     .then(res => res.json())
-    .then(json => {
-      pb.style.display = "none";
-      alert(pesanSukses);
-      loadDaftarSoalEditor();
+    .then(resJson => {
+      if (resJson.result === "success") {
+        tutupModalSoal();
+        loadDaftarSoalEditor();
+      } else {
+        alert("Gagal menyimpan: " + resJson.message);
+      }
     })
-    .catch(e => {
-      pb.style.display = "none";
-      alert("Gagal memproses ke server: " + e.message);
-    });
+    .catch(e => alert("Error: " + e.message));
   }
 
-  // Helper Utilities
-  function setLoading(loaderId, btnId, isLoading) {
-    document.getElementById(loaderId).style.display = isLoading ? 'block' : 'none';
-    document.getElementById(btnId).disabled = isLoading;
+  function konfirmasiHapusSingle() {
+    if (!activeEditObj) return;
+    if (confirm("Apakah Anda yakin ingin menghapus soal ini?")) {
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "deleteQuestion", id: activeEditObj.id })
+      })
+      .then(res => res.json())
+      .then(resJson => {
+        if (resJson.result === "success") {
+          tutupModalSoal();
+          loadDaftarSoalEditor();
+        } else {
+          alert("Gagal menghapus: " + resJson.message);
+        }
+      })
+      .catch(e => alert("Error: " + e.message));
+    }
+  }
+
+  function konfirmasiHapusSemuaSoal() {
+    if (confirm("PERINGATAN: Seluruh daftar soal akan dihapus! Lanjutkan?")) {
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "deleteAllQuestions" })
+      })
+      .then(res => res.json())
+      .then(resJson => {
+        if (resJson.result === "success") {
+          loadDaftarSoalEditor();
+        } else {
+          alert("Gagal menghapus semua: " + resJson.message);
+        }
+      })
+      .catch(e => alert("Error: " + e.message));
+    }
   }
 </script>
-
 </body>
 </html>
