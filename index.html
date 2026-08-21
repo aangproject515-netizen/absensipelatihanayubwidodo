@@ -506,7 +506,7 @@
             <div class="menu-title">Editor Soal</div>
           </div>
 
-          <!-- 5. Cek Nilai (Baru - Disamakan dengan Android) -->
+          <!-- 5. Cek Nilai Trainer -->
           <div class="menu-item" onclick="bukaTrainerLogin('cek_nilai')">
             <div class="menu-card-icon">
               <span class="material-icons" style="font-size:36px;">leaderboard</span>
@@ -754,7 +754,7 @@
       </div>
     </div>
 
-    <!-- 11. PAGE: CEK NILAI TRAINER (NEW - Disamakan dengan Android TrainerCekNilaiActivity) -->
+    <!-- 11. PAGE: CEK NILAI TRAINER -->
     <div id="pageCekNilai" class="page">
       <div class="desktop-card">
         <h2 class="text-maroon" style="font-size: 24px; margin-bottom: 8px;">Daftar Nilai Peserta (Trainer View)</h2>
@@ -833,7 +833,6 @@
   // ==========================================
   // CONFIGURATION & GLOBAL STATE
   // ==========================================
-  // URL disesuaikan persis ApiConfig.kt milik aplikasi Android
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOUsMvvyIGEwIIyX0kzY_aZl2xlnmZZKvHig84El_Nkc-GQIEaJhzVlFj4oBgYpyj7CA/exec";
 
   let evaluasiNama = "";
@@ -851,6 +850,45 @@
   let targetPageAfterLogin = 'pageTrainerSetting';
   let listKategoriGlobal = [];
 
+  // ==========================================
+  // AUDIO SYSTEM (Local MP3 Files)
+  // ==========================================
+  const sndClick = new Audio('btn_click.mp3');
+  const sndBgm = new Audio('bgm_quiz.mp3');
+  const sndSubmit = new Audio('submit_quiz.mp3');
+
+  sndBgm.loop = true;
+  sndBgm.volume = 0.4;
+
+  // Efek Suara Klik
+  function playSoundClick() {
+    sndClick.currentTime = 0;
+    sndClick.play().catch(() => {});
+  }
+
+  // Efek Suara Selebrasi Leaderboard / Submit
+  function playSoundLeaderboard() {
+    sndSubmit.currentTime = 0;
+    sndSubmit.play().catch(() => {});
+  }
+
+  // Background Music (BGM) Kuis
+  function startBGM() {
+    sndBgm.play().catch(() => {});
+  }
+
+  function stopBGM() {
+    sndBgm.pause();
+    sndBgm.currentTime = 0;
+  }
+
+  // Listener Klik Global untuk Suara Tombol
+  document.addEventListener('click', function(e) {
+    if (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.classList.contains('menu-item') || e.target.classList.contains('radio-option')) {
+      playSoundClick();
+    }
+  });
+
   // Init Date On Load
   window.onload = function() {
     const today = new Date();
@@ -859,7 +897,6 @@
     const yyyy = today.getFullYear();
     document.getElementById('etTanggalEvaluasi').value = `${dd}/${mm}/${yyyy}`;
     
-    // Set default tanggal pada form absensi
     const inputDate = document.getElementById('etTanggal');
     if (inputDate) inputDate.value = `${yyyy}-${mm}-${dd}`;
 
@@ -919,13 +956,15 @@
     const pengajar = document.getElementById('etPengajar').value.trim();
     const email = document.getElementById('etEmail').value.trim();
 
-    if (!nama || !tanggal || !pengajar || !email) {
-      alert("Mohon lengkapi semua data");
+    if (!nama || !tanggal || !email) {
+      alert("Mohon isi semua data absensi!");
       return;
     }
 
-    document.getElementById('progressBarMain').style.display = 'block';
-    document.getElementById('btnKirim').disabled = true;
+    const btn = document.getElementById('btnKirim');
+    const loader = document.getElementById('progressBarMain');
+    btn.disabled = true;
+    loader.style.display = 'block';
 
     const payload = {
       action: "absensi",
@@ -936,22 +975,25 @@
     };
 
     fetch(SCRIPT_URL, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(payload)
     })
     .then(res => res.json())
-    .then(resJson => {
-      if (resJson.result === "success") {
-        document.getElementById('etNamaEvaluasi').value = nama;
+    .then(res => {
+      btn.disabled = false;
+      loader.style.display = 'none';
+      if (res.status === "success") {
         document.getElementById('modalSuccess').style.display = 'flex';
+        document.getElementById('etNama').value = "";
+        document.getElementById('etEmail').value = "";
       } else {
-        alert("Gagal: " + (resJson.message || "Terjadi kesalahan"));
+        alert("Gagal menyimpan absensi: " + res.message);
       }
     })
-    .catch(err => alert("Terjadi kesalahan koneksi: " + err.message))
-    .finally(() => {
-      document.getElementById('progressBarMain').style.display = 'none';
-      document.getElementById('btnKirim').disabled = false;
+    .catch(err => {
+      btn.disabled = false;
+      loader.style.display = 'none';
+      alert("Terjadi kesalahan jaringan/sistem.");
     });
   }
 
@@ -961,7 +1003,7 @@
   }
 
   // ==========================================
-  // EVALUASI CODE & VERIFICATION (Android EvaluasiCodeActivity)
+  // EVALUASI CODE & FORM LOGIC
   // ==========================================
   function submitKodeEvaluasi() {
     const kode = document.getElementById('etKodeEvaluasi').value.trim();
@@ -970,142 +1012,114 @@
       return;
     }
 
-    const loader = document.getElementById('pbEvaluasiCode');
     const btn = document.getElementById('btnKirimKode');
-    loader.style.display = 'block';
+    const loader = document.getElementById('pbEvaluasiCode');
     btn.disabled = true;
+    loader.style.display = 'block';
 
-    // Direct Verification ke Apps Script sesuai EvaluasiCodeActivity.kt
     fetch(`${SCRIPT_URL}?action=verifyCode&code=${encodeURIComponent(kode)}`)
       .then(res => res.json())
-      .then(json => {
-        if (json.result === "success") {
+      .then(res => {
+        btn.disabled = false;
+        loader.style.display = 'none';
+        if (res.status === "success") {
           evaluasiKode = kode;
-          evaluasiKategori = json.kategori || "";
-          lanjutKeForm();
+          evaluasiKategori = res.kategori;
+          loadLokasiPelatihan();
+          navigateTo('pageEvaluasiForm');
         } else {
-          alert(json.message || "Kode evaluasi tidak valid!");
+          alert(res.message || "Kode evaluasi tidak valid!");
         }
       })
-      .catch(err => alert("Error verifikasi kode: " + err.message))
-      .finally(() => {
-        loader.style.display = 'none';
+      .catch(err => {
         btn.disabled = false;
+        loader.style.display = 'none';
+        alert("Gagal memverifikasi kode!");
       });
   }
 
-  function lanjutKeForm() {
-    navigateTo('pageEvaluasiForm');
-    loadLokasiData();
-  }
-
-  function loadLokasiData() {
-    const select = document.getElementById('spLokasi');
-    select.innerHTML = "<option value=''>Memuat lokasi...</option>";
+  function loadLokasiPelatihan() {
+    const sp = document.getElementById('spLokasi');
+    sp.innerHTML = '<option value="">Memuat lokasi...</option>';
 
     fetch(`${SCRIPT_URL}?action=getLocations`)
       .then(res => res.json())
-      .then(resJson => {
-        select.innerHTML = "<option value=''>-- Pilih Lokasi --</option>";
-        const locations = resJson.locations || [];
-        locations.forEach(loc => {
-          let opt = document.createElement('option');
+      .then(data => {
+        sp.innerHTML = '<option value="">-- Pilih Lokasi --</option>';
+        data.forEach(loc => {
+          const opt = document.createElement('option');
           opt.value = loc;
-          opt.innerText = loc;
-          select.appendChild(opt);
+          opt.textContent = loc;
+          sp.appendChild(opt);
         });
       })
       .catch(() => {
-        select.innerHTML = "<option value=''>-- Pilih Lokasi --</option>";
-        ["Auditorium Utama", "Ruang Pelatihan BHD", "Klinik Utama"].forEach(loc => {
-          let opt = document.createElement('option');
-          opt.value = loc;
-          opt.innerText = loc;
-          select.appendChild(opt);
-        });
+        sp.innerHTML = '<option value="">Gagal memuat lokasi</option>';
       });
   }
 
   function mulaiEvaluasi() {
     evaluasiNama = document.getElementById('etNamaEvaluasi').value.trim();
-    evaluasiLokasi = document.getElementById('spLokasi').value.trim();
-    evaluasiTanggal = document.getElementById('etTanggalEvaluasi').value.trim();
+    evaluasiLokasi = document.getElementById('spLokasi').value;
+    evaluasiTanggal = document.getElementById('etTanggalEvaluasi').value;
 
     if (!evaluasiNama || !evaluasiLokasi) {
-      alert("Mohon lengkapi Nama dan Lokasi");
+      alert("Mohon isi Nama dan Pilih Lokasi Pelatihan!");
       return;
     }
 
-    navigateTo('pageQuiz');
-    loadSoal();
+    loadSoalEvaluasi();
   }
 
-  // ==========================================
-  // QUIZ LOGIC
-  // ==========================================
-  function loadSoal() {
-    let url = `${SCRIPT_URL}?action=getQuestions`;
-    if (evaluasiKategori) {
-      url += `&kategori=${encodeURIComponent(evaluasiKategori)}`;
-    }
-
-    fetch(url)
+  function loadSoalEvaluasi() {
+    fetch(`${SCRIPT_URL}?action=getQuestions&kategori=${encodeURIComponent(evaluasiKategori)}`)
       .then(res => res.json())
-      .then(resJson => {
-        soalList = resJson.questions || [];
-        if (soalList.length > 0) {
+      .then(data => {
+        if (data && data.questions && data.questions.length > 0) {
+          soalList = data.questions;
           currentIndex = 0;
           jawabanUser = {};
-          tampilkanSoal(0);
-          const durasi = resJson.durasi || 20;
-          startTimer(durasi * 60);
+          navigateTo('pageQuiz');
+          renderSoal();
+          startTimer(data.durationMinutes || 20);
+          startBGM();
         } else {
-          alert("Daftar soal untuk kategori ini kosong!");
-          navigateTo('pageMenu');
+          alert("Tidak ada soal untuk kategori ini.");
         }
       })
-      .catch(e => alert("Gagal memuat soal: " + e.message));
+      .catch(err => {
+        alert("Gagal mengambil soal evaluasi.");
+      });
   }
 
-  function startTimer(duration) {
-    let timer = duration, minutes, seconds;
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-      minutes = parseInt(timer / 60, 10);
-      seconds = parseInt(timer % 60, 10);
+  // ==========================================
+  // QUIZ ENGINE LOGIC
+  // ==========================================
+  function renderSoal() {
+    const item = soalList[currentIndex];
+    document.getElementById('tvSoalKe').textContent = `Soal ${currentIndex + 1}/${soalList.length}`;
+    document.getElementById('tvTeksSoal').textContent = item.pertanyaan;
 
-      minutes = minutes < 10 ? "0" + minutes : minutes;
-      seconds = seconds < 10 ? "0" + seconds : seconds;
+    document.getElementById('labelA').textContent = "A. " + item.pilihanA;
+    document.getElementById('labelB').textContent = "B. " + item.pilihanB;
+    document.getElementById('labelC').textContent = "C. " + item.pilihanC;
 
-      document.getElementById('tvTimer').innerText = `${minutes}:${seconds}`;
+    const radios = document.getElementsByName('pilihan');
+    radios.forEach(r => r.checked = false);
 
-      if (--timer < 0) {
-        clearInterval(timerInterval);
-        alert("Waktu pengerjaan habis!");
-        selesaikanQuiz();
-      }
-    }, 1000);
-  }
-
-  function tampilkanSoal(index) {
-    if (index < 0 || index >= soalList.length) return;
-    
-    document.querySelectorAll('input[name="pilihan"]').forEach(el => el.checked = false);
-
-    const obj = soalList[index];
-    document.getElementById('tvSoalKe').innerText = `Soal ${index + 1}/${soalList.length}`;
-    document.getElementById('tvTeksSoal').innerText = obj.soal || "";
-    document.getElementById('labelA').innerText = "A. " + (obj.pilihanA || "");
-    document.getElementById('labelB').innerText = "B. " + (obj.pilihanB || "");
-    document.getElementById('labelC').innerText = "C. " + (obj.pilihanC || "");
-
-    if (jawabanUser[index]) {
-      const radio = document.querySelector(`input[name="pilihan"][value="${jawabanUser[index]}"]`);
-      if (radio) radio.checked = true;
+    if (jawabanUser[currentIndex]) {
+      const val = jawabanUser[currentIndex];
+      if (val === 'A') document.getElementById('rbA').checked = true;
+      if (val === 'B') document.getElementById('rbB').checked = true;
+      if (val === 'C') document.getElementById('rbC').checked = true;
     }
 
-    const btnNext = document.getElementById('btnLanjut');
-    btnNext.innerText = (index === soalList.length - 1) ? "SELESAI & KIRIM" : "SELANJUTNYA";
+    const btnLanjut = document.getElementById('btnLanjut');
+    if (currentIndex === soalList.length - 1) {
+      btnLanjut.textContent = "SUBMIT JAWABAN";
+    } else {
+      btnLanjut.textContent = "SELANJUTNYA";
+    }
   }
 
   function nextSoal() {
@@ -1116,388 +1130,373 @@
 
     if (currentIndex < soalList.length - 1) {
       currentIndex++;
-      tampilkanSoal(currentIndex);
+      renderSoal();
     } else {
-      selesaikanQuiz();
+      submitEvaluasi();
     }
   }
 
-  function selesaikanQuiz() {
-    clearInterval(timerInterval);
+  function startTimer(minutes) {
+    if (timerInterval) clearInterval(timerInterval);
+    let seconds = minutes * 60;
 
-    let jumlahBenar = 0;
-    detailJawabanGlobal = [];
+    timerInterval = setInterval(() => {
+      seconds--;
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      document.getElementById('tvTimer').textContent = 
+        `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+      if (seconds <= 0) {
+        clearInterval(timerInterval);
+        alert("Waktu pengerjaan telah habis!");
+        submitEvaluasi();
+      }
+    }, 1000);
+  }
+
+  function submitEvaluasi() {
+    if (timerInterval) clearInterval(timerInterval);
+    stopBGM();
+
+    let skor = 0;
+    const detailJawaban = [];
 
     soalList.forEach((s, idx) => {
-      const ans = jawabanUser[idx] || "";
-      const isCorrect = (ans.toUpperCase() === (s.kunci || "").toUpperCase());
-      if (isCorrect) jumlahBenar++;
+      const ans = jawabanUser[idx] || "-";
+      const isCorrect = (ans === s.kunci);
+      if (isCorrect) skor += (100 / soalList.length);
 
-      detailJawabanGlobal.push({
-        no: idx + 1,
-        soal: s.soal,
-        jawabanUser: ans,
-        kunci: s.kunci,
+      detailJawaban.push({
+        soal: s.pertanyaan,
         pilihanA: s.pilihanA,
         pilihanB: s.pilihanB,
-        pilihanC: s.pilihanC
+        pilihanC: s.pilihanC,
+        jawabanUser: ans,
+        kunci: s.kunci,
+        isCorrect: isCorrect
       });
     });
 
-    const nilaiAkhir = Math.round((jumlahBenar / soalList.length) * 100);
+    skor = Math.round(skor);
+    detailJawabanGlobal = detailJawaban;
 
-    // Kirim Jawaban ke Apps Script
     const payload = {
-      action: "submitQuiz",
+      action: "submitEvaluasi",
       nama: evaluasiNama,
       lokasi: evaluasiLokasi,
       tanggal: evaluasiTanggal,
-      nilai: nilaiAkhir,
+      kode: evaluasiKode,
       kategori: evaluasiKategori,
-      kode: evaluasiKode
+      nilai: skor
     };
 
     fetch(SCRIPT_URL, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(payload)
     })
     .then(res => res.json())
-    .then(() => {
-      document.getElementById('tvSkorSaya').innerText = nilaiAkhir;
-      navigateTo('pageLeaderboard');
+    .then(res => {
+      playSoundLeaderboard();
+      document.getElementById('tvSkorSaya').textContent = skor;
       loadLeaderboard();
+      navigateTo('pageLeaderboard');
     })
-    .catch(() => {
-      document.getElementById('tvSkorSaya').innerText = nilaiAkhir;
+    .catch(err => {
+      playSoundLeaderboard();
+      document.getElementById('tvSkorSaya').textContent = skor;
       navigateTo('pageLeaderboard');
-      loadLeaderboard();
     });
   }
 
   // ==========================================
-  // LEADERBOARD LOGIC
+  // LEADERBOARD & KOREKSI LOGIC
   // ==========================================
   function loadLeaderboard() {
     const container = document.getElementById('containerLeaderboard');
-    container.innerHTML = "<p style='text-align:center;'>Memuat papan peringkat...</p>";
+    container.innerHTML = '<p style="text-align:center;">Memuat papan peringkat...</p>';
 
-    fetch(`${SCRIPT_URL}?action=getLeaderboard`)
+    fetch(`${SCRIPT_URL}?action=getLeaderboard&kategori=${encodeURIComponent(evaluasiKategori)}`)
       .then(res => res.json())
-      .then(resJson => {
+      .then(data => {
         container.innerHTML = "";
-        const list = resJson.leaderboard || [];
-        if (list.length === 0) {
-          container.innerHTML = "<p style='text-align:center; color:#888;'>Belum ada data peserta.</p>";
-          return;
-        }
-
-        list.forEach((item, index) => {
-          const badgeIcon = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index+1}`;
+        data.slice(0, 10).forEach((item, index) => {
           const card = document.createElement('div');
           card.className = "rank-card";
+          
+          let medal = `#${index + 1}`;
+          if (index === 0) medal = "🥇";
+          if (index === 1) medal = "🥈";
+          if (index === 2) medal = "🥉";
+
           card.innerHTML = `
-            <div class="rank-badge">${badgeIcon}</div>
-            <div style="flex:1;">
-              <div style="font-weight:700; font-size:16px; color:#333;">${item.nama}</div>
-              <div style="font-size:12px; color:var(--maroon); font-weight:700;">${item.lokasi || 'Peserta'}</div>
+            <div class="rank-badge">${medal}</div>
+            <div style="flex: 1;">
+              <div style="font-weight: 700; font-size: 16px;">${item.nama}</div>
+              <div style="font-size: 12px; color: var(--muted);">${item.lokasi || '-'}</div>
             </div>
-            <div style="font-size:24px; font-weight:700; color:var(--maroon);">${item.nilai}</div>
+            <div style="font-weight: 700; font-size: 20px; color: var(--maroon);">${item.nilai}</div>
           `;
           container.appendChild(card);
         });
+        renderKoreksi();
       })
       .catch(() => {
-        container.innerHTML = "<p style='text-align:center; color:red;'>Gagal memuat papan peringkat.</p>";
+        container.innerHTML = '<p style="text-align:center;">Gagal memuat papan peringkat.</p>';
+        renderKoreksi();
       });
   }
 
-  // ==========================================
-  // KOREKSI JAWABAN LOGIC (Android KoreksiActivity)
-  // ==========================================
-  function renderKoreksiPage() {
+  function renderKoreksi() {
     const container = document.getElementById('containerKoreksi');
     container.innerHTML = "";
 
-    detailJawabanGlobal.forEach(item => {
-      const isBenar = item.jawabanUser.toUpperCase() === (item.kunci || "").toUpperCase();
+    detailJawabanGlobal.forEach((item, index) => {
       const card = document.createElement('div');
       card.className = "koreksi-card";
 
-      const getOpsiText = (kode) => {
-        if (kode === "A") return item.pilihanA;
-        if (kode === "B") return item.pilihanB;
-        if (kode === "C") return item.pilihanC;
-        return "";
-      };
-
-      const userText = item.jawabanUser ? `${item.jawabanUser}. ${getOpsiText(item.jawabanUser)}` : "Tidak Menjawab";
-      const kunciText = `${item.kunci}. ${getOpsiText(item.kunci)}`;
+      const badgeClass = item.isCorrect ? "badge-success" : "badge-danger";
+      const badgeText = item.isCorrect ? "BENAR" : "SALAH";
 
       card.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong style="color:var(--maroon);">Soal #${item.no}</strong>
-          <span class="koreksi-status-badge ${isBenar ? 'badge-success' : 'badge-danger'}">
-            ${isBenar ? '✓ BENAR' : '✕ SALAH'}
-          </span>
-        </div>
-        <div style="font-size:15px; font-weight:500; margin: 10px 0;">${item.soal}</div>
-        
-        <div style="margin-top:8px; font-size:13px;">
-          <div style="color:#777; font-weight:700;">JAWABAN ANDA:</div>
-          <div style="padding:8px 12px; border-radius:6px; background:${isBenar ? '#E8F5E9' : '#FFEBEE'}; color:${isBenar ? 'var(--success)' : 'var(--danger)'}; font-weight:700; margin-top:4px;">
-            ${userText}
-          </div>
-        </div>
-
-        <div style="margin-top:8px; font-size:13px;">
-          <div style="color:#777; font-weight:700;">KUNCI JAWABAN:</div>
-          <div style="padding:8px 12px; border-radius:6px; background:#E8F5E9; color:var(--success); font-weight:700; margin-top:4px;">
-            ${kunciText}
-          </div>
+        <div class="koreksi-status-badge ${badgeClass}">${badgeText}</div>
+        <div style="font-weight: 700; margin-bottom: 12px;">${index + 1}. ${item.soal}</div>
+        <div style="font-size: 13px; color: #444; margin-bottom: 4px;">A. ${item.pilihanA}</div>
+        <div style="font-size: 13px; color: #444; margin-bottom: 4px;">B. ${item.pilihanB}</div>
+        <div style="font-size: 13px; color: #444; margin-bottom: 12px;">C. ${item.pilihanC}</div>
+        <div style="font-size: 12px; margin-top: auto; padding-top: 8px; border-top: 1px dashed #EEE;">
+          Jawaban Anda: <b>${item.jawabanUser}</b> | Kunci: <b>${item.kunci}</b>
         </div>
       `;
       container.appendChild(card);
     });
   }
 
-  // Monitor navigasi ke halaman Koreksi
-  const origShowPageDOM = showPageDOM;
-  showPageDOM = function(pageId) {
-    origShowPageDOM(pageId);
-    if (pageId === 'pageKoreksi') renderKoreksiPage();
-  };
-
   // ==========================================
-  // TRAINER AUTH & SETTINGS
+  // TRAINER FEATURES
   // ==========================================
   function loginTrainer() {
-    const akun = document.getElementById('etAkunTrainer').value.trim();
-    const pass = document.getElementById('etPassTrainer').value.trim();
+    const u = document.getElementById('etAkunTrainer').value.trim();
+    const p = document.getElementById('etPassTrainer').value.trim();
 
-    if (akun === "ayub@admin" && pass === "plumbon123") {
+    if (u === "admin" && p === "admin123") {
       navigateTo(targetPageAfterLogin);
     } else {
-      alert("Username atau Password Salah!");
+      alert("Akun atau password trainer salah!");
     }
   }
 
   function loadKategoriTrainer() {
     const sp = document.getElementById('spKategoriTrainer');
-    sp.innerHTML = "<option value=''>Memuat...</option>";
+    sp.innerHTML = '<option value="">Memuat Kategori...</option>';
 
     fetch(`${SCRIPT_URL}?action=getCategories`)
       .then(res => res.json())
-      .then(resJson => {
+      .then(cats => {
         sp.innerHTML = "";
-        const list = resJson.categories || [];
-        listKategoriGlobal = list;
-        list.forEach(cat => {
-          let opt = document.createElement('option');
-          opt.value = cat;
-          opt.innerText = cat;
+        cats.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = c;
           sp.appendChild(opt);
         });
       });
   }
 
   function generateKodeDariAppsScript() {
-    const cat = document.getElementById('spKategoriTrainer').value;
-    if (!cat) {
+    const kat = document.getElementById('spKategoriTrainer').value;
+    if (!kat) {
       alert("Pilih kategori terlebih dahulu!");
       return;
     }
 
-    fetch(`${SCRIPT_URL}?action=generateCode&kategori=${encodeURIComponent(cat)}`)
+    fetch(`${SCRIPT_URL}?action=generateCode&kategori=${encodeURIComponent(kat)}`)
       .then(res => res.json())
-      .then(json => {
-        const kode = json.code || "BHD-1234";
-        document.getElementById('tvKodeEvaluasiTrainer').innerText = "KODE EVALUASI: " + kode;
-        
-        // Generate QR Code
-        const qrContainer = document.getElementById('qrcode');
-        qrContainer.innerHTML = "";
-        new QRCode(qrContainer, {
-          text: kode,
-          width: 180,
-          height: 180
-        });
+      .then(res => {
+        if (res.status === "success") {
+          document.getElementById('tvKodeEvaluasiTrainer').textContent = `KODE EVALUASI: ${res.code}`;
+          
+          const qrDiv = document.getElementById('qrcode');
+          qrDiv.innerHTML = "";
+          new QRCode(qrDiv, {
+            text: res.code,
+            width: 180,
+            height: 180
+          });
+        }
       });
   }
 
   // ==========================================
-  // QUESTION EDITOR LOGIC
+  // QUESTION EDITOR & CEK NILAI TRAINER
   // ==========================================
   function loadKategoriEditor() {
     const sp = document.getElementById('spKategoriEditor');
-    sp.innerHTML = "<option value=''>Memuat...</option>";
+    sp.innerHTML = '<option value="">Memuat...</option>';
 
     fetch(`${SCRIPT_URL}?action=getCategories`)
       .then(res => res.json())
-      .then(resJson => {
+      .then(cats => {
         sp.innerHTML = "";
-        const list = resJson.categories || [];
-        listKategoriGlobal = list;
-        list.forEach(cat => {
-          let opt = document.createElement('option');
-          opt.value = cat;
-          opt.innerText = cat;
+        cats.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = c;
           sp.appendChild(opt);
         });
-        loadDaftarSoalEditor();
+        if (cats.length > 0) onCategoryEditorChanged();
       });
   }
 
   function onCategoryEditorChanged() {
-    loadDaftarSoalEditor();
-  }
+    const kat = document.getElementById('spKategoriEditor').value;
+    if (!kat) return;
 
-  function loadDaftarSoalEditor() {
-    const cat = document.getElementById('spKategoriEditor').value;
     const loader = document.getElementById('pbEditor');
     const container = document.getElementById('containerSoalEditor');
-    
     loader.style.display = 'block';
     container.innerHTML = "";
 
-    fetch(`${SCRIPT_URL}?action=getQuestions&kategori=${encodeURIComponent(cat)}`)
+    fetch(`${SCRIPT_URL}?action=getQuestions&kategori=${encodeURIComponent(kat)}`)
       .then(res => res.json())
-      .then(resJson => {
-        const questions = resJson.questions || [];
-        soalList = questions;
+      .then(data => {
+        loader.style.display = 'none';
+        document.getElementById('inputDurasiKuis').value = data.durationMinutes || 20;
 
-        if (questions.length === 0) {
-          container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>Belum ada soal pada kategori ini.</p>";
-          return;
-        }
-
-        questions.forEach((q, idx) => {
+        (data.questions || []).forEach((q, idx) => {
           const card = document.createElement('div');
           card.className = "editor-card";
           card.onclick = () => bukaDialogSoal(q);
+
           card.innerHTML = `
             <div>
-              <div style="font-size:12px; font-weight:700; color:var(--maroon); margin-bottom:6px;">SOAL #${idx + 1}</div>
-              <div style="font-size:15px; font-weight:500; color:#333;">${q.soal}</div>
+              <div style="font-weight: 700; color: var(--maroon); margin-bottom: 8px;">Soal #${idx + 1}</div>
+              <div style="font-size: 14px; margin-bottom: 12px;">${q.pertanyaan}</div>
             </div>
-            <div style="margin-top:12px; font-size:12px; background:var(--maroon-soft); color:var(--maroon); padding:6px 10px; border-radius:6px; font-weight:700;">
-              Kunci Jawaban: ${q.kunci}
-            </div>
+            <div style="font-size: 12px; color: var(--muted);">Kunci Jawaban: <b>${q.kunci}</b></div>
           `;
           container.appendChild(card);
         });
-      })
-      .finally(() => {
-        loader.style.display = 'none';
       });
   }
 
-  function bukaDialogSoal(obj) {
-    activeEditObj = obj;
-    document.getElementById('modalSoalTitle').innerText = obj ? "Edit Soal" : "Tambah Soal";
-    document.getElementById('etDialogSoal').value = obj ? obj.soal : "";
-    document.getElementById('etDialogA').value = obj ? obj.pilihanA : "";
-    document.getElementById('etDialogB').value = obj ? obj.pilihanB : "";
-    document.getElementById('etDialogC').value = obj ? obj.pilihanC : "";
-    document.getElementById('etDialogKunci').value = obj ? obj.kunci : "";
+  function bukaDialogSoal(q) {
+    activeEditObj = q;
+    const modal = document.getElementById('modalEditSoal');
+    const btnDel = document.getElementById('btnDialogDelete');
 
-    document.getElementById('btnDialogDelete').style.display = obj ? "block" : "none";
-    document.getElementById('modalEditSoal').style.display = "flex";
+    if (q) {
+      document.getElementById('modalSoalTitle').textContent = "Edit Soal";
+      document.getElementById('etDialogSoal').value = q.pertanyaan;
+      document.getElementById('etDialogA').value = q.pilihanA;
+      document.getElementById('etDialogB').value = q.pilihanB;
+      document.getElementById('etDialogC').value = q.pilihanC;
+      document.getElementById('etDialogKunci').value = q.kunci;
+      btnDel.style.display = 'block';
+    } else {
+      document.getElementById('modalSoalTitle').textContent = "Tambah Soal";
+      document.getElementById('etDialogSoal').value = "";
+      document.getElementById('etDialogA').value = "";
+      document.getElementById('etDialogB').value = "";
+      document.getElementById('etDialogC').value = "";
+      document.getElementById('etDialogKunci').value = "";
+      btnDel.style.display = 'none';
+    }
+    modal.style.display = 'flex';
   }
 
   function tutupModalSoal() {
-    document.getElementById('modalEditSoal').style.display = "none";
+    document.getElementById('modalEditSoal').style.display = 'none';
   }
 
   function simpanSoalDialog() {
-    const cat = document.getElementById('spKategoriEditor').value;
+    const kat = document.getElementById('spKategoriEditor').value;
+    const p = document.getElementById('etDialogSoal').value.trim();
+    const a = document.getElementById('etDialogA').value.trim();
+    const b = document.getElementById('etDialogB').value.trim();
+    const c = document.getElementById('etDialogC').value.trim();
+    const k = document.getElementById('etDialogKunci').value.trim().toUpperCase();
+
+    if (!p || !a || !b || !c || !k) {
+      alert("Lengkapi semua kolom soal!");
+      return;
+    }
+
     const payload = {
-      action: activeEditObj ? "editQuestion" : "addQuestion",
+      action: "saveQuestion",
       id: activeEditObj ? activeEditObj.id : null,
-      kategori: cat,
-      soal: document.getElementById('etDialogSoal').value.trim(),
-      pilihanA: document.getElementById('etDialogA').value.trim(),
-      pilihanB: document.getElementById('etDialogB').value.trim(),
-      pilihanC: document.getElementById('etDialogC').value.trim(),
-      kunci: document.getElementById('etDialogKunci').value.trim().toUpperCase()
+      kategori: kat,
+      pertanyaan: p,
+      pilihanA: a,
+      pilihanB: b,
+      pilihanC: c,
+      kunci: k
     };
 
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(() => {
-      tutupModalSoal();
-      loadDaftarSoalEditor();
-    });
+    fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) })
+      .then(res => res.json())
+      .then(() => {
+        tutupModalSoal();
+        onCategoryEditorChanged();
+      });
   }
 
   function konfirmasiHapusSingle() {
-    if (confirm("Apakah Anda yakin ingin menghapus soal ini?")) {
-      const payload = { action: "deleteQuestion", id: activeEditObj.id };
-      fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
-        .then(() => {
-          tutupModalSoal();
-          loadDaftarSoalEditor();
-        });
+    if (confirm("Yakin ingin menghapus soal ini?") && activeEditObj) {
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "deleteQuestion", id: activeEditObj.id })
+      }).then(() => {
+        tutupModalSoal();
+        onCategoryEditorChanged();
+      });
     }
   }
 
   function konfirmasiHapusSemuaSoal() {
-    const cat = document.getElementById('spKategoriEditor').value;
-    if (confirm(`Yakin ingin menghapus SELURUH soal pada kategori '${cat}'?`)) {
-      const payload = { action: "deleteAllQuestions", kategori: cat };
-      fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
-        .then(() => loadDaftarSoalEditor());
+    const kat = document.getElementById('spKategoriEditor').value;
+    if (confirm(`Yakin ingin menghapus SEMUA soal pada kategori ${kat}?`)) {
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "clearAllQuestions", kategori: kat })
+      }).then(() => {
+        onCategoryEditorChanged();
+      });
     }
   }
 
   function simpanDurasiKuis() {
-    const cat = document.getElementById('spKategoriEditor').value;
+    const kat = document.getElementById('spKategoriEditor').value;
     const durasi = document.getElementById('inputDurasiKuis').value;
-    
-    const payload = { action: "saveDuration", kategori: cat, durasi: durasi };
-    fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
-      .then(() => alert("Durasi pengerjaan berhasil disimpan!"));
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "saveDuration", kategori: kat, duration: durasi })
+    }).then(() => alert("Durasi kuis berhasil disimpan!"));
   }
 
-  // ==========================================
-  // CEK NILAI TRAINER LOGIC (New Page)
-  // ==========================================
   function loadCekNilaiTrainer() {
-    const tbody = document.querySelector('#tableCekNilai tbody');
     const loader = document.getElementById('pbCekNilai');
-    
+    const tbody = document.querySelector('#tableCekNilai tbody');
     loader.style.display = 'block';
     tbody.innerHTML = "";
 
     fetch(`${SCRIPT_URL}?action=getAllScores`)
       .then(res => res.json())
-      .then(resJson => {
-        const scores = resJson.scores || [];
-        if (scores.length === 0) {
-          tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Belum ada data nilai.</td></tr>";
-          return;
-        }
-
-        scores.forEach((item, index) => {
+      .then(data => {
+        loader.style.display = 'none';
+        data.forEach((row, idx) => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${index + 1}</td>
-            <td><strong>${item.nama}</strong></td>
-            <td>${item.lokasi || '-'}</td>
-            <td>${item.tanggal || '-'}</td>
-            <td>${item.kategori || '-'}</td>
-            <td><strong style="color:var(--maroon);">${item.nilai}</strong></td>
+            <td>${idx + 1}</td>
+            <td>${row.nama}</td>
+            <td>${row.lokasi}</td>
+            <td>${row.tanggal}</td>
+            <td>${row.kategori}</td>
+            <td><b>${row.nilai}</b></td>
           `;
           tbody.appendChild(tr);
         });
-      })
-      .catch(() => {
-        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Gagal memuat data nilai.</td></tr>";
-      })
-      .finally(() => {
-        loader.style.display = 'none';
       });
   }
 </script>
