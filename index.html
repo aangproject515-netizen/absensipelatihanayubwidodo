@@ -776,7 +776,7 @@
   // ==========================================
   // API & CONSTANTS
   // ==========================================
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlT6nqVRAOg2TFtfKGWessmJq8Y1GOlRtkqGHeEB9_lFUCSQFQfRl4C9VIpien1OOadg/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfqrvRjvpWeWVJy6fBEY1FVNICno5ERbwLfKhCVE8W7mUquftG2dzGokNif0o8nTwbHg/exec";
 
   // App State variables
   let evaluasiNama = "";
@@ -864,7 +864,13 @@
 
     setLoading('progressBarMain', 'btnKirim', true);
 
-    const payload = { nama, tanggal, pengajar, email };
+    const payload = {
+  action: "absensi",
+  nama: nama,
+  tanggal: tanggal,
+  pengajar: pengajar,
+  email: email
+};
 
     fetch(SCRIPT_URL, {
       method: 'POST',
