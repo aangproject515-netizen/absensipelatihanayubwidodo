@@ -1325,35 +1325,43 @@
     activeEditObj = null;
   }
 
-  function simpanSoalDialog() {
+ function simpanSoalDialog() {
   const soal = document.getElementById('etDialogSoal').value.trim();
   const a = document.getElementById('etDialogA').value.trim();
   const b = document.getElementById('etDialogB').value.trim();
   const c = document.getElementById('etDialogC').value.trim();
   const kunci = document.getElementById('etDialogKunci').value.trim().toUpperCase();
 
+  // Validasi input
   if (!soal || !a || !b || !c || !kunci) {
     alert("Mohon isi seluruh field pertanyaan, pilihan, dan kunci!");
     return;
   }
 
+  // Validasi kunci jawaban
   if (!['A', 'B', 'C'].includes(kunci)) {
     alert("Kunci jawaban harus A, B, atau C!");
     return;
   }
 
-  // ==========================================
-  // PAYLOAD
-  // ==========================================
+  // =====================================================
+  // TENTUKAN MODE:
+  // EDIT = updateQuestion
+  // TAMBAH = addQuestion
+  // =====================================================
+  const isEdit = !!activeEditObj;
+
   const payload = {
-    action: activeEditObj ? "updateQuestion" : "addQuestion",
+    action: isEdit ? "updateQuestion" : "addQuestion",
 
-    // ID tetap dikirim
-    id: activeEditObj ? activeEditObj.id : null,
+    // ID soal
+    id: isEdit ? activeEditObj.id : null,
 
-    // INI YANG SEBELUMNYA HILANG
-    rowIndex: activeEditObj ? activeEditObj.rowIndex : null,
+    // BARIS GOOGLE SHEET
+    // Ini bagian yang sebelumnya tidak dikirim
+    rowIndex: isEdit ? activeEditObj.rowIndex : null,
 
+    // Data soal
     soal: soal,
     pilihanA: a,
     pilihanB: b,
@@ -1361,7 +1369,7 @@
     kunci: kunci
   };
 
-  console.log("DATA SOAL YANG DIKIRIM:", payload);
+  console.log("PAYLOAD SIMPAN SOAL:", payload);
 
   fetch(SCRIPT_URL, {
     method: 'POST',
@@ -1369,11 +1377,13 @@
   })
   .then(res => res.json())
   .then(resJson => {
-    console.log("RESPON APPS SCRIPT:", resJson);
+
+    console.log("RESPON SIMPAN SOAL:", resJson);
 
     if (resJson.result === "success") {
+
       alert(
-        activeEditObj
+        isEdit
           ? "Soal berhasil diperbarui!"
           : "Soal berhasil ditambahkan!"
       );
@@ -1382,17 +1392,26 @@
       loadDaftarSoalEditor();
 
     } else {
+
       alert(
         "Gagal menyimpan: " +
         (resJson.message || "Terjadi kesalahan")
       );
     }
+
   })
   .catch(err => {
-    console.error("ERROR:", err);
-    alert("Terjadi kesalahan: " + err.message);
+
+    console.error("ERROR SIMPAN SOAL:", err);
+
+    alert(
+      "Terjadi kesalahan: " +
+      err.message
+    );
+
   });
 }
+  
  function konfirmasiHapusSingle() {
   if (!activeEditObj) return;
 
