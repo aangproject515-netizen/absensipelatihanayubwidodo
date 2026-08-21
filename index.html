@@ -687,6 +687,19 @@
       </div>
     </div>
 
+    <div class="card" style="margin-bottom:22px;">
+      <div style="font-size:18px;font-weight:700;color:#800000;margin-bottom:6px;">Pengaturan Durasi Kuis</div>
+      <div style="font-size:13px;color:#777;margin-bottom:14px;">Atur waktu pengerjaan evaluasi dalam satuan menit.</div>
+      <div style="display:flex;gap:12px;align-items:flex-end;max-width:700px;">
+        <div class="form-group" style="margin:0;flex:1;">
+          <label>Durasi (Menit)</label>
+          <input type="number" id="inputDurasiKuis" class="form-control" min="1" max="180" value="20" placeholder="Contoh: 20">
+        </div>
+        <button id="btnSimpanDurasi" class="btn" style="width:auto;min-width:190px;margin:0;" onclick="simpanDurasiKuis()">SIMPAN WAKTU</button>
+      </div>
+      <div id="statusDurasiKuis" style="font-size:12px;color:#777;margin-top:10px;"></div>
+    </div>
+
     <div class="editor-summary">
       <div class="summary-card">
         <div class="summary-label">Total Soal</div>
@@ -804,6 +817,7 @@
       target.classList.add('active');
       if (pageId === 'pageQuestionEditor') {
         loadDaftarSoalEditor();
+        muatDurasiKuis();
       }
     }
   }
@@ -930,7 +944,43 @@
 
     navigateTo('pageQuiz');
     loadSoal();
-    startTimer(30 * 60);
+    startTimer(getDurasiKuisMenit() * 60);
+  }
+
+  // ==========================================
+  // PENGATURAN DURASI KUIS
+  // ==========================================
+  function getDurasiKuisMenit() {
+    const saved = parseInt(localStorage.getItem('durasiKuisMenit') || '20', 10);
+    return Number.isFinite(saved) && saved >= 1 ? Math.min(saved, 180) : 20;
+  }
+
+  function muatDurasiKuis() {
+    const input = document.getElementById('inputDurasiKuis');
+    const status = document.getElementById('statusDurasiKuis');
+    if (!input) return;
+    input.value = getDurasiKuisMenit();
+    if (status) status.innerText = `Durasi aktif: ${getDurasiKuisMenit()} menit`;
+  }
+
+  function simpanDurasiKuis() {
+    const input = document.getElementById('inputDurasiKuis');
+    const status = document.getElementById('statusDurasiKuis');
+    const btn = document.getElementById('btnSimpanDurasi');
+    const menit = parseInt(input.value, 10);
+
+    if (!Number.isFinite(menit) || menit < 1 || menit > 180) {
+      alert('Durasi harus antara 1 sampai 180 menit.');
+      return;
+    }
+
+    localStorage.setItem('durasiKuisMenit', menit);
+    if (status) status.innerText = `Durasi berhasil disimpan: ${menit} menit`;
+    if (btn) {
+      const old = btn.innerText;
+      btn.innerText = 'TERSIMPAN ✓';
+      setTimeout(() => btn.innerText = old, 1500);
+    }
   }
 
   // ==========================================
