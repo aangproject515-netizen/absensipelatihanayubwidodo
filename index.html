@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aplikasi Absensi Pelatihan Ayub Widodo - Web Version</title>
-  
+
   <!-- Material Design Icons & Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  
-  <!-- Library QR Code Generator -->
+
+  <!-- QR Code Generator -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
@@ -44,7 +44,10 @@
       flex-direction: column;
     }
 
-    /* Desktop Navigation Header */
+    /* =========================================
+       NAVBAR
+    ========================================= */
+
     .top-navbar {
       background: var(--maroon);
       color: #FFF;
@@ -73,8 +76,9 @@
       gap: 12px;
     }
 
-    .btn-nav-home, .btn-audio-toggle {
-      background: rgba(255, 255, 255, 0.15);
+    .btn-nav-home,
+    .btn-audio-toggle {
+      background: rgba(255,255,255,0.15);
       color: #FFF;
       border: none;
       padding: 8px 16px;
@@ -87,11 +91,15 @@
       transition: 0.2s;
     }
 
-    .btn-nav-home:hover, .btn-audio-toggle:hover {
-      background: rgba(255, 255, 255, 0.3);
+    .btn-nav-home:hover,
+    .btn-audio-toggle:hover {
+      background: rgba(255,255,255,0.3);
     }
 
-    /* Desktop Main Container */
+    /* =========================================
+       CONTAINER
+    ========================================= */
+
     .app-container {
       width: 100%;
       max-width: 1280px;
@@ -107,17 +115,34 @@
       animation: fadeIn 0.25s ease-in-out;
     }
 
-    .page.active { display: flex; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+    .page.active {
+      display: flex;
     }
 
-    .text-maroon { color: var(--maroon) !important; }
-    .text-navy { color: var(--navy) !important; }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
 
-    /* Cards & Containers for Desktop */
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .text-maroon {
+      color: var(--maroon) !important;
+    }
+
+    .text-navy {
+      color: var(--navy) !important;
+    }
+
+    /* =========================================
+       CARD
+    ========================================= */
+
     .desktop-card {
       background: var(--card);
       border-radius: 16px;
@@ -133,7 +158,10 @@
       width: 100%;
     }
 
-    /* Form Design */
+    /* =========================================
+       FORM
+    ========================================= */
+
     .form-group {
       margin-bottom: 20px;
       display: flex;
@@ -151,7 +179,7 @@
 
     .form-control {
       width: 100%;
-      height: 48px;
+      min-height: 48px;
       padding: 10px 16px;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -159,6 +187,10 @@
       outline: none;
       background: #FFF;
       transition: .2s;
+    }
+
+    textarea.form-control {
+      resize: vertical;
     }
 
     .form-control:focus {
@@ -172,10 +204,13 @@
       color: #666;
     }
 
-    /* Buttons */
+    /* =========================================
+       BUTTON
+    ========================================= */
+
     .btn {
       width: 100%;
-      height: 48px;
+      min-height: 48px;
       background: var(--maroon);
       color: #FFF;
       border: none;
@@ -191,21 +226,45 @@
       transition: .2s;
     }
 
-    .btn:hover { background: var(--maroon-dark); }
-    .btn:disabled { background: #CCC; cursor: not-allowed; }
-    .btn-navy { background: var(--navy); }
-    .btn-navy:hover { background: var(--navy-dark); }
-    .btn-danger { background: var(--danger); }
+    .btn:hover {
+      background: var(--maroon-dark);
+    }
+
+    .btn:disabled {
+      background: #CCC;
+      cursor: not-allowed;
+    }
+
+    .btn-navy {
+      background: var(--navy);
+    }
+
+    .btn-navy:hover {
+      background: var(--navy-dark);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: #B71C1C;
+    }
+
     .btn-outline-danger {
       background: transparent;
       color: var(--danger);
       border: 1px solid var(--danger);
     }
+
     .btn-outline-danger:hover {
       background: #FDF2F2;
     }
 
-    /* Menu Grid Desktop (5 Columns) */
+    /* =========================================
+       MENU
+    ========================================= */
+
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -259,7 +318,10 @@
       text-transform: capitalize;
     }
 
-    /* Quiz Desktop Layout */
+    /* =========================================
+       QUIZ
+    ========================================= */
+
     .quiz-container {
       max-width: 800px;
       margin: 0 auto;
@@ -294,9 +356,13 @@
       accent-color: var(--maroon);
       width: 18px;
       height: 18px;
+      flex-shrink: 0;
     }
 
-    /* Leaderboard Grid Layout */
+    /* =========================================
+       LEADERBOARD
+    ========================================= */
+
     .leaderboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -326,9 +392,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
-    /* Koreksi Grid Layout */
+    /* =========================================
+       KOREKSI
+    ========================================= */
+
     .koreksi-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
@@ -354,10 +424,20 @@
       margin-bottom: 12px;
     }
 
-    .badge-success { background: #E8F5E9; color: var(--success); }
-    .badge-danger { background: #FFEBEE; color: var(--danger); }
+    .badge-success {
+      background: #E8F5E9;
+      color: var(--success);
+    }
 
-    /* Editor Soal Desktop Layout */
+    .badge-danger {
+      background: #FFEBEE;
+      color: var(--danger);
+    }
+
+    /* =========================================
+       EDITOR
+    ========================================= */
+
     .editor-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -382,6 +462,10 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.06);
     }
 
+    /* =========================================
+       LOADER
+    ========================================= */
+
     .loader {
       display: none;
       border: 4px solid #EEE;
@@ -394,11 +478,19 @@
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
-    /* Modals */
+    /* =========================================
+       MODAL
+    ========================================= */
+
     .modal {
       display: none;
       position: fixed;
@@ -420,14 +512,18 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.2);
     }
 
-    /* Table Cek Nilai Trainer */
+    /* =========================================
+       TABLE
+    ========================================= */
+
     .data-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 16px;
     }
 
-    .data-table th, .data-table td {
+    .data-table th,
+    .data-table td {
       border: 1px solid var(--border);
       padding: 12px 16px;
       text-align: left;
@@ -438,1099 +534,4192 @@
       background: var(--maroon-soft);
       color: var(--maroon);
       font-weight: 700;
+      white-space: nowrap;
     }
 
-    /* Responsive adjustments */
+    .data-table tbody tr:hover {
+      background: #FAFAFA;
+    }
+
+    /* =========================================
+       QR
+    ========================================= */
+
+    #qrcode img {
+      margin: auto;
+    }
+
+    /* =========================================
+       RESPONSIVE
+    ========================================= */
+
     @media (max-width: 768px) {
-      .top-navbar { padding: 16px 20px; }
-      .app-container { padding: 0 16px; margin: 16px auto; }
-      .desktop-card { padding: 20px; }
-      .leaderboard-grid, .koreksi-grid, .editor-grid { grid-template-columns: 1fr; }
+
+      .top-navbar {
+        padding: 14px 16px;
+        gap: 12px;
+      }
+
+      .top-navbar .brand-title {
+        font-size: 14px;
+      }
+
+      .top-navbar .brand-title .material-icons {
+        font-size: 20px;
+      }
+
+      .btn-nav-home {
+        padding: 8px 10px;
+      }
+
+      .btn-nav-home {
+        font-size: 0;
+      }
+
+      .btn-nav-home .material-icons {
+        font-size: 20px !important;
+      }
+
+      .app-container {
+        padding: 0 16px;
+        margin: 16px auto;
+      }
+
+      .desktop-card {
+        padding: 20px;
+        border-radius: 12px;
+      }
+
+      .leaderboard-grid,
+      .koreksi-grid,
+      .editor-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .menu-item {
+        padding: 24px 12px;
+      }
+
+      .menu-card-icon {
+        width: 58px;
+        height: 58px;
+      }
+
+      .menu-card-icon .material-icons {
+        font-size: 30px !important;
+      }
+
+      .menu-title {
+        font-size: 13px;
+      }
+
+      .leaderboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .koreksi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+
+      .top-navbar .brand-title span:last-child {
+        max-width: 180px;
+        line-height: 1.2;
+      }
+
+      .menu-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .desktop-card {
+        padding: 16px;
+      }
+
+      .rank-card {
+        padding: 14px;
+      }
+
+      .rank-badge {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <!-- Top Navbar -->
+  <!-- =========================================
+       TOP NAVBAR
+  ========================================= -->
+
   <div class="top-navbar">
+
     <div class="brand-title">
       <span class="material-icons">school</span>
       <span>Aplikasi Absensi Pelatihan Ayub Widodo</span>
     </div>
+
     <div class="nav-actions">
-      <button class="btn-audio-toggle" onclick="toggleBGM()" id="btnAudioToggle" title="Matikan/Nyalakan Musik">
-        <span class="material-icons" id="iconAudio">music_note</span>
+
+      <button
+        class="btn-audio-toggle"
+        onclick="toggleBGM()"
+        id="btnAudioToggle"
+        title="Matikan/Nyalakan Musik">
+
+        <span
+          class="material-icons"
+          id="iconAudio">
+          music_note
+        </span>
+
       </button>
-      <button class="btn-nav-home" onclick="navigateTo('pageMenu')">
-        <span class="material-icons" style="font-size: 18px;">home</span> Menu Utama
+
+      <button
+        class="btn-nav-home"
+        onclick="navigateTo('pageMenu')">
+
+        <span
+          class="material-icons"
+          style="font-size:18px;">
+          home
+        </span>
+
+        <span>Menu Utama</span>
+
       </button>
+
     </div>
+
   </div>
 
-  <!-- App Main Content Container -->
+
+  <!-- =========================================
+       APP CONTAINER
+  ========================================= -->
+
   <div class="app-container">
 
-    <!-- 1. PAGE: MENU UTAMA -->
+    <!-- =======================================
+         1. MENU UTAMA
+    ======================================== -->
+
     <div id="pageMenu" class="page active">
+
       <div class="desktop-card">
-        <h2 style="font-size: 22px; text-align: center; margin-bottom: 8px; font-weight: 700; color: var(--maroon);">
+
+        <h2
+          style="
+            font-size:22px;
+            text-align:center;
+            margin-bottom:8px;
+            font-weight:700;
+            color:var(--maroon);
+          ">
+
           DASHBOARD PELATIHAN
+
         </h2>
-        <p style="text-align: center; color: var(--muted); margin-bottom: 24px; font-size: 14px;">
+
+        <p
+          style="
+            text-align:center;
+            color:var(--muted);
+            margin-bottom:24px;
+            font-size:14px;
+          ">
+
           Pilih menu di bawah ini untuk mengakses layanan pelatihan.
+
         </p>
+
 
         <div class="menu-grid">
-          <!-- 1. Absensi Pelatihan BHD -->
-          <div class="menu-item" onclick="navigateTo('pageMain')">
+
+          <!-- ABSENSI -->
+
+          <div
+            class="menu-item"
+            onclick="navigateTo('pageMain')">
+
             <div class="menu-card-icon">
-              <span class="material-icons" style="font-size:36px;">assignment</span>
+
+              <span
+                class="material-icons"
+                style="font-size:36px;">
+                assignment
+              </span>
+
             </div>
-            <div class="menu-title">Absensi Pelatihan BHD</div>
+
+            <div class="menu-title">
+              Absensi Pelatihan BHD
+            </div>
+
           </div>
 
-          <!-- 2. Evaluasi -->
-          <div class="menu-item" onclick="navigateTo('pageEvaluasiCode')">
+
+          <!-- EVALUASI -->
+
+          <div
+            class="menu-item"
+            onclick="navigateTo('pageEvaluasiCode')">
+
             <div class="menu-card-icon">
-              <span class="material-icons" style="font-size:36px;">edit</span>
+
+              <span
+                class="material-icons"
+                style="font-size:36px;">
+                edit
+              </span>
+
             </div>
-            <div class="menu-title">Evaluasi</div>
+
+            <div class="menu-title">
+              Evaluasi
+            </div>
+
           </div>
 
-          <!-- 3. Trainer Setting -->
-          <div class="menu-item" onclick="bukaTrainerLogin('trainer_setting')">
+
+          <!-- TRAINER SETTING -->
+
+          <div
+            class="menu-item"
+            onclick="bukaTrainerLogin('trainer_setting')">
+
             <div class="menu-card-icon">
-              <span class="material-icons" style="font-size:36px;">settings</span>
+
+              <span
+                class="material-icons"
+                style="font-size:36px;">
+                settings
+              </span>
+
             </div>
-            <div class="menu-title">Trainer Setting</div>
+
+            <div class="menu-title">
+              Trainer Setting
+            </div>
+
           </div>
 
-          <!-- 4. Editor Soal -->
-          <div class="menu-item" onclick="bukaTrainerLogin('editor_soal')">
+
+          <!-- EDITOR SOAL -->
+
+          <div
+            class="menu-item"
+            onclick="bukaTrainerLogin('editor_soal')">
+
             <div class="menu-card-icon">
-              <span class="material-icons" style="font-size:36px;">quiz</span>
+
+              <span
+                class="material-icons"
+                style="font-size:36px;">
+                quiz
+              </span>
+
             </div>
-            <div class="menu-title">Editor Soal</div>
+
+            <div class="menu-title">
+              Editor Soal
+            </div>
+
           </div>
 
-          <!-- 5. Cek Nilai Trainer -->
-          <div class="menu-item" onclick="bukaTrainerLogin('cek_nilai')">
+
+          <!-- CEK NILAI -->
+
+          <div
+            class="menu-item"
+            onclick="bukaTrainerLogin('cek_nilai')">
+
             <div class="menu-card-icon">
-              <span class="material-icons" style="font-size:36px;">leaderboard</span>
+
+              <span
+                class="material-icons"
+                style="font-size:36px;">
+                leaderboard
+              </span>
+
             </div>
-            <div class="menu-title">Cek Nilai Trainer</div>
+
+            <div class="menu-title">
+              Cek Nilai Trainer
+            </div>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
-    <!-- 2. PAGE: MAIN ABSENSI -->
+
+    <!-- =======================================
+         2. ABSENSI
+    ======================================== -->
+
     <div id="pageMain" class="page">
+
       <div class="desktop-card desktop-card-center">
-        <h2 class="text-navy" style="font-size: 22px; margin-bottom: 4px;">Form Absensi Pelatihan</h2>
-        <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">Silakan lengkapi data absensi Anda di bawah ini.</p>
 
-        <div class="form-group">
-          <label>NAMA LENGKAP :</label>
-          <input type="text" id="etNama" class="form-control" placeholder="Masukkan nama lengkap">
-        </div>
+        <h2
+          class="text-navy"
+          style="
+            font-size:22px;
+            margin-bottom:4px;
+          ">
 
-        <div class="form-group">
-          <label>TANGGAL PELATIHAN :</label>
-          <input type="date" id="etTanggal" class="form-control">
-        </div>
+          Form Absensi Pelatihan
 
-        <div class="form-group">
-          <label>PENGAJAR :</label>
-          <input type="text" id="etPengajar" class="form-control" value="Ayub widodo" disabled>
-        </div>
+        </h2>
 
-        <div class="form-group">
-          <label>EMAIL PESERTA :</label>
-          <input type="email" id="etEmail" class="form-control" placeholder="Masukkan alamat email">
-        </div>
+        <p
+          style="
+            color:var(--muted);
+            font-size:13px;
+            margin-bottom:20px;
+          ">
 
-        <button id="btnKirim" class="btn btn-navy" onclick="kirimDataAbsensi()" style="margin-top: 10px;">
-          <span class="material-icons">send</span> KIRIM ABSENSI
-        </button>
-        <div id="progressBarMain" class="loader"></div>
-      </div>
-    </div>
+          Silakan lengkapi data absensi Anda di bawah ini.
 
-    <!-- 3. PAGE: EVALUASI CODE -->
-    <div id="pageEvaluasiCode" class="page">
-      <div class="desktop-card desktop-card-center">
-        <h2 class="text-maroon" style="font-size: 22px; margin-bottom: 8px;">Masukan Kode Evaluasi</h2>
-        <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">
-          Ketik kode unik evaluasi yang diberikan oleh trainer untuk memulai kuis.
         </p>
 
-        <div class="form-group">
-          <label>Kode Evaluasi Anda</label>
-          <input type="text" id="etKodeEvaluasi" class="form-control" placeholder="Contoh: BHD-9821">
-        </div>
-
-        <button id="btnKirimKode" class="btn" onclick="submitKodeEvaluasi()">VERIFIKASI &amp; LANJUT</button>
-        <div id="pbEvaluasiCode" class="loader"></div>
-      </div>
-    </div>
-
-    <!-- 4. PAGE: EVALUASI FORM -->
-    <div id="pageEvaluasiForm" class="page">
-      <div class="desktop-card desktop-card-center">
-        <h2 class="text-maroon" style="font-size: 22px; margin-bottom: 8px;">Konfirmasi Data Evaluasi</h2>
-        <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">Pastikan lokasi dan identitas Anda sudah benar.</p>
 
         <div class="form-group">
+
           <label>NAMA LENGKAP :</label>
-          <input type="text" id="etNamaEvaluasi" class="form-control" placeholder="Isi Nama Anda">
+
+          <input
+            type="text"
+            id="etNama"
+            class="form-control"
+            placeholder="Masukkan nama lengkap">
+
         </div>
 
-        <div class="form-group">
-          <label>LOKASI PELATIHAN :</label>
-          <select id="spLokasi" class="form-control">
-            <option value="Ruang Pelatihan Utama">Ruang Pelatihan Utama</option>
-            <option value="Auditorium lantai 3">Auditorium lantai 3</option>
-            <option value="Online / Zoom">Online / Zoom</option>
-          </select>
-        </div>
 
         <div class="form-group">
+
           <label>TANGGAL PELATIHAN :</label>
-          <input type="text" id="etTanggalEvaluasi" class="form-control" readonly>
+
+          <input
+            type="date"
+            id="etTanggal"
+            class="form-control">
+
         </div>
 
+
         <div class="form-group">
+
           <label>PENGAJAR :</label>
-          <input type="text" id="etPengajarEvaluasi" class="form-control" value="Ayub widodo" readonly>
+
+          <input
+            type="text"
+            id="etPengajar"
+            class="form-control"
+            value="Ayub widodo"
+            disabled>
+
         </div>
 
-        <button class="btn" onclick="mulaiEvaluasi()">MULAI EVALUASI SOAL</button>
-      </div>
-    </div>
 
-    <!-- 5. PAGE: QUIZ -->
-    <div id="pageQuiz" class="page">
-      <div class="quiz-container">
-        <div class="desktop-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
-            <div id="tvSoalKe" style="font-size: 16px; font-weight: 700; color: #555;">Soal 1/10</div>
-            <div id="tvTimer" class="text-maroon" style="font-size: 22px; font-weight: 700;">30:00</div>
-          </div>
+        <div class="form-group">
 
-          <div id="tvTeksSoal" style="font-size: 18px; margin: 24px 0; font-weight: 500; line-height: 1.6;">
-            Memuat pertanyaan...
-          </div>
+          <label>EMAIL PESERTA :</label>
 
-          <div class="radio-group" id="rgPilihan">
-            <label class="radio-option">
-              <input type="radio" name="pilihan" value="A" id="rbA">
-              <span id="labelA">A. </span>
-            </label>
-            <label class="radio-option">
-              <input type="radio" name="pilihan" value="B" id="rbB">
-              <span id="labelB">B. </span>
-            </label>
-            <label class="radio-option">
-              <input type="radio" name="pilihan" value="C" id="rbC">
-              <span id="labelC">C. </span>
-            </label>
-          </div>
+          <input
+            type="email"
+            id="etEmail"
+            class="form-control"
+            placeholder="Masukkan alamat email">
 
-          <button id="btnLanjut" class="btn" style="margin-top: 32px;" onclick="nextSoal()">SELANJUTNYA</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 6. PAGE: LEADERBOARD -->
-    <div id="pageLeaderboard" class="page">
-      <div class="desktop-card">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <div style="color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: 2px;">EVALUASI PELATIHAN</div>
-          <h2 style="font-size: 28px; font-weight: 700; color: var(--maroon); margin-top: 4px;">Papan Peringkat Peserta</h2>
         </div>
 
-        <div style="background: var(--maroon-soft); border-radius: 12px; padding: 20px; text-align: center; max-width: 320px; margin: 0 auto 24px auto;">
-          <div style="font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px;">NILAI ANDA</div>
-          <div id="tvSkorSaya" class="text-maroon" style="font-size: 42px; font-weight: 700;">0</div>
-        </div>
 
-        <div id="containerLeaderboard" class="leaderboard-grid"></div>
+        <button
+          id="btnKirim"
+          class="btn btn-navy"
+          onclick="kirimDataAbsensi()"
+          style="margin-top:10px;">
 
-        <button class="btn" style="margin-top: 32px; max-width: 320px; margin-left: auto; margin-right: auto;" onclick="navigateTo('pageKoreksi')">
-          KOREKSI JAWABAN SAYA
+          <span class="material-icons">
+            send
+          </span>
+
+          KIRIM ABSENSI
+
         </button>
+
+
+        <div
+          id="progressBarMain"
+          class="loader">
+        </div>
+
       </div>
+
     </div>
 
-    <!-- 7. PAGE: KOREKSI JAWABAN -->
-    <div id="pageKoreksi" class="page">
-      <div class="desktop-card">
-        <h2 class="text-maroon" style="font-size: 24px; font-weight: 700; margin-bottom: 6px;">Koreksi &amp; Kunci Jawaban</h2>
-        <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px;">Periksa kembali hasil pengerjaan soal evaluasi Anda.</p>
 
-        <div id="containerKoreksi" class="koreksi-grid"></div>
-      </div>
-    </div>
+    <!-- =======================================
+         3. KODE EVALUASI
+    ======================================== -->
 
-    <!-- 8. PAGE: TRAINER LOGIN -->
-    <div id="pageTrainerLogin" class="page">
+    <div id="pageEvaluasiCode" class="page">
+
       <div class="desktop-card desktop-card-center">
-        <h2 class="text-maroon" style="font-size: 22px; text-align: center; margin-bottom: 20px;">Autentikasi Trainer</h2>
+
+        <h2
+          class="text-maroon"
+          style="
+            font-size:22px;
+            margin-bottom:8px;
+          ">
+
+          Masukan Kode Evaluasi
+
+        </h2>
+
+        <p
+          style="
+            color:var(--muted);
+            font-size:13px;
+            margin-bottom:20px;
+          ">
+
+          Ketik kode unik evaluasi yang diberikan oleh trainer untuk memulai kuis.
+
+        </p>
+
 
         <div class="form-group">
-          <label>Username / Akun</label>
-          <input type="text" id="etAkunTrainer" class="form-control" placeholder="Masukkan akun trainer">
+
+          <label>Kode Evaluasi Anda</label>
+
+          <input
+            type="text"
+            id="etKodeEvaluasi"
+            class="form-control"
+            placeholder="Contoh: BHD-9821">
+
         </div>
 
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="etPassTrainer" class="form-control" placeholder="Masukkan kata sandi">
+
+        <button
+          id="btnKirimKode"
+          class="btn"
+          onclick="submitKodeEvaluasi()">
+
+          VERIFIKASI &amp; LANJUT
+
+        </button>
+
+
+        <div
+          id="pbEvaluasiCode"
+          class="loader">
         </div>
 
-        <button class="btn" onclick="loginTrainer()">LOGIN TRAINER</button>
       </div>
+
     </div>
 
-    <!-- 9. PAGE: TRAINER SETTING -->
-    <div id="pageTrainerSetting" class="page">
-      <div class="desktop-card desktop-card-center" style="text-align: center;">
-        <h2 class="text-maroon" style="font-size: 22px; margin-bottom: 20px;">Trainer Setting &amp; QR Generator</h2>
 
-        <div class="form-group" style="text-align: left;">
-          <label>PILIH KATEGORI :</label>
-          <select id="spKategoriTrainer" class="form-control">
-            <option value="">-- Memuat Kategori... --</option>
+    <!-- =======================================
+         4. FORM EVALUASI
+    ======================================== -->
+
+    <div id="pageEvaluasiForm" class="page">
+
+      <div class="desktop-card desktop-card-center">
+
+        <h2
+          class="text-maroon"
+          style="
+            font-size:22px;
+            margin-bottom:8px;
+          ">
+
+          Konfirmasi Data Evaluasi
+
+        </h2>
+
+        <p
+          style="
+            color:var(--muted);
+            font-size:13px;
+            margin-bottom:20px;
+          ">
+
+          Pastikan lokasi dan identitas Anda sudah benar.
+
+        </p>
+
+
+        <div class="form-group">
+
+          <label>NAMA LENGKAP :</label>
+
+          <input
+            type="text"
+            id="etNamaEvaluasi"
+            class="form-control"
+            placeholder="Isi Nama Anda">
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>LOKASI PELATIHAN :</label>
+
+          <select
+            id="spLokasi"
+            class="form-control">
+
+            <option value="Ruang Pelatihan Utama">
+              Ruang Pelatihan Utama
+            </option>
+
+            <option value="Auditorium lantai 3">
+              Auditorium lantai 3
+            </option>
+
+            <option value="Online / Zoom">
+              Online / Zoom
+            </option>
+
           </select>
+
         </div>
 
-        <div id="qrcode" style="width:200px; height:200px; margin: 20px auto; padding: 10px; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center;"></div>
 
-        <div id="tvKodeEvaluasiTrainer" style="font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--navy);">
+        <div class="form-group">
+
+          <label>TANGGAL PELATIHAN :</label>
+
+          <input
+            type="text"
+            id="etTanggalEvaluasi"
+            class="form-control"
+            readonly>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>PENGAJAR :</label>
+
+          <input
+            type="text"
+            id="etPengajarEvaluasi"
+            class="form-control"
+            value="Ayub widodo"
+            readonly>
+
+        </div>
+
+
+        <button
+          class="btn"
+          onclick="mulaiEvaluasi()">
+
+          MULAI EVALUASI SOAL
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =======================================
+         5. QUIZ
+    ======================================== -->
+
+    <div id="pageQuiz" class="page">
+
+      <div class="quiz-container">
+
+        <div class="desktop-card">
+
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              align-items:center;
+              padding-bottom:16px;
+              border-bottom:1px solid var(--border);
+            ">
+
+            <div
+              id="tvSoalKe"
+              style="
+                font-size:16px;
+                font-weight:700;
+                color:#555;
+              ">
+
+              Soal 1/10
+
+            </div>
+
+
+            <div
+              id="tvTimer"
+              class="text-maroon"
+              style="
+                font-size:22px;
+                font-weight:700;
+              ">
+
+              30:00
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="tvTeksSoal"
+            style="
+              font-size:18px;
+              margin:24px 0;
+              font-weight:500;
+              line-height:1.6;
+            ">
+
+            Memuat pertanyaan...
+
+          </div>
+
+
+          <div
+            class="radio-group"
+            id="rgPilihan">
+
+            <label class="radio-option">
+
+              <input
+                type="radio"
+                name="pilihan"
+                value="A"
+                id="rbA">
+
+              <span id="labelA">
+                A.
+              </span>
+
+            </label>
+
+
+            <label class="radio-option">
+
+              <input
+                type="radio"
+                name="pilihan"
+                value="B"
+                id="rbB">
+
+              <span id="labelB">
+                B.
+              </span>
+
+            </label>
+
+
+            <label class="radio-option">
+
+              <input
+                type="radio"
+                name="pilihan"
+                value="C"
+                id="rbC">
+
+              <span id="labelC">
+                C.
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <button
+            id="btnLanjut"
+            class="btn"
+            style="margin-top:32px;"
+            onclick="nextSoal()">
+
+            SELANJUTNYA
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =======================================
+         6. LEADERBOARD
+    ======================================== -->
+
+    <div id="pageLeaderboard" class="page">
+
+      <div class="desktop-card">
+
+        <div
+          style="
+            text-align:center;
+            margin-bottom:24px;
+          ">
+
+          <div
+            style="
+              color:var(--gold);
+              font-size:12px;
+              font-weight:700;
+              letter-spacing:2px;
+            ">
+
+            EVALUASI PELATIHAN
+
+          </div>
+
+
+          <h2
+            style="
+              font-size:28px;
+              font-weight:700;
+              color:var(--maroon);
+              margin-top:4px;
+            ">
+
+            Papan Peringkat Peserta
+
+          </h2>
+
+        </div>
+
+
+        <div
+          style="
+            background:var(--maroon-soft);
+            border-radius:12px;
+            padding:20px;
+            text-align:center;
+            max-width:320px;
+            margin:0 auto 24px auto;
+          ">
+
+          <div
+            style="
+              font-size:12px;
+              font-weight:700;
+              color:var(--muted);
+              letter-spacing:1px;
+            ">
+
+            NILAI ANDA
+
+          </div>
+
+
+          <div
+            id="tvSkorSaya"
+            class="text-maroon"
+            style="
+              font-size:42px;
+              font-weight:700;
+            ">
+
+            0
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="containerLeaderboard"
+          class="leaderboard-grid">
+        </div>
+
+
+        <button
+          class="btn"
+          style="
+            margin-top:32px;
+            max-width:320px;
+            margin-left:auto;
+            margin-right:auto;
+          "
+          onclick="navigateTo('pageKoreksi')">
+
+          KOREKSI JAWABAN SAYA
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =======================================
+         7. KOREKSI
+    ======================================== -->
+
+    <div id="pageKoreksi" class="page">
+
+      <div class="desktop-card">
+
+        <h2
+          class="text-maroon"
+          style="
+            font-size:24px;
+            font-weight:700;
+            margin-bottom:6px;
+          ">
+
+          Koreksi &amp; Kunci Jawaban
+
+        </h2>
+
+
+        <p
+          style="
+            color:var(--muted);
+            font-size:14px;
+            margin-bottom:24px;
+          ">
+
+          Periksa kembali hasil pengerjaan soal evaluasi Anda.
+
+        </p>
+
+
+        <div
+          id="containerKoreksi"
+          class="koreksi-grid">
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =======================================
+         8. LOGIN TRAINER
+    ======================================== -->
+
+    <div id="pageTrainerLogin" class="page">
+
+      <div class="desktop-card desktop-card-center">
+
+        <h2
+          class="text-maroon"
+          style="
+            font-size:22px;
+            text-align:center;
+            margin-bottom:20px;
+          ">
+
+          Autentikasi Trainer
+
+        </h2>
+
+
+        <div class="form-group">
+
+          <label>Username / Akun</label>
+
+          <input
+            type="text"
+            id="etAkunTrainer"
+            class="form-control"
+            placeholder="Masukkan akun trainer">
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>Password</label>
+
+          <input
+            type="password"
+            id="etPassTrainer"
+            class="form-control"
+            placeholder="Masukkan kata sandi">
+
+        </div>
+
+
+        <button
+          class="btn"
+          onclick="loginTrainer()">
+
+          LOGIN TRAINER
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =======================================
+         9. TRAINER SETTING
+    ======================================== -->
+
+    <div id="pageTrainerSetting" class="page">
+
+      <div
+        class="desktop-card desktop-card-center"
+        style="text-align:center;">
+
+        <h2
+          class="text-maroon"
+          style="
+            font-size:22px;
+            margin-bottom:20px;
+          ">
+
+          Trainer Setting &amp; QR Generator
+
+        </h2>
+
+
+        <div
+          class="form-group"
+          style="text-align:left;">
+
+          <label>PILIH KATEGORI :</label>
+
+          <select
+            id="spKategoriTrainer"
+            class="form-control">
+
+            <option value="">
+              -- Memuat Kategori... --
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div
+          id="qrcode"
+          style="
+            width:200px;
+            height:200px;
+            margin:20px auto;
+            padding:10px;
+            border:1px solid var(--border);
+            border-radius:8px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+          ">
+        </div>
+
+
+        <div
+          id="tvKodeEvaluasiTrainer"
+          style="
+            font-size:18px;
+            font-weight:700;
+            margin-bottom:20px;
+            color:var(--navy);
+          ">
+
           KODE EVALUASI: -
+
         </div>
 
-        <div style="display: flex; gap: 12px;">
-          <button id="btnGenerateQr" class="btn" onclick="generateKodeDariAppsScript()">GENERATE KODE / QR</button>
-          <button class="btn btn-navy" onclick="navigateTo('pageQuestionEditor')">KELOLA SOAL</button>
+
+        <div
+          style="
+            display:flex;
+            gap:12px;
+          ">
+
+          <button
+            id="btnGenerateQr"
+            class="btn"
+            onclick="generateKodeDariAppsScript()">
+
+            GENERATE KODE / QR
+
+          </button>
+
+
+          <button
+            class="btn btn-navy"
+            onclick="navigateTo('pageQuestionEditor')">
+
+            KELOLA SOAL
+
+          </button>
+
         </div>
+
       </div>
+
     </div>
 
-    <!-- 10. PAGE: QUESTION EDITOR -->
+
+    <!-- =======================================
+         10. QUESTION EDITOR
+    ======================================== -->
+
     <div id="pageQuestionEditor" class="page">
+
       <div class="desktop-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:16px;
+            margin-bottom:24px;
+          ">
+
           <div>
-            <h2 class="text-maroon" style="font-size: 24px;">Editor Soal Evaluasi</h2>
-            <p style="color: var(--muted); font-size: 14px;">Kelola soal, opsi jawaban, dan durasi pengerjaan per kategori.</p>
+
+            <h2
+              class="text-maroon"
+              style="font-size:24px;">
+
+              Editor Soal Evaluasi
+
+            </h2>
+
+
+            <p
+              style="
+                color:var(--muted);
+                font-size:14px;
+              ">
+
+              Kelola soal, opsi jawaban, dan durasi pengerjaan per kategori.
+
+            </p>
+
           </div>
-          <div style="display: flex; gap: 12px;">
-            <button class="btn btn-danger" style="width: auto; padding: 0 20px;" onclick="konfirmasiHapusSemuaSoal()">
-              <span class="material-icons">delete_sweep</span> HAPUS SEMUA
+
+
+          <div
+            style="
+              display:flex;
+              gap:12px;
+            ">
+
+            <button
+              class="btn btn-danger"
+              style="
+                width:auto;
+                padding:0 20px;
+              "
+              onclick="konfirmasiHapusSemuaSoal()">
+
+              <span class="material-icons">
+                delete_sweep
+              </span>
+
+              HAPUS SEMUA
+
             </button>
-            <button class="btn" style="width: auto; padding: 0 20px;" onclick="bukaDialogSoal(null)">
-              <span class="material-icons">add</span> TAMBAH SOAL
+
+
+            <button
+              class="btn"
+              style="
+                width:auto;
+                padding:0 20px;
+              "
+              onclick="bukaDialogSoal(null)">
+
+              <span class="material-icons">
+                add
+              </span>
+
+              TAMBAH SOAL
+
             </button>
+
           </div>
+
         </div>
 
-        <!-- Filter & Durasi Section -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; background: var(--bg); padding: 20px; border-radius: 12px; margin-bottom: 24px;">
-          <div class="form-group" style="margin: 0;">
-            <label>Kategori Soal Saat Ini :</label>
-            <div style="display: flex; gap: 8px;">
-              <select id="spKategoriEditor" class="form-control" onchange="onCategoryEditorChanged()">
-                <option value="">-- Memuat Kategori... --</option>
-              </select>
-            </div>
+
+        <!-- FILTER & DURASI -->
+
+        <div
+          style="
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            gap:20px;
+            background:var(--bg);
+            padding:20px;
+            border-radius:12px;
+            margin-bottom:24px;
+          ">
+
+          <div
+            class="form-group"
+            style="margin:0;">
+
+            <label>
+              Kategori Soal Saat Ini :
+            </label>
+
+            <select
+              id="spKategoriEditor"
+              class="form-control"
+              onchange="onCategoryEditorChanged()">
+
+              <option value="">
+                -- Memuat Kategori... --
+              </option>
+
+            </select>
+
           </div>
 
-          <div class="form-group" style="margin: 0;">
-            <label>Durasi Kuis (Menit) :</label>
-            <div style="display: flex; gap: 8px;">
-              <input type="number" id="inputDurasiKuis" class="form-control" min="1" max="180" value="20">
-              <button class="btn" style="width: auto; padding: 0 20px;" onclick="simpanDurasiKuis()">SIMPAN WAKTU</button>
+
+          <div
+            class="form-group"
+            style="margin:0;">
+
+            <label>
+              Durasi Kuis (Menit) :
+            </label>
+
+            <div
+              style="
+                display:flex;
+                gap:8px;
+              ">
+
+              <input
+                type="number"
+                id="inputDurasiKuis"
+                class="form-control"
+                min="1"
+                max="180"
+                value="20">
+
+              <button
+                class="btn"
+                style="
+                  width:auto;
+                  padding:0 20px;
+                  white-space:nowrap;
+                "
+                onclick="simpanDurasiKuis()">
+
+                SIMPAN WAKTU
+
+              </button>
+
             </div>
+
           </div>
+
         </div>
 
-        <div id="pbEditor" class="loader"></div>
-        <div id="containerSoalEditor" class="editor-grid"></div>
+
+        <div
+          id="pbEditor"
+          class="loader">
+        </div>
+
+
+        <div
+          id="containerSoalEditor"
+          class="editor-grid">
+        </div>
+
       </div>
+
     </div>
 
-    <!-- 11. PAGE: CEK NILAI TRAINER -->
-    <div id="pageCekNilai" class="page">
-      <div class="desktop-card">
-        <h2 class="text-maroon" style="font-size: 24px; margin-bottom: 8px;">Daftar Nilai Peserta (Trainer View)</h2>
-        <p style="color: var(--muted); font-size: 14px; margin-bottom: 20px;">Laporan lengkap hasil evaluasi seluruh peserta pelatihan.</p>
 
-        <div id="pbCekNilai" class="loader"></div>
-        <div style="overflow-x: auto;">
-          <table class="data-table" id="tableCekNilai">
+    <!-- =======================================
+         11. CEK NILAI TRAINER
+    ======================================== -->
+
+    <div id="pageCekNilai" class="page">
+
+      <div class="desktop-card">
+
+        <h2
+          class="text-maroon"
+          style="
+            font-size:24px;
+            margin-bottom:8px;
+          ">
+
+          Daftar Nilai Peserta (Trainer View)
+
+        </h2>
+
+
+        <p
+          style="
+            color:var(--muted);
+            font-size:14px;
+            margin-bottom:20px;
+          ">
+
+          Laporan lengkap hasil evaluasi seluruh peserta pelatihan.
+
+        </p>
+
+
+        <div
+          id="pbCekNilai"
+          class="loader">
+        </div>
+
+
+        <div style="overflow-x:auto;">
+
+          <table
+            class="data-table"
+            id="tableCekNilai">
+
             <thead>
+
               <tr>
+
                 <th>No</th>
                 <th>Nama Peserta</th>
                 <th>Lokasi</th>
                 <th>Tanggal</th>
                 <th>Kategori</th>
                 <th>Nilai</th>
+
               </tr>
+
             </thead>
+
+
             <tbody id="tbodyNilai">
-              <!-- Row data dimuat dinamis -->
+
+              <!-- Data dimuat dinamis -->
+
             </tbody>
+
           </table>
+
         </div>
+
       </div>
+
     </div>
 
-  </div> <!-- End App Container -->
-
-  <!-- MODAL SUCCESS ABSENSI -->
-  <div id="modalSuccess" class="modal">
-    <div class="modal-content" style="text-align: center;">
-      <span class="material-icons" style="font-size: 56px; color: var(--success);">check_circle</span>
-      <h3 class="text-maroon" style="margin-top: 12px;">Absensi Berhasil!</h3>
-      <p style="margin-top: 8px; color: #555;">Data absensi pelatihan Anda telah tercatat ke sistem.</p>
-      <button class="btn" style="margin-top: 20px;" onclick="closeModalSuccess()">TUTUP</button>
-    </div>
   </div>
 
-  <!-- MODAL EDIT / TAMBAH SOAL -->
-  <div id="modalEditSoal" class="modal">
+
+  <!-- =========================================
+       MODAL SUCCESS ABSENSI
+  ========================================= -->
+
+  <div
+    id="modalSuccess"
+    class="modal">
+
+    <div
+      class="modal-content"
+      style="text-align:center;">
+
+      <span
+        class="material-icons"
+        style="
+          font-size:56px;
+          color:var(--success);
+        ">
+
+        check_circle
+
+      </span>
+
+
+      <h3
+        class="text-maroon"
+        style="margin-top:12px;">
+
+        Absensi Berhasil!
+
+      </h3>
+
+
+      <p
+        style="
+          margin-top:8px;
+          color:#555;
+        ">
+
+        Data absensi pelatihan Anda telah tercatat ke sistem.
+
+      </p>
+
+
+      <button
+        class="btn"
+        style="margin-top:20px;"
+        onclick="closeModalSuccess()">
+
+        TUTUP
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================================
+       MODAL EDIT / TAMBAH SOAL
+  ========================================= -->
+
+  <div
+    id="modalEditSoal"
+    class="modal">
+
     <div class="modal-content">
-      <h3 id="modalSoalTitle" class="text-maroon" style="text-align: center; margin-bottom: 16px;">Tambah Soal</h3>
-      
-      <div class="form-group">
-        <label>Pertanyaan Soal</label>
-        <textarea id="etDialogSoal" class="form-control" style="height: 80px;" placeholder="Isi pertanyaan"></textarea>
-      </div>
+
+      <h3
+        id="modalSoalTitle"
+        class="text-maroon"
+        style="
+          text-align:center;
+          margin-bottom:16px;
+        ">
+
+        Tambah Soal
+
+      </h3>
+
 
       <div class="form-group">
-        <label>Pilihan A</label>
-        <input type="text" id="etDialogA" class="form-control" placeholder="Jawaban A">
+
+        <label>
+          Pertanyaan Soal
+        </label>
+
+        <textarea
+          id="etDialogSoal"
+          class="form-control"
+          style="height:80px;"
+          placeholder="Isi pertanyaan">
+        </textarea>
+
       </div>
+
 
       <div class="form-group">
-        <label>Pilihan B</label>
-        <input type="text" id="etDialogB" class="form-control" placeholder="Jawaban B">
+
+        <label>
+          Pilihan A
+        </label>
+
+        <input
+          type="text"
+          id="etDialogA"
+          class="form-control"
+          placeholder="Jawaban A">
+
       </div>
+
 
       <div class="form-group">
-        <label>Pilihan C</label>
-        <input type="text" id="etDialogC" class="form-control" placeholder="Jawaban C">
+
+        <label>
+          Pilihan B
+        </label>
+
+        <input
+          type="text"
+          id="etDialogB"
+          class="form-control"
+          placeholder="Jawaban B">
+
       </div>
+
 
       <div class="form-group">
-        <label>Kunci Jawaban (A/B/C)</label>
-        <input type="text" id="etDialogKunci" class="form-control" placeholder="Contoh: A">
+
+        <label>
+          Pilihan C
+        </label>
+
+        <input
+          type="text"
+          id="etDialogC"
+          class="form-control"
+          placeholder="Jawaban C">
+
       </div>
 
-      <button class="btn" style="margin-top: 16px;" onclick="simpanSoalDialog()">SIMPAN SOAL</button>
-      <button id="btnDialogDelete" class="btn btn-outline-danger" style="margin-top: 8px; display: none;" onclick="konfirmasiHapusSingle()">HAPUS SOAL INI</button>
-      <button class="btn" style="margin-top: 8px; background: #888;" onclick="tutupModalSoal()">BATAL</button>
+
+      <div class="form-group">
+
+        <label>
+          Kunci Jawaban (A/B/C)
+        </label>
+
+        <input
+          type="text"
+          id="etDialogKunci"
+          class="form-control"
+          placeholder="Contoh: A">
+
+      </div>
+
+
+      <button
+        class="btn"
+        style="margin-top:16px;"
+        onclick="simpanSoalDialog()">
+
+        SIMPAN SOAL
+
+      </button>
+
+
+      <button
+        id="btnDialogDelete"
+        class="btn btn-outline-danger"
+        style="
+          margin-top:8px;
+          display:none;
+        "
+        onclick="konfirmasiHapusSingle()">
+
+        HAPUS SOAL INI
+
+      </button>
+
+
+      <button
+        class="btn"
+        style="
+          margin-top:8px;
+          background:#888;
+        "
+        onclick="tutupModalSoal()">
+
+        BATAL
+
+      </button>
+
     </div>
+
   </div>
+
 
 <script>
-  // ==========================================
-  // CONFIGURATION & GLOBAL STATE
-  // ==========================================
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOUsMvvyIGEwIIyX0kzY_aZl2xlnmZZKvHig84El_Nkc-GQIEaJhzVlFj4oBgYpyj7CA/exec";
+
+  /* =========================================
+     CONFIGURATION
+  ========================================= */
+
+  const SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbwOUsMvvyIGEwIIyX0kzY_aZl2xlnmZZKvHig84El_Nkc-GQIEaJhzVlFj4oBgYpyj7CA/exec";
+
+
+  /* =========================================
+     GLOBAL STATE
+  ========================================= */
 
   let evaluasiNama = "";
   let evaluasiLokasi = "";
   let evaluasiTanggal = "";
   let evaluasiKode = "";
   let evaluasiKategori = "";
-  
+
   let soalList = [];
   let jawabanUser = {};
   let currentIndex = 0;
+
   let timerInterval = null;
   let timeRemaining = 0;
+
   let detailJawabanGlobal = [];
-  let activeEditObj = null; 
-  let targetPageAfterLogin = 'pageTrainerSetting';
+
+  let activeEditObj = null;
+
+  let targetPageAfterLogin = "pageTrainerSetting";
+
   let isAudioMuted = false;
+
   let qrCodeInstance = null;
 
-  // ==========================================
-  // AUDIO SYSTEM
-  // ==========================================
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+
+  /* =========================================
+     AUDIO SYSTEM
+  ========================================= */
+
+  const AudioCtx =
+    window.AudioContext ||
+    window.webkitAudioContext;
+
   let audioCtx = null;
 
+
   function initAudio() {
+
     if (!audioCtx) {
       audioCtx = new AudioCtx();
     }
+
   }
+
 
   function playSoundClick() {
+
     try {
+
       initAudio();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
+
+      const osc =
+        audioCtx.createOscillator();
+
+      const gain =
+        audioCtx.createGain();
+
+      osc.type = "sine";
+
+      osc.frequency.setValueAtTime(
+        600,
+        audioCtx.currentTime
+      );
+
+      gain.gain.setValueAtTime(
+        0.08,
+        audioCtx.currentTime
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        audioCtx.currentTime + 0.08
+      );
+
       osc.connect(gain);
       gain.connect(audioCtx.destination);
+
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.08);
-    } catch(e){}
+
+      osc.stop(
+        audioCtx.currentTime + 0.08
+      );
+
+    } catch (e) {}
+
   }
+
 
   function playSoundLeaderboard() {
+
     try {
+
       initAudio();
-      const notes = [523.25, 659.25, 783.99, 1046.50];
+
+      const notes = [
+        523.25,
+        659.25,
+        783.99,
+        1046.50
+      ];
+
       notes.forEach((freq, idx) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (idx * 0.1));
-        gain.gain.setValueAtTime(0.12, audioCtx.currentTime + (idx * 0.1));
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (idx * 0.1) + 0.3);
+
+        const osc =
+          audioCtx.createOscillator();
+
+        const gain =
+          audioCtx.createGain();
+
+        const startTime =
+          audioCtx.currentTime +
+          (idx * 0.1);
+
+        osc.type = "triangle";
+
+        osc.frequency.setValueAtTime(
+          freq,
+          startTime
+        );
+
+        gain.gain.setValueAtTime(
+          0.12,
+          startTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          startTime + 0.3
+        );
+
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime + (idx * 0.1));
-        osc.stop(audioCtx.currentTime + (idx * 0.1) + 0.3);
+
+        osc.start(startTime);
+
+        osc.stop(startTime + 0.3);
+
       });
-    } catch(e){}
+
+    } catch (e) {}
+
   }
 
-  const sndBgm = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3');
+
+  /* =========================================
+     BACKGROUND MUSIC
+  ========================================= */
+
+  const sndBgm = new Audio(
+    "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3"
+  );
+
   sndBgm.loop = true;
   sndBgm.volume = 0.25;
 
+
   function startBGM() {
+
     if (!isAudioMuted) {
-      sndBgm.play().catch(() => {});
+
+      sndBgm
+        .play()
+        .catch(() => {});
+
     }
+
   }
+
 
   function stopBGM() {
+
     sndBgm.pause();
+
     sndBgm.currentTime = 0;
+
   }
+
 
   function toggleBGM() {
+
     isAudioMuted = !isAudioMuted;
-    const btnIcon = document.getElementById('iconAudio');
+
+    const btnIcon =
+      document.getElementById("iconAudio");
+
     if (isAudioMuted) {
+
       sndBgm.pause();
+
       btnIcon.innerText = "music_off";
+
     } else {
+
       btnIcon.innerText = "music_note";
-      sndBgm.play().catch(() => {});
+
+      sndBgm
+        .play()
+        .catch(() => {});
+
     }
+
   }
 
-  document.addEventListener('click', function(e) {
-    if (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.classList.contains('menu-item') || e.target.classList.contains('radio-option')) {
-      playSoundClick();
+
+  /* =========================================
+     GLOBAL CLICK SOUND
+  ========================================= */
+
+  document.addEventListener(
+    "click",
+    function(e) {
+
+      if (
+        e.target.tagName === "BUTTON" ||
+        e.target.closest("button") ||
+        e.target.classList.contains("menu-item") ||
+        e.target.classList.contains("radio-option")
+      ) {
+
+        playSoundClick();
+
+      }
+
     }
-  });
+  );
 
-  // Init Date & Dinamis Kategori On Load
+
+  /* =========================================
+     INITIALIZATION
+  ========================================= */
+
   window.onload = function() {
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yyyy = today.getFullYear();
-    document.getElementById('etTanggalEvaluasi').value = `${dd}/${mm}/${yyyy}`;
-    
-    const inputDate = document.getElementById('etTanggal');
-    if (inputDate) inputDate.value = `${yyyy}-${mm}-${dd}`;
 
-    history.replaceState({ page: 'pageMenu' }, "", "");
-    
-    // Muat daftar kategori dari database
+    const today = new Date();
+
+    const dd =
+      String(today.getDate())
+        .padStart(2, "0");
+
+    const mm =
+      String(today.getMonth() + 1)
+        .padStart(2, "0");
+
+    const yyyy =
+      today.getFullYear();
+
+
+    const tanggalEvaluasi =
+      document.getElementById(
+        "etTanggalEvaluasi"
+      );
+
+    if (tanggalEvaluasi) {
+
+      tanggalEvaluasi.value =
+        `${dd}/${mm}/${yyyy}`;
+
+    }
+
+
+    const inputDate =
+      document.getElementById(
+        "etTanggal"
+      );
+
+    if (inputDate) {
+
+      inputDate.value =
+        `${yyyy}-${mm}-${dd}`;
+
+    }
+
+
+    history.replaceState(
+      { page: "pageMenu" },
+      "",
+      ""
+    );
+
+
     muatDaftarKategori();
+
   };
 
-  // ==========================================
-  // CATEGORY SYNC WITH SPREADSHEET (ANDROID EQUIVALENT)
-  // ==========================================
+
+  /* =========================================
+     LOAD CATEGORY
+  ========================================= */
+
   function muatDaftarKategori() {
-    const url = `${SCRIPT_URL}?action=getKategori`;
-    
+
+    const url =
+      `${SCRIPT_URL}?action=getKategori`;
+
     fetch(url)
-      .then(response => response.json())
+
+      .then(response =>
+        response.json()
+      )
+
       .then(data => {
-        const selectTrainer = document.getElementById('spKategoriTrainer');
-        const selectEditor = document.getElementById('spKategoriEditor');
-        
-        selectTrainer.innerHTML = '';
-        selectEditor.innerHTML = '';
 
-        if (data && data.length > 0) {
+        const selectTrainer =
+          document.getElementById(
+            "spKategoriTrainer"
+          );
+
+        const selectEditor =
+          document.getElementById(
+            "spKategoriEditor"
+          );
+
+
+        selectTrainer.innerHTML = "";
+        selectEditor.innerHTML = "";
+
+
+        if (
+          data &&
+          data.length > 0
+        ) {
+
           data.forEach(kat => {
-            const namaKategori = typeof kat === 'object' ? (kat.nama || kat[0]) : kat;
-            
-            const opt1 = document.createElement('option');
-            opt1.value = namaKategori;
-            opt1.textContent = namaKategori.toUpperCase();
-            selectTrainer.appendChild(opt1);
 
-            const opt2 = document.createElement('option');
-            opt2.value = namaKategori;
-            opt2.textContent = namaKategori.toUpperCase();
-            selectEditor.appendChild(opt2);
+            const namaKategori =
+              typeof kat === "object"
+                ? (kat.nama || kat[0])
+                : kat;
+
+
+            const opt1 =
+              document.createElement(
+                "option"
+              );
+
+            opt1.value =
+              namaKategori;
+
+            opt1.textContent =
+              String(
+                namaKategori
+              ).toUpperCase();
+
+            selectTrainer.appendChild(
+              opt1
+            );
+
+
+            const opt2 =
+              document.createElement(
+                "option"
+              );
+
+            opt2.value =
+              namaKategori;
+
+            opt2.textContent =
+              String(
+                namaKategori
+              ).toUpperCase();
+
+            selectEditor.appendChild(
+              opt2
+            );
+
           });
+
         } else {
-          selectTrainer.innerHTML = '<option value="bhd">BHD</option>';
-          selectEditor.innerHTML = '<option value="bhd">BHD</option>';
+
+          selectTrainer.innerHTML =
+            '<option value="bhd">BHD</option>';
+
+          selectEditor.innerHTML =
+            '<option value="bhd">BHD</option>';
+
         }
+
       })
+
       .catch(err => {
-        console.error("Gagal memuat daftar kategori:", err);
-        const selectTrainer = document.getElementById('spKategoriTrainer');
-        const selectEditor = document.getElementById('spKategoriEditor');
-        selectTrainer.innerHTML = '<option value="bhd">BHD</option>';
-        selectEditor.innerHTML = '<option value="bhd">BHD</option>';
+
+        console.error(
+          "Gagal memuat daftar kategori:",
+          err
+        );
+
+        const selectTrainer =
+          document.getElementById(
+            "spKategoriTrainer"
+          );
+
+        const selectEditor =
+          document.getElementById(
+            "spKategoriEditor"
+          );
+
+        selectTrainer.innerHTML =
+          '<option value="bhd">BHD</option>';
+
+        selectEditor.innerHTML =
+          '<option value="bhd">BHD</option>';
+
       });
+
   }
 
-  // ==========================================
-  // NAVIGATION LOGIC
-  // ==========================================
+
+  /* =========================================
+     NAVIGATION
+  ========================================= */
+
   function showPageDOM(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById(pageId);
+
+    document
+      .querySelectorAll(".page")
+      .forEach(p =>
+        p.classList.remove("active")
+      );
+
+
+    const target =
+      document.getElementById(pageId);
+
+
     if (target) {
-      target.classList.add('active');
-      if (pageId === 'pageCekNilai') {
+
+      target.classList.add("active");
+
+
+      if (
+        pageId === "pageCekNilai"
+      ) {
+
         loadCekNilaiTrainer();
+
       }
-      if (pageId === 'pageQuestionEditor') {
+
+
+      if (
+        pageId === "pageQuestionEditor"
+      ) {
+
         onCategoryEditorChanged();
+
       }
+
     }
+
   }
+
 
   function navigateTo(pageId) {
+
     showPageDOM(pageId);
-    if (pageId !== 'pageMenu') {
-      history.pushState({ page: pageId }, "", "#" + pageId);
+
+    if (pageId !== "pageMenu") {
+
+      history.pushState(
+        { page: pageId },
+        "",
+        "#" + pageId
+      );
+
     }
+
   }
 
-  window.addEventListener('popstate', function(event) {
-    if (event.state && event.state.page) {
-      showPageDOM(event.state.page);
-    } else {
-      showPageDOM('pageMenu');
+
+  window.addEventListener(
+    "popstate",
+    function(event) {
+
+      if (
+        event.state &&
+        event.state.page
+      ) {
+
+        showPageDOM(
+          event.state.page
+        );
+
+      } else {
+
+        showPageDOM(
+          "pageMenu"
+        );
+
+      }
+
     }
-  });
+  );
+
+
+  /* =========================================
+     TRAINER LOGIN ROUTING
+  ========================================= */
 
   function bukaTrainerLogin(tujuan) {
-    targetPageAfterLogin = tujuan === 'editor_soal' ? 'pageQuestionEditor' : 
-                           tujuan === 'cek_nilai' ? 'pageCekNilai' : 'pageTrainerSetting';
-    navigateTo('pageTrainerLogin');
+
+    targetPageAfterLogin =
+      tujuan === "editor_soal"
+        ? "pageQuestionEditor"
+        : tujuan === "cek_nilai"
+          ? "pageCekNilai"
+          : "pageTrainerSetting";
+
+
+    navigateTo(
+      "pageTrainerLogin"
+    );
+
   }
 
-  // ==========================================
-  // 1. ABSENSI MAIN
-  // ==========================================
-  function kirimDataAbsensi() {
-    const nama = document.getElementById('etNama').value.trim();
-    const tanggal = document.getElementById('etTanggal').value;
-    const pengajar = document.getElementById('etPengajar').value;
-    const email = document.getElementById('etEmail').value.trim();
-    const btn = document.getElementById('btnKirim');
-    const loader = document.getElementById('progressBarMain');
 
-    if (!nama || !tanggal || !email) {
-      alert("Mohon isi semua data absensi!");
+  /* =========================================
+     ABSENSI
+  ========================================= */
+
+  function kirimDataAbsensi() {
+
+    const nama =
+      document
+        .getElementById("etNama")
+        .value
+        .trim();
+
+    const tanggal =
+      document
+        .getElementById("etTanggal")
+        .value;
+
+    const pengajar =
+      document
+        .getElementById("etPengajar")
+        .value;
+
+    const email =
+      document
+        .getElementById("etEmail")
+        .value
+        .trim();
+
+    const btn =
+      document.getElementById(
+        "btnKirim"
+      );
+
+    const loader =
+      document.getElementById(
+        "progressBarMain"
+      );
+
+
+    if (
+      !nama ||
+      !tanggal ||
+      !email
+    ) {
+
+      alert(
+        "Mohon isi semua data absensi!"
+      );
+
       return;
+
     }
 
+
     btn.disabled = true;
-    loader.style.display = "block";
+
+    loader.style.display =
+      "block";
+
 
     const payload = {
+
       action: "simpanAbsensi",
+
       nama: nama,
+
       tanggal: tanggal,
+
       pengajar: pengajar,
+
       email: email
+
     };
 
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
-    .then(res => res.text())
-    .then(res => {
-      btn.disabled = false;
-      loader.style.display = "none";
-      document.getElementById('modalSuccess').style.display = "flex";
-      document.getElementById('etNama').value = "";
-      document.getElementById('etEmail').value = "";
-    })
-    .catch(err => {
-      btn.disabled = false;
-      loader.style.display = "none";
-      alert("Terjadi kesalahan koneksi. Silakan coba lagi.");
-    });
+
+    fetch(
+      SCRIPT_URL,
+      {
+        method: "POST",
+        body: JSON.stringify(
+          payload
+        )
+      }
+    )
+
+      .then(res =>
+        res.text()
+      )
+
+      .then(res => {
+
+        btn.disabled = false;
+
+        loader.style.display =
+          "none";
+
+
+        document.getElementById(
+          "modalSuccess"
+        ).style.display = "flex";
+
+
+        document.getElementById(
+          "etNama"
+        ).value = "";
+
+
+        document.getElementById(
+          "etEmail"
+        ).value = "";
+
+      })
+
+      .catch(err => {
+
+        btn.disabled = false;
+
+        loader.style.display =
+          "none";
+
+
+        alert(
+          "Terjadi kesalahan koneksi. Silakan coba lagi."
+        );
+
+      });
+
   }
+
 
   function closeModalSuccess() {
-    document.getElementById('modalSuccess').style.display = "none";
-    navigateTo('pageMenu');
+
+    document.getElementById(
+      "modalSuccess"
+    ).style.display = "none";
+
+
+    navigateTo(
+      "pageMenu"
+    );
+
   }
 
-  // ==========================================
-  // 2. EVALUASI CODE & FORM
-  // ==========================================
+
+  /* =========================================
+     KODE EVALUASI
+  ========================================= */
+
   function submitKodeEvaluasi() {
-    const kode = document.getElementById('etKodeEvaluasi').value.trim();
-    const loader = document.getElementById('pbEvaluasiCode');
+
+    const kode =
+      document
+        .getElementById(
+          "etKodeEvaluasi"
+        )
+        .value
+        .trim();
+
+    const loader =
+      document.getElementById(
+        "pbEvaluasiCode"
+      );
+
 
     if (!kode) {
-      alert("Masukkan Kode Evaluasi!");
+
+      alert(
+        "Masukkan Kode Evaluasi!"
+      );
+
       return;
+
     }
 
-    loader.style.display = "block";
 
-    fetch(`${SCRIPT_URL}?action=cekKodeEvaluasi&kode=${encodeURIComponent(kode)}`)
-      .then(res => res.json())
+    loader.style.display =
+      "block";
+
+
+    fetch(
+      `${SCRIPT_URL}?action=cekKodeEvaluasi&kode=${encodeURIComponent(kode)}`
+    )
+
+      .then(res =>
+        res.json()
+      )
+
       .then(data => {
-        loader.style.display = "none";
-        if (data.valid || data.status === "SUCCESS" || data.kategori) {
-          evaluasiKode = kode;
-          evaluasiKategori = data.kategori || "BHD";
-          navigateTo('pageEvaluasiForm');
+
+        loader.style.display =
+          "none";
+
+
+        if (
+          data.valid ||
+          data.status === "SUCCESS" ||
+          data.kategori
+        ) {
+
+          evaluasiKode =
+            kode;
+
+          evaluasiKategori =
+            data.kategori ||
+            "BHD";
+
+
+          navigateTo(
+            "pageEvaluasiForm"
+          );
+
         } else {
-          alert("Kode Evaluasi tidak valid atau sudah kedaluwarsa!");
+
+          alert(
+            "Kode Evaluasi tidak valid atau sudah kedaluwarsa!"
+          );
+
         }
+
       })
+
       .catch(err => {
-        loader.style.display = "none";
-        alert("Gagal memverifikasi kode evaluasi!");
+
+        loader.style.display =
+          "none";
+
+        alert(
+          "Gagal memverifikasi kode evaluasi!"
+        );
+
       });
+
   }
+
+
+  /* =========================================
+     MULAI EVALUASI
+  ========================================= */
 
   function mulaiEvaluasi() {
-    evaluasiNama = document.getElementById('etNamaEvaluasi').value.trim();
-    evaluasiLokasi = document.getElementById('spLokasi').value;
-    evaluasiTanggal = document.getElementById('etTanggalEvaluasi').value;
+
+    evaluasiNama =
+      document
+        .getElementById(
+          "etNamaEvaluasi"
+        )
+        .value
+        .trim();
+
+
+    evaluasiLokasi =
+      document
+        .getElementById(
+          "spLokasi"
+        )
+        .value;
+
+
+    evaluasiTanggal =
+      document
+        .getElementById(
+          "etTanggalEvaluasi"
+        )
+        .value;
+
 
     if (!evaluasiNama) {
-      alert("Nama Lengkap harus diisi!");
+
+      alert(
+        "Nama Lengkap harus diisi!"
+      );
+
+      return;
+
+    }
+
+
+    fetch(
+      `${SCRIPT_URL}?action=getSoalEvaluasi&kode=${encodeURIComponent(evaluasiKode)}&kategori=${encodeURIComponent(evaluasiKategori)}`
+    )
+
+      .then(res =>
+        res.json()
+      )
+
+      .then(data => {
+
+        if (
+          data &&
+          data.soal &&
+          data.soal.length > 0
+        ) {
+
+          soalList =
+            data.soal;
+
+          timeRemaining =
+            (data.durasi || 20) * 60;
+
+          currentIndex = 0;
+
+          jawabanUser = {};
+
+
+          navigateTo(
+            "pageQuiz"
+          );
+
+
+          renderSoal();
+
+          startTimer();
+
+          startBGM();
+
+        } else {
+
+          alert(
+            "Tidak ada soal untuk kode/kategori ini."
+          );
+
+        }
+
+      })
+
+      .catch(err => {
+
+        console.error(err);
+
+        alert(
+          "Gagal memuat soal evaluasi!"
+        );
+
+      });
+
+  }
+
+
+  /* =========================================
+     TIMER
+  ========================================= */
+
+  function startTimer() {
+
+    clearInterval(
+      timerInterval
+    );
+
+
+    updateTimerDisplay();
+
+
+    timerInterval =
+      setInterval(
+        () => {
+
+          timeRemaining--;
+
+          updateTimerDisplay();
+
+
+          if (
+            timeRemaining <= 0
+          ) {
+
+            clearInterval(
+              timerInterval
+            );
+
+            alert(
+              "Waktu Habis!"
+            );
+
+            selesaiQuiz();
+
+          }
+
+        },
+        1000
+      );
+
+  }
+
+
+  function updateTimerDisplay() {
+
+    const safeTime =
+      Math.max(
+        0,
+        timeRemaining
+      );
+
+
+    const m =
+      Math.floor(
+        safeTime / 60
+      );
+
+
+    const s =
+      safeTime % 60;
+
+
+    const timer =
+      document.getElementById(
+        "tvTimer"
+      );
+
+
+    if (timer) {
+
+      timer.innerText =
+        `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+
+    }
+
+  }
+
+
+  /* =========================================
+     RENDER SOAL
+  ========================================= */
+
+  function renderSoal() {
+
+    const s =
+      soalList[currentIndex];
+
+
+    if (!s) {
       return;
     }
 
-    // Ambil data Soal & Durasi dari Backend
-    fetch(`${SCRIPT_URL}?action=getSoalEvaluasi&kode=${encodeURIComponent(evaluasiKode)}&kategori=${encodeURIComponent(evaluasiKategori)}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.soal && data.soal.length > 0) {
-          soalList = data.soal;
-          timeRemaining = (data.durasi || 20) * 60;
-          currentIndex = 0;
-          jawabanUser = {};
-          
-          navigateTo('pageQuiz');
-          renderSoal();
-          startTimer();
-          startBGM();
-        } else {
-          alert("Tidak ada soal untuk kode/kategori ini.");
-        }
-      })
-      .catch(err => {
-        alert("Gagal memuat soal evaluasi!");
-      });
-  }
 
-  // ==========================================
-  // 3. QUIZ SYSTEM
-  // ==========================================
-  function startTimer() {
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-      timeRemaining--;
-      const m = Math.floor(timeRemaining / 60);
-      const s = timeRemaining % 60;
-      document.getElementById('tvTimer').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    document.getElementById(
+      "tvSoalKe"
+    ).innerText =
+      `Soal ${currentIndex + 1}/${soalList.length}`;
 
-      if (timeRemaining <= 0) {
-        clearInterval(timerInterval);
-        alert("Waktu Habis!");
-        selesaiQuiz();
+
+    document.getElementById(
+      "tvTeksSoal"
+    ).innerText =
+      s.soal || "";
+
+
+    document.getElementById(
+      "labelA"
+    ).innerText =
+      "A. " +
+      (
+        s.opsiA ||
+        s.a ||
+        ""
+      );
+
+
+    document.getElementById(
+      "labelB"
+    ).innerText =
+      "B. " +
+      (
+        s.opsiB ||
+        s.b ||
+        ""
+      );
+
+
+    document.getElementById(
+      "labelC"
+    ).innerText =
+      "C. " +
+      (
+        s.opsiC ||
+        s.c ||
+        ""
+      );
+
+
+    const radios =
+      document.getElementsByName(
+        "pilihan"
+      );
+
+
+    radios.forEach(
+      r => r.checked = false
+    );
+
+
+    if (
+      jawabanUser[currentIndex]
+    ) {
+
+      const selectedRadio =
+        document.getElementById(
+          "rb" +
+          jawabanUser[currentIndex]
+        );
+
+
+      if (selectedRadio) {
+
+        selectedRadio.checked =
+          true;
+
       }
-    }, 1000);
-  }
 
-  function renderSoal() {
-    const s = soalList[currentIndex];
-    document.getElementById('tvSoalKe').innerText = `Soal ${currentIndex + 1}/${soalList.length}`;
-    document.getElementById('tvTeksSoal').innerText = s.soal;
-
-    document.getElementById('labelA').innerText = "A. " + (s.opsiA || s.a || "");
-    document.getElementById('labelB').innerText = "B. " + (s.opsiB || s.b || "");
-    document.getElementById('labelC').innerText = "C. " + (s.opsiC || s.c || "");
-
-    const radios = document.getElementsByName('pilihan');
-    radios.forEach(r => r.checked = false);
-
-    if (jawabanUser[currentIndex]) {
-      const selectedRadio = document.getElementById('rb' + jawabanUser[currentIndex]);
-      if (selectedRadio) selectedRadio.checked = true;
     }
 
-    document.getElementById('btnLanjut').innerText = (currentIndex === soalList.length - 1) ? "SELESAI & KIRIM" : "SELANJUTNYA";
+
+    document.getElementById(
+      "btnLanjut"
+    ).innerText =
+      currentIndex ===
+      soalList.length - 1
+        ? "SELESAI & KIRIM"
+        : "SELANJUTNYA";
+
   }
+
+
+  /* =========================================
+     NEXT SOAL
+  ========================================= */
 
   function nextSoal() {
-    const selected = document.querySelector('input[name="pilihan"]:checked');
+
+    const selected =
+      document.querySelector(
+        'input[name="pilihan"]:checked'
+      );
+
+
     if (selected) {
-      jawabanUser[currentIndex] = selected.value;
+
+      jawabanUser[currentIndex] =
+        selected.value;
+
     }
 
-    if (currentIndex < soalList.length - 1) {
+
+    if (
+      currentIndex <
+      soalList.length - 1
+    ) {
+
       currentIndex++;
+
       renderSoal();
+
     } else {
+
       selesaiQuiz();
+
     }
+
   }
+
+
+  /* =========================================
+     SELESAI QUIZ
+  ========================================= */
 
   function selesaiQuiz() {
-    clearInterval(timerInterval);
+
+    if (
+      !soalList ||
+      soalList.length === 0
+    ) {
+      return;
+    }
+
+
+    clearInterval(
+      timerInterval
+    );
+
+
     stopBGM();
 
+
     let benarCount = 0;
+
     detailJawabanGlobal = [];
 
-    soalList.forEach((s, idx) => {
-      const userAns = jawabanUser[idx] || "-";
-      const kunci = s.kunci || s.kunciJawaban || "";
-      const isCorrect = userAns.toUpperCase() === kunci.toUpperCase();
-      if (isCorrect) benarCount++;
 
-      detailJawabanGlobal.push({
-        soal: s.soal,
-        userAns: userAns,
-        kunci: kunci,
-        opsiA: s.opsiA || s.a,
-        opsiB: s.opsiB || s.b,
-        opsiC: s.opsiC || s.c,
-        isCorrect: isCorrect
-      });
-    });
+    soalList.forEach(
+      (s, idx) => {
 
-    const totalSkor = Math.round((benarCount / soalList.length) * 100);
+        const userAns =
+          jawabanUser[idx] ||
+          "-";
+
+
+        const kunci =
+          s.kunci ||
+          s.kunciJawaban ||
+          "";
+
+
+        const isCorrect =
+          userAns
+            .toUpperCase() ===
+          String(kunci)
+            .toUpperCase();
+
+
+        if (isCorrect) {
+
+          benarCount++;
+
+        }
+
+
+        detailJawabanGlobal.push({
+
+          soal:
+            s.soal,
+
+          userAns:
+            userAns,
+
+          kunci:
+            kunci,
+
+          opsiA:
+            s.opsiA ||
+            s.a,
+
+          opsiB:
+            s.opsiB ||
+            s.b,
+
+          opsiC:
+            s.opsiC ||
+            s.c,
+
+          isCorrect:
+            isCorrect
+
+        });
+
+      }
+    );
+
+
+    const totalSkor =
+      Math.round(
+        (
+          benarCount /
+          soalList.length
+        ) * 100
+      );
+
 
     const payload = {
-      action: "simpanEvaluasi",
-      nama: evaluasiNama,
-      lokasi: evaluasiLokasi,
-      tanggal: evaluasiTanggal,
-      kategori: evaluasiKategori,
-      kode: evaluasiKode,
-      nilai: totalSkor
+
+      action:
+        "simpanEvaluasi",
+
+      nama:
+        evaluasiNama,
+
+      lokasi:
+        evaluasiLokasi,
+
+      tanggal:
+        evaluasiTanggal,
+
+      kategori:
+        evaluasiKategori,
+
+      kode:
+        evaluasiKode,
+
+      nilai:
+        totalSkor
+
     };
 
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
-    .then(() => {
-      loadLeaderboard(totalSkor);
-    })
-    .catch(() => {
-      loadLeaderboard(totalSkor);
-    });
+
+    fetch(
+      SCRIPT_URL,
+      {
+        method: "POST",
+        body: JSON.stringify(
+          payload
+        )
+      }
+    )
+
+      .then(() => {
+
+        loadLeaderboard(
+          totalSkor
+        );
+
+      })
+
+      .catch(() => {
+
+        loadLeaderboard(
+          totalSkor
+        );
+
+      });
+
   }
 
-  // ==========================================
-  // 4. LEADERBOARD & KOREKSI
-  // ==========================================
-  function loadLeaderboard(skorSaya) {
-    document.getElementById('tvSkorSaya').innerText = skorSaya;
+
+  /* =========================================
+     LEADERBOARD
+  ========================================= */
+
+  function loadLeaderboard(
+    skorSaya
+  ) {
+
+    document.getElementById(
+      "tvSkorSaya"
+    ).innerText =
+      skorSaya;
+
+
     playSoundLeaderboard();
-    navigateTo('pageLeaderboard');
 
-    fetch(`${SCRIPT_URL}?action=getLeaderboard&kode=${encodeURIComponent(evaluasiKode)}`)
-      .then(res => res.json())
+
+    navigateTo(
+      "pageLeaderboard"
+    );
+
+
+    const container =
+      document.getElementById(
+        "containerLeaderboard"
+      );
+
+
+    container.innerHTML =
+      `<div style="text-align:center;color:var(--muted);padding:20px;">
+        Memuat papan peringkat...
+       </div>`;
+
+
+    fetch(
+      `${SCRIPT_URL}?action=getLeaderboard&kode=${encodeURIComponent(evaluasiKode)}`
+    )
+
+      .then(res =>
+        res.json()
+      )
+
       .then(data => {
-        const container = document.getElementById('containerLeaderboard');
-        container.innerHTML = "";
 
-        if (data && data.length > 0) {
-          data.forEach((item, index) => {
-            container.innerHTML += `
-              <div class="rank-card">
-                <div class="rank-badge">${index + 1}</div>
-                <div style="flex:1;">
-                  <div style="font-weight:700; font-size:16px;">${item.nama}</div>
-                  <div style="font-size:12px; color: var(--muted);">${item.lokasi || '-'}</div>
+        container.innerHTML =
+          "";
+
+
+        if (
+          data &&
+          data.length > 0
+        ) {
+
+          data.forEach(
+            (item, index) => {
+
+              container.innerHTML += `
+
+                <div class="rank-card">
+
+                  <div class="rank-badge">
+                    ${index + 1}
+                  </div>
+
+                  <div style="flex:1;">
+
+                    <div
+                      style="
+                        font-weight:700;
+                        font-size:16px;
+                      ">
+
+                      ${escapeHtml(
+                        item.nama || "-"
+                      )}
+
+                    </div>
+
+                    <div
+                      style="
+                        font-size:12px;
+                        color:var(--muted);
+                      ">
+
+                      ${escapeHtml(
+                        item.lokasi || "-"
+                      )}
+
+                    </div>
+
+                  </div>
+
+                  <div
+                    style="
+                      font-weight:700;
+                      font-size:20px;
+                      color:var(--maroon);
+                    ">
+
+                    ${escapeHtml(
+                      item.nilai ?? 0
+                    )}
+
+                  </div>
+
                 </div>
-                <div style="font-weight:700; font-size:20px; color: var(--maroon);">${item.nilai}</div>
-              </div>
-            `;
-          });
+
+              `;
+
+            }
+          );
+
+        } else {
+
+          container.innerHTML =
+            `<div style="
+              grid-column:1/-1;
+              text-align:center;
+              color:var(--muted);
+              padding:20px;
+            ">
+              Belum ada data leaderboard.
+            </div>`;
+
         }
+
+      })
+
+      .catch(err => {
+
+        console.error(err);
+
+        container.innerHTML =
+          `<div style="
+            grid-column:1/-1;
+            text-align:center;
+            color:var(--danger);
+            padding:20px;
+          ">
+            Gagal memuat leaderboard.
+          </div>`;
+
       });
+
 
     renderKoreksi();
+
   }
+
+
+  /* =========================================
+     KOREKSI
+  ========================================= */
 
   function renderKoreksi() {
-    const container = document.getElementById('containerKoreksi');
-    container.innerHTML = "";
 
-    detailJawabanGlobal.forEach((item, index) => {
-      const badgeClass = item.isCorrect ? "badge-success" : "badge-danger";
-      const statusText = item.isCorrect ? "BENAR" : "SALAH";
+    const container =
+      document.getElementById(
+        "containerKoreksi"
+      );
 
-      container.innerHTML += `
-        <div class="koreksi-card">
-          <div class="koreksi-status-badge ${badgeClass}">${index + 1}. ${statusText}</div>
-          <div style="font-weight:700; font-size:15px; margin-bottom: 12px;">${item.soal}</div>
-          <div style="font-size:13px; color:#555; margin-bottom: 4px;">Jawaban Anda: <b>${item.userAns}</b></div>
-          <div style="font-size:13px; color: var(--success);">Kunci Jawaban: <b>${item.kunci}</b></div>
-        </div>
-      `;
-    });
-  }
 
-  // ==========================================
-  // 5. TRAINER AUTH & SETTING
-  // ==========================================
-  function loginTrainer() {
-    const akun = document.getElementById('etAkunTrainer').value.trim();
-    const pass = document.getElementById('etPassTrainer').value.trim();
+    container.innerHTML =
+      "";
 
-    if (akun === "ayub@admin" && pass === "plumbon123") {
-      document.getElementById('etAkunTrainer').value = "";
-      document.getElementById('etPassTrainer').value = "";
-      navigateTo(targetPageAfterLogin);
-    } else {
-      alert("Akun atau Password Trainer Salah!");
+
+    if (
+      !detailJawabanGlobal ||
+      detailJawabanGlobal.length === 0
+    ) {
+
+      container.innerHTML =
+        `<div style="
+          grid-column:1/-1;
+          text-align:center;
+          color:var(--muted);
+        ">
+          Tidak ada data koreksi.
+        </div>`;
+
+      return;
+
     }
+
+
+    detailJawabanGlobal.forEach(
+      (item, index) => {
+
+        const badgeClass =
+          item.isCorrect
+            ? "badge-success"
+            : "badge-danger";
+
+
+        const statusText =
+          item.isCorrect
+            ? "BENAR"
+            : "SALAH";
+
+
+        container.innerHTML += `
+
+          <div class="koreksi-card">
+
+            <div
+              class="koreksi-status-badge ${badgeClass}">
+
+              ${index + 1}.
+              ${statusText}
+
+            </div>
+
+
+            <div
+              style="
+                font-weight:700;
+                font-size:15px;
+                margin-bottom:12px;
+              ">
+
+              ${escapeHtml(
+                item.soal || ""
+              )}
+
+            </div>
+
+
+            <div
+              style="
+                font-size:13px;
+                color:#555;
+                margin-bottom:4px;
+              ">
+
+              Jawaban Anda:
+              <b>
+                ${escapeHtml(
+                  item.userAns || "-"
+                )}
+              </b>
+
+            </div>
+
+
+            <div
+              style="
+                font-size:13px;
+                color:var(--success);
+              ">
+
+              Kunci Jawaban:
+              <b>
+                ${escapeHtml(
+                  item.kunci || "-"
+                )}
+              </b>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    );
+
   }
+
+
+  /* =========================================
+     TRAINER AUTH
+  ========================================= */
+
+  function loginTrainer() {
+
+    const akun =
+      document
+        .getElementById(
+          "etAkunTrainer"
+        )
+        .value
+        .trim();
+
+
+    const pass =
+      document
+        .getElementById(
+          "etPassTrainer"
+        )
+        .value
+        .trim();
+
+
+    if (
+      akun === "ayub@admin" &&
+      pass === "plumbon123"
+    ) {
+
+      document.getElementById(
+        "etAkunTrainer"
+      ).value = "";
+
+
+      document.getElementById(
+        "etPassTrainer"
+      ).value = "";
+
+
+      navigateTo(
+        targetPageAfterLogin
+      );
+
+    } else {
+
+      alert(
+        "Akun atau Password Trainer Salah!"
+      );
+
+    }
+
+  }
+
+
+  /* =========================================
+     GENERATE KODE / QR
+  ========================================= */
 
   function generateKodeDariAppsScript() {
-    const kategori = document.getElementById('spKategoriTrainer').value;
-    const btn = document.getElementById('btnGenerateQr');
+
+    const kategori =
+      document
+        .getElementById(
+          "spKategoriTrainer"
+        )
+        .value;
+
+
+    if (!kategori) {
+
+      alert(
+        "Silakan pilih kategori terlebih dahulu."
+      );
+
+      return;
+
+    }
+
+
+    const btn =
+      document.getElementById(
+        "btnGenerateQr"
+      );
+
+
     btn.disabled = true;
 
-    fetch(`${SCRIPT_URL}?action=generateKodeEvaluasi&kategori=${encodeURIComponent(kategori)}`)
-      .then(res => res.json())
-      .then(data => {
-        btn.disabled = false;
-        const kode = data.kode || data.kodeEvaluasi;
-        document.getElementById('tvKodeEvaluasiTrainer').innerText = "KODE EVALUASI: " + kode;
 
-        const qrContainer = document.getElementById('qrcode');
-        qrContainer.innerHTML = "";
-        qrCodeInstance = new QRCode(qrContainer, {
-          text: kode,
-          width: 180,
-          height: 180
-        });
+    fetch(
+      `${SCRIPT_URL}?action=generateKodeEvaluasi&kategori=${encodeURIComponent(kategori)}`
+    )
+
+      .then(res =>
+        res.json()
+      )
+
+      .then(data => {
+
+        btn.disabled = false;
+
+
+        const kode =
+          data.kode ||
+          data.kodeEvaluasi;
+
+
+        if (!kode) {
+
+          alert(
+            "Kode evaluasi tidak diterima dari server."
+          );
+
+          return;
+
+        }
+
+
+        document.getElementById(
+          "tvKodeEvaluasiTrainer"
+        ).innerText =
+          "KODE EVALUASI: " +
+          kode;
+
+
+        const qrContainer =
+          document.getElementById(
+            "qrcode"
+          );
+
+
+        qrContainer.innerHTML =
+          "";
+
+
+        qrCodeInstance =
+          new QRCode(
+            qrContainer,
+            {
+              text: kode,
+              width: 180,
+              height: 180
+            }
+          );
+
       })
+
       .catch(err => {
+
+        console.error(err);
+
         btn.disabled = false;
-        alert("Gagal menggenerate kode!");
+
+        alert(
+          "Gagal menggenerate kode!"
+        );
+
       });
+
   }
 
-  // ==========================================
-  // 6. QUESTION EDITOR
-  // ==========================================
+
+  /* =========================================
+     QUESTION EDITOR
+  ========================================= */
+
   function onCategoryEditorChanged() {
-    const kategori = document.getElementById('spKategoriEditor').value;
-    if (!kategori) return;
 
-    const loader = document.getElementById('pbEditor');
-    const container = document.getElementById('containerSoalEditor');
-    
-    loader.style.display = "block";
-    container.innerHTML = "";
+    const kategori =
+      document
+        .getElementById(
+          "spKategoriEditor"
+        )
+        .value;
 
-    fetch(`${SCRIPT_URL}?action=getSoalEditor&kategori=${encodeURIComponent(kategori)}`)
-      .then(res => res.json())
+
+    if (!kategori) {
+      return;
+    }
+
+
+    const loader =
+      document.getElementById(
+        "pbEditor"
+      );
+
+
+    const container =
+      document.getElementById(
+        "containerSoalEditor"
+      );
+
+
+    loader.style.display =
+      "block";
+
+
+    container.innerHTML =
+      "";
+
+
+    fetch(
+      `${SCRIPT_URL}?action=getSoalEditor&kategori=${encodeURIComponent(kategori)}`
+    )
+
+      .then(res =>
+        res.json()
+      )
+
       .then(data => {
-        loader.style.display = "none";
+
+        loader.style.display =
+          "none";
+
+
         if (data.durasi) {
-          document.getElementById('inputDurasiKuis').value = data.durasi;
+
+          document.getElementById(
+            "inputDurasiKuis"
+          ).value =
+            data.durasi;
+
         }
-        
-        const list = data.soal || data;
-        if (Array.isArray(list) && list.length > 0) {
-          list.forEach((item, idx) => {
-            container.innerHTML += `
-              <div class="editor-card" onclick='bukaDialogSoal(${JSON.stringify(item)}, ${idx})'>
-                <div>
-                  <div style="font-weight:700; font-size:15px; margin-bottom: 8px;">${idx + 1}. ${item.soal}</div>
-                  <div style="font-size:13px; color:#666;">A. ${item.opsiA || item.a}</div>
-                  <div style="font-size:13px; color:#666;">B. ${item.opsiB || item.b}</div>
-                  <div style="font-size:13px; color:#666;">C. ${item.opsiC || item.c}</div>
+
+
+        const list =
+          data.soal ||
+          data;
+
+
+        if (
+          Array.isArray(list) &&
+          list.length > 0
+        ) {
+
+          list.forEach(
+            (item, idx) => {
+
+              const safeItem =
+                JSON.stringify(item)
+                  .replace(
+                    /'/g,
+                    "&#39;"
+                  );
+
+
+              container.innerHTML += `
+
+                <div
+                  class="editor-card"
+                  onclick='bukaDialogSoal(${safeItem}, ${idx})'>
+
+                  <div>
+
+                    <div
+                      style="
+                        font-weight:700;
+                        font-size:15px;
+                        margin-bottom:8px;
+                      ">
+
+                      ${idx + 1}.
+                      ${escapeHtml(
+                        item.soal || ""
+                      )}
+
+                    </div>
+
+
+                    <div
+                      style="
+                        font-size:13px;
+                        color:#666;
+                      ">
+
+                      A.
+                      ${escapeHtml(
+                        item.opsiA ||
+                        item.a ||
+                        ""
+                      )}
+
+                    </div>
+
+
+                    <div
+                      style="
+                        font-size:13px;
+                        color:#666;
+                      ">
+
+                      B.
+                      ${escapeHtml(
+                        item.opsiB ||
+                        item.b ||
+                        ""
+                      )}
+
+                    </div>
+
+
+                    <div
+                      style="
+                        font-size:13px;
+                        color:#666;
+                      ">
+
+                      C.
+                      ${escapeHtml(
+                        item.opsiC ||
+                        item.c ||
+                        ""
+                      )}
+
+                    </div>
+
+                  </div>
+
+
+                  <div
+                    style="
+                      margin-top:12px;
+                      font-weight:700;
+                      font-size:12px;
+                      color:var(--maroon);
+                    ">
+
+                    Kunci:
+                    ${escapeHtml(
+                      item.kunci ||
+                      item.kunciJawaban ||
+                      ""
+                    )}
+
+                  </div>
+
                 </div>
-                <div style="margin-top: 12px; font-weight:700; font-size:12px; color: var(--maroon);">
-                  Kunci: ${item.kunci || item.kunciJawaban}
-                </div>
-              </div>
-            `;
-          });
+
+              `;
+
+            }
+          );
+
         } else {
-          container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color: var(--muted);">Belum ada soal pada kategori ini.</div>`;
+
+          container.innerHTML =
+            `<div
+              style="
+                grid-column:1/-1;
+                text-align:center;
+                color:var(--muted);
+                padding:30px;
+              ">
+
+              Belum ada soal pada kategori ini.
+
+            </div>`;
+
         }
+
       })
-      .catch(() => {
-        loader.style.display = "none";
+
+      .catch(err => {
+
+        console.error(err);
+
+        loader.style.display =
+          "none";
+
+
+        container.innerHTML =
+          `<div
+            style="
+              grid-column:1/-1;
+              text-align:center;
+              color:var(--danger);
+              padding:30px;
+            ">
+
+            Gagal memuat soal.
+
+          </div>`;
+
       });
+
   }
+
+
+  /* =========================================
+     SIMPAN DURASI
+  ========================================= */
 
   function simpanDurasiKuis() {
-    const kategori = document.getElementById('spKategoriEditor').value;
-    const durasi = document.getElementById('inputDurasiKuis').value;
 
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "simpanDurasi",
-        kategori: kategori,
-        durasi: durasi
-      })
-    })
-    .then(() => alert("Durasi berhasil diperbarui!"))
-    .catch(() => alert("Gagal memperbarui durasi!"));
+    const kategori =
+      document
+        .getElementById(
+          "spKategoriEditor"
+        )
+        .value;
+
+
+    const durasi =
+      document
+        .getElementById(
+          "inputDurasiKuis"
+        )
+        .value;
+
+
+    if (!kategori) {
+
+      alert(
+        "Pilih kategori terlebih dahulu."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !durasi ||
+      Number(durasi) < 1
+    ) {
+
+      alert(
+        "Durasi harus lebih dari 0 menit."
+      );
+
+      return;
+
+    }
+
+
+    fetch(
+      SCRIPT_URL,
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+
+          action:
+            "simpanDurasi",
+
+          kategori:
+            kategori,
+
+          durasi:
+            durasi
+
+        })
+
+      }
+    )
+
+      .then(() =>
+        alert(
+          "Durasi berhasil diperbarui!"
+        )
+      )
+
+      .catch(() =>
+        alert(
+          "Gagal memperbarui durasi!"
+        )
+      );
+
   }
 
-  function bukaDialogSoal(obj, idx) {
-    activeEditObj = obj;
-    const modal = document.getElementById('modalEditSoal');
-    const title = document.getElementById('modalSoalTitle');
-    const btnDel = document.getElementById('btnDialogDelete');
+
+  /* =========================================
+     BUKA DIALOG SOAL
+  ========================================= */
+
+  function bukaDialogSoal(
+    obj,
+    idx
+  ) {
+
+    activeEditObj =
+      obj;
+
+
+    const modal =
+      document.getElementById(
+        "modalEditSoal"
+      );
+
+
+    const title =
+      document.getElementById(
+        "modalSoalTitle"
+      );
+
+
+    const btnDel =
+      document.getElementById(
+        "btnDialogDelete"
+      );
+
 
     if (obj) {
-      title.innerText = "Edit Soal #" + (idx + 1);
-      document.getElementById('etDialogSoal').value = obj.soal;
-      document.getElementById('etDialogA').value = obj.opsiA || obj.a;
-      document.getElementById('etDialogB').value = obj.opsiB || obj.b;
-      document.getElementById('etDialogC').value = obj.opsiC || obj.c;
-      document.getElementById('etDialogKunci').value = obj.kunci || obj.kunciJawaban;
-      btnDel.style.display = "block";
+
+      title.innerText =
+        "Edit Soal #" +
+        (idx + 1);
+
+
+      document.getElementById(
+        "etDialogSoal"
+      ).value =
+        obj.soal || "";
+
+
+      document.getElementById(
+        "etDialogA"
+      ).value =
+        obj.opsiA ||
+        obj.a ||
+        "";
+
+
+      document.getElementById(
+        "etDialogB"
+      ).value =
+        obj.opsiB ||
+        obj.b ||
+        "";
+
+
+      document.getElementById(
+        "etDialogC"
+      ).value =
+        obj.opsiC ||
+        obj.c ||
+        "";
+
+
+      document.getElementById(
+        "etDialogKunci"
+      ).value =
+        obj.kunci ||
+        obj.kunciJawaban ||
+        "";
+
+
+      btnDel.style.display =
+        "block";
+
     } else {
-      title.innerText = "Tambah Soal Baru";
-      document.getElementById('etDialogSoal').value = "";
-      document.getElementById('etDialogA').value = "";
-      document.getElementById('etDialogB').value = "";
-      document.getElementById('etDialogC').value = "";
-      document.getElementById('etDialogKunci').value = "";
-      btnDel.style.display = "none";
+
+      title.innerText =
+        "Tambah Soal Baru";
+
+
+      document.getElementById(
+        "etDialogSoal"
+      ).value = "";
+
+
+      document.getElementById(
+        "etDialogA"
+      ).value = "";
+
+
+      document.getElementById(
+        "etDialogB"
+      ).value = "";
+
+
+      document.getElementById(
+        "etDialogC"
+      ).value = "";
+
+
+      document.getElementById(
+        "etDialogKunci"
+      ).value = "";
+
+
+      btnDel.style.display =
+        "none";
+
     }
 
-    modal.style.display = "flex";
+
+    modal.style.display =
+      "flex";
+
   }
+
+
+  /* =========================================
+     TUTUP MODAL
+  ========================================= */
 
   function tutupModalSoal() {
-    document.getElementById('modalEditSoal').style.display = "none";
+
+    document.getElementById(
+      "modalEditSoal"
+    ).style.display =
+      "none";
+
   }
+
+
+  /* =========================================
+     SIMPAN SOAL
+  ========================================= */
 
   function simpanSoalDialog() {
-    const kategori = document.getElementById('spKategoriEditor').value;
+
+    const kategori =
+      document
+        .getElementById(
+          "spKategoriEditor"
+        )
+        .value;
+
+
+    const soal =
+      document
+        .getElementById(
+          "etDialogSoal"
+        )
+        .value
+        .trim();
+
+
+    const opsiA =
+      document
+        .getElementById(
+          "etDialogA"
+        )
+        .value
+        .trim();
+
+
+    const opsiB =
+      document
+        .getElementById(
+          "etDialogB"
+        )
+        .value
+        .trim();
+
+
+    const opsiC =
+      document
+        .getElementById(
+          "etDialogC"
+        )
+        .value
+        .trim();
+
+
+    const kunci =
+      document
+        .getElementById(
+          "etDialogKunci"
+        )
+        .value
+        .trim()
+        .toUpperCase();
+
+
+    if (
+      !kategori ||
+      !soal ||
+      !opsiA ||
+      !opsiB ||
+      !opsiC ||
+      !["A","B","C"].includes(kunci)
+    ) {
+
+      alert(
+        "Mohon lengkapi pertanyaan, semua pilihan jawaban, dan kunci A/B/C."
+      );
+
+      return;
+
+    }
+
+
     const payload = {
-      action: "simpanSoalSingle",
-      kategori: kategori,
-      id: activeEditObj ? activeEditObj.id : null,
-      soal: document.getElementById('etDialogSoal').value,
-      opsiA: document.getElementById('etDialogA').value,
-      opsiB: document.getElementById('etDialogB').value,
-      opsiC: document.getElementById('etDialogC').value,
-      kunci: document.getElementById('etDialogKunci').value.toUpperCase()
+
+      action:
+        "simpanSoalSingle",
+
+      kategori:
+        kategori,
+
+      id:
+        activeEditObj
+          ? activeEditObj.id
+          : null,
+
+      soal:
+        soal,
+
+      opsiA:
+        opsiA,
+
+      opsiB:
+        opsiB,
+
+      opsiC:
+        opsiC,
+
+      kunci:
+        kunci
+
     };
 
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
-    .then(() => {
-      tutupModalSoal();
-      onCategoryEditorChanged();
-    });
+
+    fetch(
+      SCRIPT_URL,
+      {
+        method: "POST",
+        body: JSON.stringify(
+          payload
+        )
+      }
+    )
+
+      .then(res =>
+        res.text()
+      )
+
+      .then(() => {
+
+        tutupModalSoal();
+
+        onCategoryEditorChanged();
+
+      })
+
+      .catch(err => {
+
+        console.error(err);
+
+        alert(
+          "Gagal menyimpan soal."
+        );
+
+      });
+
   }
+
+
+  /* =========================================
+     HAPUS SOAL SINGLE
+  ========================================= */
 
   function konfirmasiHapusSingle() {
-    if (confirm("Apakah Anda yakin ingin menghapus soal ini?")) {
-      const kategori = document.getElementById('spKategoriEditor').value;
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "hapusSoalSingle",
-          kategori: kategori,
-          id: activeEditObj.id
-        })
-      })
-      .then(() => {
-        tutupModalSoal();
-        onCategoryEditorChanged();
-      });
+
+    if (!activeEditObj) {
+      return;
     }
+
+
+    if (
+      confirm(
+        "Apakah Anda yakin ingin menghapus soal ini?"
+      )
+    ) {
+
+      const kategori =
+        document
+          .getElementById(
+            "spKategoriEditor"
+          )
+          .value;
+
+
+      fetch(
+        SCRIPT_URL,
+        {
+          method: "POST",
+
+          body: JSON.stringify({
+
+            action:
+              "hapusSoalSingle",
+
+            kategori:
+              kategori,
+
+            id:
+              activeEditObj.id
+
+          })
+
+        }
+      )
+
+        .then(res =>
+          res.text()
+        )
+
+        .then(() => {
+
+          tutupModalSoal();
+
+          onCategoryEditorChanged();
+
+        })
+
+        .catch(err => {
+
+          console.error(err);
+
+          alert(
+            "Gagal menghapus soal."
+          );
+
+        });
+
+    }
+
   }
+
+
+  /* =========================================
+     HAPUS SEMUA SOAL
+  ========================================= */
 
   function konfirmasiHapusSemuaSoal() {
-    const kategori = document.getElementById('spKategoriEditor').value;
-    if (confirm(`Yakin ingin MENGHAPUS SEMUA soal pada kategori ${kategori}?`)) {
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "hapusSemuaSoal",
-          kategori: kategori
-        })
-      })
-      .then(() => onCategoryEditorChanged());
+
+    const kategori =
+      document
+        .getElementById(
+          "spKategoriEditor"
+        )
+        .value;
+
+
+    if (!kategori) {
+
+      alert(
+        "Pilih kategori terlebih dahulu."
+      );
+
+      return;
+
     }
-  }
 
-  // ==========================================
-  // 7. CEK NILAI TRAINER VIEW
-  // ==========================================
-  function loadCekNilaiTrainer() {
-    const loader = document.getElementById('pbCekNilai');
-    const tbody = document.getElementById('tbodyNilai');
-    
-    loader.style.display = "block";
-    tbody.innerHTML = "";
 
-    fetch(`${SCRIPT_URL}?action=getDaftarNilai`)
-      .then(res => res.json())
-      .then(data => {
-        loader.style.display = "none";
-        if (data && data.length > 0) {
-          data.forEach((row, index) => {
-            tbody.innerHTML += `
-              <tr>
-                <td>${index + 1}</td>
-                <td><b>${row.nama}</b></td>
-                <td>${row.lokasi || '-'}</td>
-                <td>${row.tanggal || '-'}</td>
-                <td>${row.kategori || '-'}</td>
-                <td style="font-weight:700; color: var(--maroon);">${row.nilai}</td>
-              </tr>
-            `;
-          });
-        } else {
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada data nilai peserta.</td></tr>`;
+    if (
+      confirm(
+        `Yakin ingin MENGHAPUS SEMUA soal pada kategori ${kategori}?`
+      )
+    ) {
+
+      fetch(
+        SCRIPT_URL,
+        {
+          method: "POST",
+
+          body: JSON.stringify({
+
+            action:
+              "hapusSemuaSoal",
+
+            kategori:
+              kategori
+
+          })
+
         }
-      })
-      .catch(() => {
-        loader.style.display = "none";
-      });
+      )
+
+        .then(res =>
+          res.text()
+        )
+
+        .then(() =>
+          onCategoryEditorChanged()
+        )
+
+        .catch(err => {
+
+          console.error(err);
+
+          alert(
+            "Gagal menghapus semua soal."
+          );
+
+        });
+
+    }
+
   }
+
+
+  /* =========================================
+     CEK NILAI TRAINER
+  ========================================= */
+
+  function loadCekNilaiTrainer() {
+
+    const loader =
+      document.getElementById(
+        "pbCekNilai"
+      );
+
+
+    const tbody =
+      document.getElementById(
+        "tbodyNilai"
+      );
+
+
+    loader.style.display =
+      "block";
+
+
+    tbody.innerHTML =
+      "";
+
+
+    fetch(
+      `${SCRIPT_URL}?action=getDaftarNilai`
+    )
+
+      .then(res =>
+        res.json()
+      )
+
+      .then(data => {
+
+        loader.style.display =
+          "none";
+
+
+        if (
+          data &&
+          data.length > 0
+        ) {
+
+          data.forEach(
+            (row, index) => {
+
+              tbody.innerHTML += `
+
+                <tr>
+
+                  <td>
+                    ${index + 1}
+                  </td>
+
+                  <td>
+                    <b>
+                      ${escapeHtml(
+                        row.nama || "-"
+                      )}
+                    </b>
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      row.lokasi || "-"
+                    )}
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      row.tanggal || "-"
+                    )}
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      row.kategori || "-"
+                    )}
+                  </td>
+
+                  <td
+                    style="
+                      font-weight:700;
+                      color:var(--maroon);
+                    ">
+
+                    ${escapeHtml(
+                      row.nilai ?? 0
+                    )}
+
+                  </td>
+
+                </tr>
+
+              `;
+
+            }
+          );
+
+        } else {
+
+          tbody.innerHTML =
+            `<tr>
+
+              <td
+                colspan="6"
+                style="
+                  text-align:center;
+                  padding:30px;
+                  color:var(--muted);
+                ">
+
+                Belum ada data nilai peserta.
+
+              </td>
+
+            </tr>`;
+
+        }
+
+      })
+
+      .catch(err => {
+
+        console.error(err);
+
+        loader.style.display =
+          "none";
+
+
+        tbody.innerHTML =
+          `<tr>
+
+            <td
+              colspan="6"
+              style="
+                text-align:center;
+                color:var(--danger);
+                padding:30px;
+              ">
+
+              Gagal memuat data nilai peserta.
+
+            </td>
+
+          </tr>`;
+
+      });
+
+  }
+
+
+  /* =========================================
+     ESCAPE HTML
+  ========================================= */
+
+  function escapeHtml(value) {
+
+    if (
+      value === null ||
+      value === undefined
+    ) {
+
+      return "";
+
+    }
+
+
+    return String(value)
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
+
+
+  /* =========================================
+     CLOSE MODAL WHEN CLICK OUTSIDE
+  ========================================= */
+
+  document.addEventListener(
+    "click",
+    function(e) {
+
+      const modalSuccess =
+        document.getElementById(
+          "modalSuccess"
+        );
+
+
+      const modalEdit =
+        document.getElementById(
+          "modalEditSoal"
+        );
+
+
+      if (
+        e.target === modalSuccess
+      ) {
+
+        closeModalSuccess();
+
+      }
+
+
+      if (
+        e.target === modalEdit
+      ) {
+
+        tutupModalSoal();
+
+      }
+
+    }
+  );
+
+
+  /* =========================================
+     KEYBOARD SHORTCUT
+  ========================================= */
+
+  document.addEventListener(
+    "keydown",
+    function(e) {
+
+      if (
+        e.key === "Escape"
+      ) {
+
+        const modalEdit =
+          document.getElementById(
+            "modalEditSoal"
+          );
+
+
+        if (
+          modalEdit.style.display ===
+          "flex"
+        ) {
+
+          tutupModalSoal();
+
+        }
+
+      }
+
+    }
+  );
+
 </script>
+
 </body>
 </html>
