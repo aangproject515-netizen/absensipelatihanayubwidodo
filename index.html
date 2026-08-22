@@ -700,8 +700,7 @@
         <div class="form-group" style="text-align: left;">
           <label>PILIH KATEGORI :</label>
           <select id="spKategoriTrainer" class="form-control">
-            <option value="BHD">Bantuan Hidup Dasar (BHD)</option>
-            <option value="K3">K3 & Keselamatan Kerja</option>
+            <option value="">-- Memuat Kategori... --</option>
           </select>
         </div>
 
@@ -742,7 +741,7 @@
             <label>Kategori Soal Saat Ini :</label>
             <div style="display: flex; gap: 8px;">
               <select id="spKategoriEditor" class="form-control" onchange="onCategoryEditorChanged()">
-                <option value="BHD">Bantuan Hidup Dasar (BHD)</option>
+                <option value="">-- Memuat Kategori... --</option>
               </select>
             </div>
           </div>
@@ -857,11 +856,11 @@
   let activeEditObj = null; 
   let targetPageAfterLogin = 'pageTrainerSetting';
   let isAudioMuted = false;
+  let qrCodeInstance = null;
 
   // ==========================================
-  // AUDIO SYSTEM (Web Audio Synthesizer & Audio File Handlers)
+  // AUDIO SYSTEM
   // ==========================================
-  // Menggunakan Synthesizer audio berbasis Web Audio API untuk efek suara instan tanpa bergantung file external
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   let audioCtx = null;
 
@@ -871,7 +870,6 @@
     }
   }
 
-  // Efek Suara Tombol Klik (Beep Pendek)
   function playSoundClick() {
     try {
       initAudio();
@@ -888,11 +886,10 @@
     } catch(e){}
   }
 
-  // Efek Suara Selebrasi / Leaderboard
   function playSoundLeaderboard() {
     try {
       initAudio();
-      const notes = [523.25, 659.25, 783.99, 1046.50]; // Chord Do-Mi-Sol-Do
+      const notes = [523.25, 659.25, 783.99, 1046.50];
       notes.forEach((freq, idx) => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -908,7 +905,6 @@
     } catch(e){}
   }
 
-  // Background Music (BGM Kuis / Ambience)
   const sndBgm = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3');
   sndBgm.loop = true;
   sndBgm.volume = 0.25;
@@ -936,14 +932,13 @@
     }
   }
 
-  // Listener Klik Global untuk Suara Tombol
   document.addEventListener('click', function(e) {
     if (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.classList.contains('menu-item') || e.target.classList.contains('radio-option')) {
       playSoundClick();
     }
   });
 
-  // Init Date On Load
+  // Init Date & Dinamis Kategori On Load
   window.onload = function() {
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
@@ -955,7 +950,53 @@
     if (inputDate) inputDate.value = `${yyyy}-${mm}-${dd}`;
 
     history.replaceState({ page: 'pageMenu' }, "", "");
+    
+    // Muat daftar kategori dari database
+    muatDaftarKategori();
   };
+
+  // ==========================================
+  // CATEGORY SYNC WITH SPREADSHEET (ANDROID EQUIVALENT)
+  // ==========================================
+  function muatDaftarKategori() {
+    const url = `${SCRIPT_URL}?action=getKategori`;
+    
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const selectTrainer = document.getElementById('spKategoriTrainer');
+        const selectEditor = document.getElementById('spKategoriEditor');
+        
+        selectTrainer.innerHTML = '';
+        selectEditor.innerHTML = '';
+
+        if (data && data.length > 0) {
+          data.forEach(kat => {
+            const namaKategori = typeof kat === 'object' ? (kat.nama || kat[0]) : kat;
+            
+            const opt1 = document.createElement('option');
+            opt1.value = namaKategori;
+            opt1.textContent = namaKategori.toUpperCase();
+            selectTrainer.appendChild(opt1);
+
+            const opt2 = document.createElement('option');
+            opt2.value = namaKategori;
+            opt2.textContent = namaKategori.toUpperCase();
+            selectEditor.appendChild(opt2);
+          });
+        } else {
+          selectTrainer.innerHTML = '<option value="bhd">BHD</option>';
+          selectEditor.innerHTML = '<option value="bhd">BHD</option>';
+        }
+      })
+      .catch(err => {
+        console.error("Gagal memuat daftar kategori:", err);
+        const selectTrainer = document.getElementById('spKategoriTrainer');
+        const selectEditor = document.getElementById('spKategoriEditor');
+        selectTrainer.innerHTML = '<option value="bhd">BHD</option>';
+        selectEditor.innerHTML = '<option value="bhd">BHD</option>';
+      });
+  }
 
   // ==========================================
   // NAVIGATION LOGIC
@@ -967,6 +1008,9 @@
       target.classList.add('active');
       if (pageId === 'pageCekNilai') {
         loadCekNilaiTrainer();
+      }
+      if (pageId === 'pageQuestionEditor') {
+        onCategoryEditorChanged();
       }
     }
   }
@@ -987,37 +1031,32 @@
   });
 
   function bukaTrainerLogin(tujuan) {
-    if (tujuan === 'editor_soal') {
-      targetPageAfterLogin = 'pageQuestionEditor';
-    } else if (tujuan === 'cek_nilai') {
-      targetPageAfterLogin = 'pageCekNilai';
-    } else {
-      targetPageAfterLogin = 'pageTrainerSetting';
-    }
+    targetPageAfterLogin = tujuan === 'editor_soal' ? 'pageQuestionEditor' : 
+                           tujuan === 'cek_nilai' ? 'pageCekNilai' : 'pageTrainerSetting';
     navigateTo('pageTrainerLogin');
   }
 
   // ==========================================
-  // ABSENSI LOGIC
+  // 1. ABSENSI MAIN
   // ==========================================
   function kirimDataAbsensi() {
     const nama = document.getElementById('etNama').value.trim();
-    const tanggal = document.getElementById('etTanggal').value.trim();
-    const pengajar = document.getElementById('etPengajar').value.trim();
+    const tanggal = document.getElementById('etTanggal').value;
+    const pengajar = document.getElementById('etPengajar').value;
     const email = document.getElementById('etEmail').value.trim();
+    const btn = document.getElementById('btnKirim');
+    const loader = document.getElementById('progressBarMain');
 
     if (!nama || !tanggal || !email) {
       alert("Mohon isi semua data absensi!");
       return;
     }
 
-    const btn = document.getElementById('btnKirim');
-    const loader = document.getElementById('progressBarMain');
     btn.disabled = true;
-    loader.style.display = 'block';
+    loader.style.display = "block";
 
     const payload = {
-      action: "absensi",
+      action: "simpanAbsensi",
       nama: nama,
       tanggal: tanggal,
       pengajar: pengajar,
@@ -1028,77 +1067,55 @@
       method: "POST",
       body: JSON.stringify(payload)
     })
-    .then(res => res.json())
+    .then(res => res.text())
     .then(res => {
       btn.disabled = false;
-      loader.style.display = 'none';
-      if (res.status === "success") {
-        document.getElementById('modalSuccess').style.display = 'flex';
-        document.getElementById('etNama').value = "";
-        document.getElementById('etEmail').value = "";
-      } else {
-        alert("Gagal menyimpan absensi: " + res.message);
-      }
+      loader.style.display = "none";
+      document.getElementById('modalSuccess').style.display = "flex";
+      document.getElementById('etNama').value = "";
+      document.getElementById('etEmail').value = "";
     })
     .catch(err => {
       btn.disabled = false;
-      loader.style.display = 'none';
-      alert("Terjadi kesalahan jaringan/sistem.");
+      loader.style.display = "none";
+      alert("Terjadi kesalahan koneksi. Silakan coba lagi.");
     });
   }
 
   function closeModalSuccess() {
-    document.getElementById('modalSuccess').style.display = 'none';
+    document.getElementById('modalSuccess').style.display = "none";
     navigateTo('pageMenu');
   }
 
   // ==========================================
-  // EVALUASI CODE & FORM LOGIC
+  // 2. EVALUASI CODE & FORM
   // ==========================================
   function submitKodeEvaluasi() {
     const kode = document.getElementById('etKodeEvaluasi').value.trim();
+    const loader = document.getElementById('pbEvaluasiCode');
+
     if (!kode) {
-      alert("Masukkan kode evaluasi!");
+      alert("Masukkan Kode Evaluasi!");
       return;
     }
 
-    const loader = document.getElementById('pbEvaluasiCode');
-    const btn = document.getElementById('btnKirimKode');
-    loader.style.display = 'block';
-    btn.disabled = true;
+    loader.style.display = "block";
 
-    fetch(`${SCRIPT_URL}?action=cekKode&kode=${encodeURIComponent(kode)}`)
+    fetch(`${SCRIPT_URL}?action=cekKodeEvaluasi&kode=${encodeURIComponent(kode)}`)
       .then(res => res.json())
       .then(data => {
-        loader.style.display = 'none';
-        btn.disabled = false;
-
-        if (data.status === "success") {
+        loader.style.display = "none";
+        if (data.valid || data.status === "SUCCESS" || data.kategori) {
           evaluasiKode = kode;
           evaluasiKategori = data.kategori || "BHD";
-          
-          // Set sampel soal sederhana jika backend mengembalikan status success
-          soalList = data.soalList || [
-            { id: 1, soal: "Apa kepanjangan dari BHD dalam pertolongan pertama?", a: "Bantuan Hidup Dasar", b: "Bantuan Hari Darurat", c: "Badan Higiene Daerah", kunci: "A" },
-            { id: 2, soal: "Rasio kompresi dada dan ventilasi pada RJP dewasa adalah?", a: "15:2", b: "30:2", c: "5:1", kunci: "B" }
-          ];
-          
           navigateTo('pageEvaluasiForm');
         } else {
-          alert("Kode evaluasi tidak ditemukan atau tidak aktif.");
+          alert("Kode Evaluasi tidak valid atau sudah kedaluwarsa!");
         }
       })
       .catch(err => {
-        loader.style.display = 'none';
-        btn.disabled = false;
-        // Fallback untuk mode testing frontend
-        evaluasiKode = kode;
-        evaluasiKategori = "BHD";
-        soalList = [
-          { id: 1, soal: "Apa tindakan pertama saat menemukan korban tidak sadarkan diri?", a: "Cek Respon & Amankan Lingkungan", b: "Langsung beri napas buatan", c: "Memindahkan korban", kunci: "A" },
-          { id: 2, soal: "Berapa frekuensi kompresi dada yang ideal per menit?", a: "60-80 x/menit", b: "100-120 x/menit", c: "140-160 x/menit", kunci: "B" }
-        ];
-        navigateTo('pageEvaluasiForm');
+        loader.style.display = "none";
+        alert("Gagal memverifikasi kode evaluasi!");
       });
   }
 
@@ -1108,66 +1125,36 @@
     evaluasiTanggal = document.getElementById('etTanggalEvaluasi').value;
 
     if (!evaluasiNama) {
-      alert("Isi nama lengkap terlebih dahulu!");
+      alert("Nama Lengkap harus diisi!");
       return;
     }
 
-    currentIndex = 0;
-    jawabanUser = {};
-    timeRemaining = 20 * 60; // 20 Menit
-
-    startBGM();
-    navigateTo('pageQuiz');
-    renderSoal();
-    startTimer();
+    // Ambil data Soal & Durasi dari Backend
+    fetch(`${SCRIPT_URL}?action=getSoalEvaluasi&kode=${encodeURIComponent(evaluasiKode)}&kategori=${encodeURIComponent(evaluasiKategori)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.soal && data.soal.length > 0) {
+          soalList = data.soal;
+          timeRemaining = (data.durasi || 20) * 60;
+          currentIndex = 0;
+          jawabanUser = {};
+          
+          navigateTo('pageQuiz');
+          renderSoal();
+          startTimer();
+          startBGM();
+        } else {
+          alert("Tidak ada soal untuk kode/kategori ini.");
+        }
+      })
+      .catch(err => {
+        alert("Gagal memuat soal evaluasi!");
+      });
   }
 
   // ==========================================
-  // QUIZ ENGINE
+  // 3. QUIZ SYSTEM
   // ==========================================
-  function renderSoal() {
-    const item = soalList[currentIndex];
-    document.getElementById('tvSoalKe').innerText = `Soal ${currentIndex + 1}/${soalList.length}`;
-    document.getElementById('tvTeksSoal').innerText = item.soal;
-
-    document.getElementById('labelA').innerText = "A. " + item.a;
-    document.getElementById('labelB').innerText = "B. " + item.b;
-    document.getElementById('labelC').innerText = "C. " + item.c;
-
-    // Reset radio selection
-    document.querySelectorAll('input[name="pilihan"]').forEach(rb => rb.checked = false);
-
-    // Restore jika sudah dijawab
-    if (jawabanUser[currentIndex]) {
-      const selected = document.querySelector(`input[name="pilihan"][value="${jawabanUser[currentIndex]}"]`);
-      if (selected) selected.checked = true;
-    }
-
-    const btnLanjut = document.getElementById('btnLanjut');
-    if (currentIndex === soalList.length - 1) {
-      btnLanjut.innerText = "SUBMIT JAWABAN";
-    } else {
-      btnLanjut.innerText = "SELANJUTNYA";
-    }
-  }
-
-  function nextSoal() {
-    const selectedOption = document.querySelector('input[name="pilihan"]:checked');
-    if (!selectedOption) {
-      alert("Pilih salah satu jawaban sebelum melanjutkan!");
-      return;
-    }
-
-    jawabanUser[currentIndex] = selectedOption.value;
-
-    if (currentIndex < soalList.length - 1) {
-      currentIndex++;
-      renderSoal();
-    } else {
-      selesaiKuis();
-    }
-  }
-
   function startTimer() {
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
@@ -1178,84 +1165,156 @@
 
       if (timeRemaining <= 0) {
         clearInterval(timerInterval);
-        alert("Waktu pengerjaan habis!");
-        selesaiKuis();
+        alert("Waktu Habis!");
+        selesaiQuiz();
       }
     }, 1000);
   }
 
-  function selesaiKuis() {
+  function renderSoal() {
+    const s = soalList[currentIndex];
+    document.getElementById('tvSoalKe').innerText = `Soal ${currentIndex + 1}/${soalList.length}`;
+    document.getElementById('tvTeksSoal').innerText = s.soal;
+
+    document.getElementById('labelA').innerText = "A. " + (s.opsiA || s.a || "");
+    document.getElementById('labelB').innerText = "B. " + (s.opsiB || s.b || "");
+    document.getElementById('labelC').innerText = "C. " + (s.opsiC || s.c || "");
+
+    const radios = document.getElementsByName('pilihan');
+    radios.forEach(r => r.checked = false);
+
+    if (jawabanUser[currentIndex]) {
+      const selectedRadio = document.getElementById('rb' + jawabanUser[currentIndex]);
+      if (selectedRadio) selectedRadio.checked = true;
+    }
+
+    document.getElementById('btnLanjut').innerText = (currentIndex === soalList.length - 1) ? "SELESAI & KIRIM" : "SELANJUTNYA";
+  }
+
+  function nextSoal() {
+    const selected = document.querySelector('input[name="pilihan"]:checked');
+    if (selected) {
+      jawabanUser[currentIndex] = selected.value;
+    }
+
+    if (currentIndex < soalList.length - 1) {
+      currentIndex++;
+      renderSoal();
+    } else {
+      selesaiQuiz();
+    }
+  }
+
+  function selesaiQuiz() {
     clearInterval(timerInterval);
     stopBGM();
 
-    // Hitung Skor
-    let benar = 0;
+    let benarCount = 0;
     detailJawabanGlobal = [];
 
     soalList.forEach((s, idx) => {
-      const jwb = jawabanUser[idx] || "-";
-      const isCorrect = (jwb === s.kunci);
-      if (isCorrect) benar++;
+      const userAns = jawabanUser[idx] || "-";
+      const kunci = s.kunci || s.kunciJawaban || "";
+      const isCorrect = userAns.toUpperCase() === kunci.toUpperCase();
+      if (isCorrect) benarCount++;
 
       detailJawabanGlobal.push({
         soal: s.soal,
-        jawabanUser: jwb,
-        kunci: s.kunci,
+        userAns: userAns,
+        kunci: kunci,
+        opsiA: s.opsiA || s.a,
+        opsiB: s.opsiB || s.b,
+        opsiC: s.opsiC || s.c,
         isCorrect: isCorrect
       });
     });
 
-    const skor = Math.round((benar / soalList.length) * 100);
-    document.getElementById('tvSkorSaya').innerText = skor;
+    const totalSkor = Math.round((benarCount / soalList.length) * 100);
 
-    playSoundLeaderboard();
-    navigateTo('pageLeaderboard');
-    renderLeaderboard(skor);
-    renderKoreksi();
+    const payload = {
+      action: "simpanEvaluasi",
+      nama: evaluasiNama,
+      lokasi: evaluasiLokasi,
+      tanggal: evaluasiTanggal,
+      kategori: evaluasiKategori,
+      kode: evaluasiKode,
+      nilai: totalSkor
+    };
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      loadLeaderboard(totalSkor);
+    })
+    .catch(() => {
+      loadLeaderboard(totalSkor);
+    });
   }
 
-  function renderLeaderboard(skorSaya) {
-    const container = document.getElementById('containerLeaderboard');
-    container.innerHTML = `
-      <div class="rank-card">
-        <div class="rank-badge">1</div>
-        <div style="flex: 1;">
-          <div style="font-weight: 700; font-size: 16px;">${evaluasiNama} (Anda)</div>
-          <div style="font-size: 12px; color: var(--muted);">${evaluasiLokasi}</div>
-        </div>
-        <div style="font-size: 20px; font-weight: 700; color: var(--maroon);">${skorSaya}</div>
-      </div>
-    `;
+  // ==========================================
+  // 4. LEADERBOARD & KOREKSI
+  // ==========================================
+  function loadLeaderboard(skorSaya) {
+    document.getElementById('tvSkorSaya').innerText = skorSaya;
+    playSoundLeaderboard();
+    navigateTo('pageLeaderboard');
+
+    fetch(`${SCRIPT_URL}?action=getLeaderboard&kode=${encodeURIComponent(evaluasiKode)}`)
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('containerLeaderboard');
+        container.innerHTML = "";
+
+        if (data && data.length > 0) {
+          data.forEach((item, index) => {
+            container.innerHTML += `
+              <div class="rank-card">
+                <div class="rank-badge">${index + 1}</div>
+                <div style="flex:1;">
+                  <div style="font-weight:700; font-size:16px;">${item.nama}</div>
+                  <div style="font-size:12px; color: var(--muted);">${item.lokasi || '-'}</div>
+                </div>
+                <div style="font-weight:700; font-size:20px; color: var(--maroon);">${item.nilai}</div>
+              </div>
+            `;
+          });
+        }
+      });
+
+    renderKoreksi();
   }
 
   function renderKoreksi() {
     const container = document.getElementById('containerKoreksi');
     container.innerHTML = "";
 
-    detailJawabanGlobal.forEach((item, idx) => {
+    detailJawabanGlobal.forEach((item, index) => {
       const badgeClass = item.isCorrect ? "badge-success" : "badge-danger";
-      const badgeText = item.isCorrect ? "BENAR" : "SALAH";
+      const statusText = item.isCorrect ? "BENAR" : "SALAH";
 
-      const card = document.createElement('div');
-      card.className = "koreksi-card";
-      card.innerHTML = `
-        <div class="koreksi-status-badge ${badgeClass}">${badgeText}</div>
-        <div style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">${idx + 1}. ${item.soal}</div>
-        <div style="font-size: 13px; color: #555; margin-bottom: 4px;">Jawaban Anda: <b>${item.jawabanUser}</b></div>
-        <div style="font-size: 13px; color: var(--navy); font-weight: 700;">Kunci Jawaban: ${item.kunci}</div>
+      container.innerHTML += `
+        <div class="koreksi-card">
+          <div class="koreksi-status-badge ${badgeClass}">${index + 1}. ${statusText}</div>
+          <div style="font-weight:700; font-size:15px; margin-bottom: 12px;">${item.soal}</div>
+          <div style="font-size:13px; color:#555; margin-bottom: 4px;">Jawaban Anda: <b>${item.userAns}</b></div>
+          <div style="font-size:13px; color: var(--success);">Kunci Jawaban: <b>${item.kunci}</b></div>
+        </div>
       `;
-      container.appendChild(card);
     });
   }
 
   // ==========================================
-  // TRAINER & EDITOR LOGIC
+  // 5. TRAINER AUTH & SETTING
   // ==========================================
   function loginTrainer() {
-    const user = document.getElementById('etAkunTrainer').value.trim();
+    const akun = document.getElementById('etAkunTrainer').value.trim();
     const pass = document.getElementById('etPassTrainer').value.trim();
 
-    if (user === "ayub@admin" && pass === "plumbon123") {
+    if (akun === "ayub@admin" && pass === "plumbon123") {
+      document.getElementById('etAkunTrainer').value = "";
+      document.getElementById('etPassTrainer').value = "";
       navigateTo(targetPageAfterLogin);
     } else {
       alert("Akun atau Password Trainer Salah!");
@@ -1263,103 +1322,214 @@
   }
 
   function generateKodeDariAppsScript() {
-    const kat = document.getElementById('spKategoriTrainer').value;
-    const randomCode = kat + "-" + Math.floor(1000 + Math.random() * 9000);
-    
-    document.getElementById('tvKodeEvaluasiTrainer').innerText = "KODE EVALUASI: " + randomCode;
-    
-    const qrContainer = document.getElementById('qrcode');
-    qrContainer.innerHTML = "";
-    new QRCode(qrContainer, {
-      text: randomCode,
-      width: 180,
-      height: 180
-    });
-  }
+    const kategori = document.getElementById('spKategoriTrainer').value;
+    const btn = document.getElementById('btnGenerateQr');
+    btn.disabled = true;
 
-  function loadCekNilaiTrainer() {
-    const loader = document.getElementById('pbCekNilai');
-    const tbody = document.getElementById('tbodyNilai');
-    loader.style.display = 'block';
-    tbody.innerHTML = "";
+    fetch(`${SCRIPT_URL}?action=generateKodeEvaluasi&kategori=${encodeURIComponent(kategori)}`)
+      .then(res => res.json())
+      .then(data => {
+        btn.disabled = false;
+        const kode = data.kode || data.kodeEvaluasi;
+        document.getElementById('tvKodeEvaluasiTrainer').innerText = "KODE EVALUASI: " + kode;
 
-    // Data Simulasi Laporan Trainer
-    setTimeout(() => {
-      loader.style.display = 'none';
-      const dummyData = [
-        { nama: "Budi Santoso", lokasi: "Ruang Pelatihan Utama", tgl: "22/08/2026", kat: "BHD", nilai: 90 },
-        { nama: "Siti Rahma", lokasi: "Auditorium lantai 3", tgl: "22/08/2026", kat: "BHD", nilai: 100 },
-        { nama: "Andi Wijaya", lokasi: "Online / Zoom", tgl: "21/08/2026", kat: "K3", nilai: 80 }
-      ];
-
-      dummyData.forEach((row, i) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${i + 1}</td>
-          <td><b>${row.nama}</b></td>
-          <td>${row.lokasi}</td>
-          <td>${row.tgl}</td>
-          <td>${row.kat}</td>
-          <td><span style="color: var(--maroon); font-weight: 700;">${row.nilai}</span></td>
-        `;
-        tbody.appendChild(tr);
+        const qrContainer = document.getElementById('qrcode');
+        qrContainer.innerHTML = "";
+        qrCodeInstance = new QRCode(qrContainer, {
+          text: kode,
+          width: 180,
+          height: 180
+        });
+      })
+      .catch(err => {
+        btn.disabled = false;
+        alert("Gagal menggenerate kode!");
       });
-    }, 500);
   }
 
+  // ==========================================
+  // 6. QUESTION EDITOR
+  // ==========================================
   function onCategoryEditorChanged() {
-    // Dipanggil saat filter kategori di editor diubah
+    const kategori = document.getElementById('spKategoriEditor').value;
+    if (!kategori) return;
+
+    const loader = document.getElementById('pbEditor');
+    const container = document.getElementById('containerSoalEditor');
+    
+    loader.style.display = "block";
+    container.innerHTML = "";
+
+    fetch(`${SCRIPT_URL}?action=getSoalEditor&kategori=${encodeURIComponent(kategori)}`)
+      .then(res => res.json())
+      .then(data => {
+        loader.style.display = "none";
+        if (data.durasi) {
+          document.getElementById('inputDurasiKuis').value = data.durasi;
+        }
+        
+        const list = data.soal || data;
+        if (Array.isArray(list) && list.length > 0) {
+          list.forEach((item, idx) => {
+            container.innerHTML += `
+              <div class="editor-card" onclick='bukaDialogSoal(${JSON.stringify(item)}, ${idx})'>
+                <div>
+                  <div style="font-weight:700; font-size:15px; margin-bottom: 8px;">${idx + 1}. ${item.soal}</div>
+                  <div style="font-size:13px; color:#666;">A. ${item.opsiA || item.a}</div>
+                  <div style="font-size:13px; color:#666;">B. ${item.opsiB || item.b}</div>
+                  <div style="font-size:13px; color:#666;">C. ${item.opsiC || item.c}</div>
+                </div>
+                <div style="margin-top: 12px; font-weight:700; font-size:12px; color: var(--maroon);">
+                  Kunci: ${item.kunci || item.kunciJawaban}
+                </div>
+              </div>
+            `;
+          });
+        } else {
+          container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color: var(--muted);">Belum ada soal pada kategori ini.</div>`;
+        }
+      })
+      .catch(() => {
+        loader.style.display = "none";
+      });
   }
 
   function simpanDurasiKuis() {
+    const kategori = document.getElementById('spKategoriEditor').value;
     const durasi = document.getElementById('inputDurasiKuis').value;
-    alert("Durasi kuis berhasil diperbarui menjadi: " + durasi + " menit");
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "simpanDurasi",
+        kategori: kategori,
+        durasi: durasi
+      })
+    })
+    .then(() => alert("Durasi berhasil diperbarui!"))
+    .catch(() => alert("Gagal memperbarui durasi!"));
   }
 
-  function bukaDialogSoal(obj) {
+  function bukaDialogSoal(obj, idx) {
     activeEditObj = obj;
     const modal = document.getElementById('modalEditSoal');
-    modal.style.display = 'flex';
+    const title = document.getElementById('modalSoalTitle');
+    const btnDel = document.getElementById('btnDialogDelete');
 
     if (obj) {
-      document.getElementById('modalSoalTitle').innerText = "Edit Soal";
+      title.innerText = "Edit Soal #" + (idx + 1);
       document.getElementById('etDialogSoal').value = obj.soal;
-      document.getElementById('etDialogA').value = obj.a;
-      document.getElementById('etDialogB').value = obj.b;
-      document.getElementById('etDialogC').value = obj.c;
-      document.getElementById('etDialogKunci').value = obj.kunci;
-      document.getElementById('btnDialogDelete').style.display = 'block';
+      document.getElementById('etDialogA').value = obj.opsiA || obj.a;
+      document.getElementById('etDialogB').value = obj.opsiB || obj.b;
+      document.getElementById('etDialogC').value = obj.opsiC || obj.c;
+      document.getElementById('etDialogKunci').value = obj.kunci || obj.kunciJawaban;
+      btnDel.style.display = "block";
     } else {
-      document.getElementById('modalSoalTitle').innerText = "Tambah Soal";
+      title.innerText = "Tambah Soal Baru";
       document.getElementById('etDialogSoal').value = "";
       document.getElementById('etDialogA').value = "";
       document.getElementById('etDialogB').value = "";
       document.getElementById('etDialogC').value = "";
       document.getElementById('etDialogKunci').value = "";
-      document.getElementById('btnDialogDelete').style.display = 'none';
+      btnDel.style.display = "none";
     }
+
+    modal.style.display = "flex";
   }
 
   function tutupModalSoal() {
-    document.getElementById('modalEditSoal').style.display = 'none';
+    document.getElementById('modalEditSoal').style.display = "none";
   }
 
   function simpanSoalDialog() {
-    alert("Soal berhasil disimpan!");
-    tutupModalSoal();
+    const kategori = document.getElementById('spKategoriEditor').value;
+    const payload = {
+      action: "simpanSoalSingle",
+      kategori: kategori,
+      id: activeEditObj ? activeEditObj.id : null,
+      soal: document.getElementById('etDialogSoal').value,
+      opsiA: document.getElementById('etDialogA').value,
+      opsiB: document.getElementById('etDialogB').value,
+      opsiC: document.getElementById('etDialogC').value,
+      kunci: document.getElementById('etDialogKunci').value.toUpperCase()
+    };
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      tutupModalSoal();
+      onCategoryEditorChanged();
+    });
   }
 
   function konfirmasiHapusSingle() {
     if (confirm("Apakah Anda yakin ingin menghapus soal ini?")) {
-      alert("Soal dihapus.");
-      tutupModalSoal();
+      const kategori = document.getElementById('spKategoriEditor').value;
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "hapusSoalSingle",
+          kategori: kategori,
+          id: activeEditObj.id
+        })
+      })
+      .then(() => {
+        tutupModalSoal();
+        onCategoryEditorChanged();
+      });
     }
   }
 
   function konfirmasiHapusSemuaSoal() {
-    if (confirm("Apakah Anda yakin ingin menghapus SELURUH soal dalam kategori ini?")) {
-      alert("Semua soal berhasil dihapus.");
+    const kategori = document.getElementById('spKategoriEditor').value;
+    if (confirm(`Yakin ingin MENGHAPUS SEMUA soal pada kategori ${kategori}?`)) {
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "hapusSemuaSoal",
+          kategori: kategori
+        })
+      })
+      .then(() => onCategoryEditorChanged());
     }
+  }
+
+  // ==========================================
+  // 7. CEK NILAI TRAINER VIEW
+  // ==========================================
+  function loadCekNilaiTrainer() {
+    const loader = document.getElementById('pbCekNilai');
+    const tbody = document.getElementById('tbodyNilai');
+    
+    loader.style.display = "block";
+    tbody.innerHTML = "";
+
+    fetch(`${SCRIPT_URL}?action=getDaftarNilai`)
+      .then(res => res.json())
+      .then(data => {
+        loader.style.display = "none";
+        if (data && data.length > 0) {
+          data.forEach((row, index) => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td><b>${row.nama}</b></td>
+                <td>${row.lokasi || '-'}</td>
+                <td>${row.tanggal || '-'}</td>
+                <td>${row.kategori || '-'}</td>
+                <td style="font-weight:700; color: var(--maroon);">${row.nilai}</td>
+              </tr>
+            `;
+          });
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada data nilai peserta.</td></tr>`;
+        }
+      })
+      .catch(() => {
+        loader.style.display = "none";
+      });
   }
 </script>
 </body>
