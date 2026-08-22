@@ -1289,7 +1289,7 @@
     }
 
     loader.style.display = "block";
-    fetch(`{encodeURIComponent(kode)}`)
+    fetch(`${SCRIPT_URL}?action=verifyCode&code=${encodeURIComponent(kode)}`)
       .then(res => res.json())
       .then(data => {
         loader.style.display = "none";
@@ -1320,7 +1320,7 @@
       return;
     }
 
-    fetch(`{encodeURIComponent(evaluasiKategori)}`)
+    fetch(`${SCRIPT_URL}?action=getQuestions&kategori=${encodeURIComponent(evaluasiKategori)}`)
       .then(res => res.json())
       .then(data => {
         const questionsList = data.questions || data.soal || [];
@@ -1639,10 +1639,40 @@
     document.getElementById("modalInputKategori").style.display = "none";
   }
 
+  // POST ke Google Apps Script dibuat sebagai application/x-www-form-urlencoded
+  // supaya browser tidak melakukan CORS preflight. doPost() GS kamu memang
+  // sudah mendukung e.parameter, jadi kode GS tidak perlu diubah.
+  function postKeGS(payload) {
+    // PENTING:
+    // doPost() pada Google Apps Script membaca e.postData.contents
+    // lalu JSON.parse(). Jadi body HARUS berupa JSON string.
+    // Jangan menggunakan URLSearchParams karena akan membuat GS
+    // gagal melakukan JSON.parse terhadap request kategori.
+    return fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "cors",
+      body: JSON.stringify(payload)
+    }).then(async response => {
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error("Respons GS bukan JSON: " + text.substring(0, 200));
+      }
+      if (!response.ok) {
+        throw new Error(data.message || ("HTTP " + response.status));
+      }
+      return data;
+    });
+  }
+
   function simpanKategoriWeb() {
     const input = document.getElementById("inputNamaKategori");
     const namaBaru = input.value.trim();
     const mode = input.dataset.mode || "add";
+    const editor = document.getElementById("spKategoriEditor");
+    const kategoriLama = editor ? editor.value.trim() : "";
 
     if (!namaBaru) {
       input.focus();
@@ -1650,55 +1680,58 @@
       return;
     }
 
-    const kategoriLama = document.getElementById("spKategoriEditor").value;
+    if (mode === "rename" && !kategoriLama) {
+      alert("Pilih kategori terlebih dahulu.");
+      return;
+    }
+
+    // Cegah duplikat dari sisi HTML sebelum dikirim ke GS.
+    const sudahAda = Array.from(editor ? editor.options : []).some(opt => {
+      const value = String(opt.value || "").trim();
+      return value && value.toLowerCase() === namaBaru.toLowerCase() &&
+             (mode !== "rename" || value.toLowerCase() !== kategoriLama.toLowerCase());
+    });
+    if (sudahAda) {
+      alert("Kategori tersebut sudah ada.");
+      return;
+    }
+
     const payload = mode === "rename"
-      ? {
-          action: "renameCategory",
-          oldKategori: kategoriLama,
-          newKategori: namaBaru
-        }
-      : {
-          action: "addCategory",
-          kategori: namaBaru
-        };
+      ? { action: "renameCategory", oldKategori: kategoriLama, newKategori: namaBaru }
+      : { action: "addCategory", kategori: namaBaru };
 
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
-      .then(res => res.json())
+    const btn = document.querySelector('#modalInputKategori .btn');
+    if (btn) btn.disabled = true;
+
+    postKeGS(payload)
       .then(data => {
-        if (data.result === "success" || data.success) {
-          tutupInputKategori();
-
-          alert(data.message || (
-            mode === "rename"
-              ? "Kategori berhasil diubah."
-              : "Kategori berhasil ditambahkan."
-          ));
-
-          muatDaftarKategori(namaBaru).then(() => {
-            const editor = document.getElementById("spKategoriEditor");
-            if (editor && editor.value) {
-              onCategoryEditorChanged();
-            }
-          });
-        } else {
-          alert(data.message || (
-            mode === "rename"
-              ? "Gagal mengubah kategori."
-              : "Gagal menambahkan kategori."
-          ));
+        if (data.result !== "success" && !data.success) {
+          throw new Error(data.message || "Operasi kategori gagal.");
         }
+
+        tutupInputKategori();
+        alert(data.message || (mode === "rename"
+          ? "Kategori berhasil diubah."
+          : "Kategori berhasil ditambahkan."));
+
+        return muatDaftarKategori(namaBaru);
+      })
+      .then(() => {
+        const editorNow = document.getElementById("spKategoriEditor");
+        if (editorNow && editorNow.value) onCategoryEditorChanged();
       })
       .catch(err => {
-        console.error(err);
-        alert("Gagal terhubung ke server. Silakan coba lagi.");
+        console.error("Kategori:", err);
+        alert("Gagal menyimpan kategori.\n\n" + err.message);
+      })
+      .finally(() => {
+        if (btn) btn.disabled = false;
       });
   }
 
   function hapusKategoriWeb() {
-    const kategori = document.getElementById("spKategoriEditor").value;
+    const editor = document.getElementById("spKategoriEditor");
+    const kategori = editor ? editor.value.trim() : "";
     if (!kategori) {
       alert("Pilih kategori terlebih dahulu.");
       return;
@@ -1708,40 +1741,30 @@
       "Yakin ingin menghapus kategori '" + kategori +
       "'?\n\nSemua soal dalam kategori ini juga akan ikut dihapus."
     );
-
     if (!yakin) return;
 
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "deleteCategory",
-        kategori: kategori
-      })
-    })
-      .then(res => res.json())
+    postKeGS({ action: "deleteCategory", kategori: kategori })
       .then(data => {
-        if (data.result === "success" || data.success) {
-          tutupKelolaKategori();
-          alert(data.message || "Kategori berhasil dihapus.");
+        if (data.result !== "success" && !data.success) {
+          throw new Error(data.message || "Gagal menghapus kategori.");
+        }
 
-          muatDaftarKategori().then(() => {
-            const editor = document.getElementById("spKategoriEditor");
-            const container = document.getElementById("containerSoalEditor");
-
-            if (editor && editor.value) {
-              onCategoryEditorChanged();
-            } else if (container) {
-              container.innerHTML =
-                '<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:30px;">Belum ada kategori soal.</div>';
-            }
-          });
-        } else {
-          alert(data.message || "Gagal menghapus kategori.");
+        tutupKelolaKategori();
+        alert(data.message || "Kategori berhasil dihapus.");
+        return muatDaftarKategori();
+      })
+      .then(() => {
+        const editorNow = document.getElementById("spKategoriEditor");
+        const container = document.getElementById("containerSoalEditor");
+        if (editorNow && editorNow.value) {
+          onCategoryEditorChanged();
+        } else if (container) {
+          container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:30px;">Belum ada kategori soal.</div>';
         }
       })
       .catch(err => {
-        console.error(err);
-        alert("Gagal terhubung ke server. Silakan coba lagi.");
+        console.error("Kategori:", err);
+        alert("Gagal menghapus kategori.\n\n" + err.message);
       });
   }
 
@@ -1757,12 +1780,22 @@
     loader.style.display = "block";
     container.innerHTML = "";
 
-    fetch(`{encodeURIComponent(kategori)}`)
+    fetch(`${SCRIPT_URL}?action=getQuestions&kategori=${encodeURIComponent(kategori)}`)
       .then(res => res.json())
       .then(data => {
         loader.style.display = "none";
+
         if (data.duration || data.durasi) {
           document.getElementById("inputDurasiKuis").value = data.duration || data.durasi;
+        }
+
+        // GS mengembalikan result:error jika kategori belum mempunyai soal.
+        // Tampilkan pesan yang jelas, bukan "Gagal memuat soal".
+        if (data.result === "error" && !(data.questions || data.soal)) {
+          container.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:30px;">
+            ${escapeHtml(data.message || "Belum ada soal pada kategori ini.")}
+          </div>`;
+          return;
         }
 
         const list = data.questions || data.soal || [];
