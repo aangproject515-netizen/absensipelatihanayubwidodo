@@ -1864,9 +1864,9 @@
     if (obj) {
       title.innerText = "Edit Soal #" + (idx + 1);
       document.getElementById("etDialogSoal").value = obj.question || obj.soal || "";
-      document.getElementById("etDialogA").value = obj.optionA || obj.opsiA || obj.a || "";
-      document.getElementById("etDialogB").value = obj.optionB || obj.opsiB || obj.b || "";
-      document.getElementById("etDialogC").value = obj.optionC || obj.opsiC || obj.c || "";
+      document.getElementById("etDialogA").value = obj.pilihanA || obj.optionA || obj.opsiA || obj.a || "";
+      document.getElementById("etDialogB").value = obj.pilihanB || obj.optionB || obj.opsiB || obj.b || "";
+      document.getElementById("etDialogC").value = obj.pilihanC || obj.optionC || obj.opsiC || obj.c || "";
       document.getElementById("etDialogKunci").value = obj.key || obj.kunci || obj.kunciJawaban || "";
       btnDel.style.display = "block";
     } else {
@@ -1905,6 +1905,10 @@
       rowIndex: activeEditObj ? activeEditObj.rowIndex : undefined,
       soal: soal,
       question: soal,
+      pilihanA: opsiA,
+      pilihanB: opsiB,
+      pilihanC: opsiC,
+      // alias tetap disertakan agar kompatibel dengan format lama
       opsiA: opsiA,
       optionA: opsiA,
       opsiB: opsiB,
@@ -1921,11 +1925,17 @@
     })
       .then(res => res.json())
       .then(data => {
-        tutupModalSoal();
-        onCategoryEditorChanged();
+        if (data && (data.result === "success" || data.success === true)) {
+          tutupModalSoal();
+          alert(data.message || (actionType === "addQuestion" ? "Soal berhasil ditambahkan." : "Soal berhasil diperbarui."));
+          onCategoryEditorChanged();
+        } else {
+          alert((data && data.message) ? data.message : "Gagal menyimpan soal.");
+        }
       })
       .catch(err => {
-        alert("Gagal menyimpan soal.");
+        console.error(err);
+        alert("Gagal menyimpan soal. Periksa koneksi ke Google Apps Script.");
       });
   }
 
