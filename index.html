@@ -630,7 +630,7 @@
             <div class="menu-card-icon">
               <span class="material-icons" style="font-size:36px;">assignment</span>
             </div>
-            <div class="menu-title">Absensi Pelatihan BHD</div>
+            <div class="menu-title">Absensi Pelatihan</div>
           </div>
           <!-- EVALUASI -->
           <div class="menu-item" onclick="navigateTo('pageEvaluasiCode')">
@@ -1856,7 +1856,8 @@
   }
 
   function bukaDialogSoal(obj, idx) {
-    activeEditObj = obj;
+    // null/undefined = tambah soal baru; object = edit soal lama
+    activeEditObj = obj || null;
     const modal = document.getElementById("modalEditSoal");
     const title = document.getElementById("modalSoalTitle");
     const btnDel = document.getElementById("btnDialogDelete");
@@ -1899,6 +1900,12 @@
     }
 
     const actionType = activeEditObj ? "updateQuestion" : "addQuestion";
+    const tombolSimpan = document.querySelector('#modalEditSoal button[onclick="simpanSoalDialog()"]');
+    if (tombolSimpan) {
+      tombolSimpan.disabled = true;
+      tombolSimpan.innerText = "MENYIMPAN...";
+    }
+
     const payload = {
       action: actionType,
       kategori: kategori,
@@ -1919,23 +1926,30 @@
       key: kunci
     };
 
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
-      .then(res => res.json())
+    // Gunakan helper POST yang sama dengan fitur kategori karena helper ini
+    // sudah terbukti kompatibel dengan doPost() Google Apps Script kita.
+    postKeGS(payload)
       .then(data => {
-        if (data && (data.result === "success" || data.success === true)) {
-          tutupModalSoal();
-          alert(data.message || (actionType === "addQuestion" ? "Soal berhasil ditambahkan." : "Soal berhasil diperbarui."));
-          onCategoryEditorChanged();
-        } else {
-          alert((data && data.message) ? data.message : "Gagal menyimpan soal.");
+        if (!data || (data.result !== "success" && data.success !== true)) {
+          throw new Error((data && data.message) || "Google Apps Script menolak penyimpanan soal.");
         }
+
+        tutupModalSoal();
+        activeEditObj = null;
+        alert(data.message || (actionType === "addQuestion"
+          ? "Soal berhasil ditambahkan."
+          : "Soal berhasil diperbarui."));
+        onCategoryEditorChanged();
       })
       .catch(err => {
-        console.error(err);
-        alert("Gagal menyimpan soal. Periksa koneksi ke Google Apps Script.");
+        console.error("Simpan soal:", err);
+        alert("Gagal menyimpan soal.\n\n" + (err.message || "Periksa koneksi ke Google Apps Script."));
+      })
+      .finally(() => {
+        if (tombolSimpan) {
+          tombolSimpan.disabled = false;
+          tombolSimpan.innerText = "SIMPAN SOAL";
+        }
       });
   }
 
