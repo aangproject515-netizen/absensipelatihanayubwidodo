@@ -438,6 +438,53 @@
       overflow-y: auto;
       box-shadow: 0 10px 30px rgba(0,0,0,.2);
     }
+    .category-manage-btn {
+      width: 48px;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0;
+      background: #FFF;
+      color: var(--maroon);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .2s;
+    }
+    .category-manage-btn:hover {
+      background: var(--maroon-soft);
+      border-color: var(--maroon);
+    }
+    .category-manage-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .category-manage-grid .btn {
+      width: 100%;
+    }
+    .category-current {
+      background: var(--maroon-soft);
+      color: var(--maroon);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .category-warning {
+      background: #FFF4F4;
+      color: var(--danger);
+      border: 1px solid #F2CCCC;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
     /* =========================================
        TABLE
     ========================================= */
@@ -795,9 +842,14 @@
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; background:var(--bg); padding:20px; border-radius:12px; margin-bottom:24px;">
           <div class="form-group" style="margin:0;">
             <label>Kategori Soal Saat Ini :</label>
-            <select id="spKategoriEditor" class="form-control" onchange="onCategoryEditorChanged()">
-              <option value="">-- Memuat Kategori... --</option>
-            </select>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <select id="spKategoriEditor" class="form-control" style="flex:1;" onchange="onCategoryEditorChanged()">
+                <option value="">-- Memuat Kategori... --</option>
+              </select>
+              <button type="button" class="category-manage-btn" onclick="bukaKelolaKategori()" title="Kelola Kategori" aria-label="Kelola Kategori">
+                <span class="material-icons">build</span>
+              </button>
+            </div>
           </div>
           <div class="form-group" style="margin:0;">
             <label>Durasi Kuis (Menit) :</label>
@@ -875,6 +927,44 @@
       <button class="btn" style="margin-top:16px;" onclick="simpanSoalDialog()">SIMPAN SOAL</button>
       <button id="btnDialogDelete" class="btn btn-outline-danger" style="margin-top:8px; display:none;" onclick="konfirmasiHapusSingle()">HAPUS SOAL INI</button>
       <button class="btn" style="margin-top:8px; background:#888;" onclick="tutupModalSoal()">BATAL</button>
+    </div>
+  </div>
+
+  <!-- MODAL KELOLA KATEGORI -->
+  <div id="modalKelolaKategori" class="modal">
+    <div class="modal-content">
+      <h3 class="text-maroon" style="text-align:center; margin-bottom:16px;">Kelola Kategori</h3>
+      <div id="kategoriAktifLabel" class="category-current">Belum ada kategori dipilih</div>
+
+      <div class="category-manage-grid">
+        <button class="btn" onclick="bukaTambahKategori()">
+          <span class="material-icons">add</span> TAMBAH KATEGORI BARU
+        </button>
+        <button class="btn btn-navy" onclick="bukaUbahKategori()">
+          <span class="material-icons">edit</span> UBAH NAMA KATEGORI
+        </button>
+        <button class="btn btn-danger" onclick="hapusKategoriWeb()">
+          <span class="material-icons">delete</span> HAPUS KATEGORI INI
+        </button>
+        <button class="btn" style="background:#888;" onclick="tutupKelolaKategori()">BATAL</button>
+      </div>
+
+      <div class="category-warning">
+        Saat kategori dihapus, seluruh soal yang berada pada kategori tersebut juga akan ikut dihapus.
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL INPUT KATEGORI -->
+  <div id="modalInputKategori" class="modal">
+    <div class="modal-content">
+      <h3 id="judulInputKategori" class="text-maroon" style="text-align:center; margin-bottom:16px;">Tambah Kategori Baru</h3>
+      <div class="form-group">
+        <label>Nama Kategori</label>
+        <input type="text" id="inputNamaKategori" class="form-control" placeholder="Masukkan nama kategori" autocomplete="off">
+      </div>
+      <button class="btn" style="margin-top:8px;" onclick="simpanKategoriWeb()">SIMPAN</button>
+      <button class="btn" style="margin-top:8px; background:#888;" onclick="tutupInputKategori()">BATAL</button>
     </div>
   </div>
 
@@ -1000,12 +1090,12 @@
     
     const tanggalEvaluasi = document.getElementById("etTanggalEvaluasi");
     if (tanggalEvaluasi) {
-      tanggalEvaluasi.value = `${dd}/${mm}/${yyyy}`;
+      tanggalEvaluasi.value = `{mm}/${yyyy}`;
     }
 
     const inputDate = document.getElementById("etTanggal");
     if (inputDate) {
-      inputDate.value = `${yyyy}-${mm}-${dd}`;
+      inputDate.value = `{mm}-${dd}`;
     }
 
     history.replaceState({ page: "pageMenu" }, "", "");
@@ -1016,20 +1106,21 @@
   /* =========================================
      LOAD CATEGORY & LOCATIONS
   ========================================= */
-  function muatDaftarKategori() {
+  function muatDaftarKategori(kategoriPilihan = "") {
     const url = `${SCRIPT_URL}?action=getCategories`;
-    fetch(url)
+    return fetch(url)
       .then(res => res.json())
       .then(data => {
         const selectTrainer = document.getElementById("spKategoriTrainer");
         const selectEditor = document.getElementById("spKategoriEditor");
         selectTrainer.innerHTML = "";
         selectEditor.innerHTML = "";
-        
+
         const list = data.categories || data;
         if (Array.isArray(list) && list.length > 0) {
           list.forEach(kat => {
             const namaKategori = typeof kat === "object" ? (kat.nama || kat[0]) : kat;
+
             const opt1 = document.createElement("option");
             opt1.value = namaKategori;
             opt1.textContent = String(namaKategori).toUpperCase();
@@ -1040,6 +1131,15 @@
             opt2.textContent = String(namaKategori).toUpperCase();
             selectEditor.appendChild(opt2);
           });
+
+          if (kategoriPilihan) {
+            const indexEditor = Array.from(selectEditor.options).findIndex(
+              opt => opt.value.toLowerCase() === String(kategoriPilihan).toLowerCase()
+            );
+            if (indexEditor >= 0) {
+              selectEditor.selectedIndex = indexEditor;
+            }
+          }
         } else {
           selectTrainer.innerHTML = '<option value="BHD">BHD</option>';
           selectEditor.innerHTML = '<option value="BHD">BHD</option>';
@@ -1189,7 +1289,7 @@
     }
 
     loader.style.display = "block";
-    fetch(`${SCRIPT_URL}?action=verifyCode&code=${encodeURIComponent(kode)}`)
+    fetch(`{encodeURIComponent(kode)}`)
       .then(res => res.json())
       .then(data => {
         loader.style.display = "none";
@@ -1220,7 +1320,7 @@
       return;
     }
 
-    fetch(`${SCRIPT_URL}?action=getQuestions&kategori=${encodeURIComponent(evaluasiKategori)}`)
+    fetch(`{encodeURIComponent(evaluasiKategori)}`)
       .then(res => res.json())
       .then(data => {
         const questionsList = data.questions || data.soal || [];
@@ -1266,7 +1366,7 @@
     const s = safeTime % 60;
     const timer = document.getElementById("tvTimer");
     if (timer) {
-      timer.innerText = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+      timer.innerText = `{String(s).padStart(2, "0")}`;
     }
   }
 
@@ -1274,7 +1374,7 @@
     const s = soalList[currentIndex];
     if (!s) return;
 
-    document.getElementById("tvSoalKe").innerText = `Soal ${currentIndex + 1}/${soalList.length}`;
+    document.getElementById("tvSoalKe").innerText = `Soal {soalList.length}`;
     document.getElementById("tvTeksSoal").innerText = s.question || s.soal || "";
     document.getElementById("labelA").innerText = "A. " + (s.optionA || s.opsiA || s.a || "");
     document.getElementById("labelB").innerText = "B. " + (s.optionB || s.opsiB || s.b || "");
@@ -1404,7 +1504,7 @@
       const statusText = item.isCorrect ? "BENAR" : "SALAH";
       container.innerHTML += `
         <div class="koreksi-card">
-          <div class="koreksi-status-badge ${badgeClass}">${index + 1}. ${statusText}</div>
+          <div class="koreksi-status-badge {index + 1}. ${statusText}</div>
           <div style="font-weight:700; font-size:15px; margin-bottom:12px;">${escapeHtml(item.soal || "")}</div>
           <div style="font-size:13px; color:#555; margin-bottom:4px;">Jawaban Anda: <b>${escapeHtml(item.userAns || "-")}</b></div>
           <div style="font-size:13px; color:var(--success);">Kunci Jawaban: <b>${escapeHtml(item.kunci || "-")}</b></div>
@@ -1492,6 +1592,160 @@
   }
 
   /* =========================================
+     MANAJEMEN KATEGORI SOAL
+  ========================================= */
+  function bukaKelolaKategori() {
+    const kategori = document.getElementById("spKategoriEditor").value;
+    const label = document.getElementById("kategoriAktifLabel");
+
+    label.innerText = kategori
+      ? "Kategori aktif: " + kategori
+      : "Belum ada kategori dipilih";
+
+    document.getElementById("modalKelolaKategori").style.display = "flex";
+  }
+
+  function tutupKelolaKategori() {
+    document.getElementById("modalKelolaKategori").style.display = "none";
+  }
+
+  function bukaTambahKategori() {
+    tutupKelolaKategori();
+    document.getElementById("judulInputKategori").innerText = "Tambah Kategori Baru";
+    document.getElementById("inputNamaKategori").value = "";
+    document.getElementById("inputNamaKategori").dataset.mode = "add";
+    document.getElementById("inputNamaKategori").focus();
+    document.getElementById("modalInputKategori").style.display = "flex";
+  }
+
+  function bukaUbahKategori() {
+    const kategori = document.getElementById("spKategoriEditor").value;
+    if (!kategori) {
+      alert("Pilih kategori terlebih dahulu.");
+      return;
+    }
+
+    tutupKelolaKategori();
+    document.getElementById("judulInputKategori").innerText = "Ubah Nama Kategori";
+    const input = document.getElementById("inputNamaKategori");
+    input.value = kategori;
+    input.dataset.mode = "rename";
+    input.focus();
+    input.select();
+    document.getElementById("modalInputKategori").style.display = "flex";
+  }
+
+  function tutupInputKategori() {
+    document.getElementById("modalInputKategori").style.display = "none";
+  }
+
+  function simpanKategoriWeb() {
+    const input = document.getElementById("inputNamaKategori");
+    const namaBaru = input.value.trim();
+    const mode = input.dataset.mode || "add";
+
+    if (!namaBaru) {
+      input.focus();
+      alert("Nama kategori tidak boleh kosong.");
+      return;
+    }
+
+    const kategoriLama = document.getElementById("spKategoriEditor").value;
+    const payload = mode === "rename"
+      ? {
+          action: "renameCategory",
+          oldKategori: kategoriLama,
+          newKategori: namaBaru
+        }
+      : {
+          action: "addCategory",
+          kategori: namaBaru
+        };
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.result === "success" || data.success) {
+          tutupInputKategori();
+
+          alert(data.message || (
+            mode === "rename"
+              ? "Kategori berhasil diubah."
+              : "Kategori berhasil ditambahkan."
+          ));
+
+          muatDaftarKategori(namaBaru).then(() => {
+            const editor = document.getElementById("spKategoriEditor");
+            if (editor && editor.value) {
+              onCategoryEditorChanged();
+            }
+          });
+        } else {
+          alert(data.message || (
+            mode === "rename"
+              ? "Gagal mengubah kategori."
+              : "Gagal menambahkan kategori."
+          ));
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Gagal terhubung ke server. Silakan coba lagi.");
+      });
+  }
+
+  function hapusKategoriWeb() {
+    const kategori = document.getElementById("spKategoriEditor").value;
+    if (!kategori) {
+      alert("Pilih kategori terlebih dahulu.");
+      return;
+    }
+
+    const yakin = confirm(
+      "Yakin ingin menghapus kategori '" + kategori +
+      "'?\n\nSemua soal dalam kategori ini juga akan ikut dihapus."
+    );
+
+    if (!yakin) return;
+
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "deleteCategory",
+        kategori: kategori
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.result === "success" || data.success) {
+          tutupKelolaKategori();
+          alert(data.message || "Kategori berhasil dihapus.");
+
+          muatDaftarKategori().then(() => {
+            const editor = document.getElementById("spKategoriEditor");
+            const container = document.getElementById("containerSoalEditor");
+
+            if (editor && editor.value) {
+              onCategoryEditorChanged();
+            } else if (container) {
+              container.innerHTML =
+                '<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:30px;">Belum ada kategori soal.</div>';
+            }
+          });
+        } else {
+          alert(data.message || "Gagal menghapus kategori.");
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Gagal terhubung ke server. Silakan coba lagi.");
+      });
+  }
+
+  /* =========================================
      QUESTION EDITOR
   ========================================= */
   function onCategoryEditorChanged() {
@@ -1503,7 +1757,7 @@
     loader.style.display = "block";
     container.innerHTML = "";
 
-    fetch(`${SCRIPT_URL}?action=getQuestions&kategori=${encodeURIComponent(kategori)}`)
+    fetch(`{encodeURIComponent(kategori)}`)
       .then(res => res.json())
       .then(data => {
         loader.style.display = "none";
@@ -1749,14 +2003,31 @@
   document.addEventListener("click", function(e) {
     const modalSuccess = document.getElementById("modalSuccess");
     const modalEdit = document.getElementById("modalEditSoal");
+    const modalKelola = document.getElementById("modalKelolaKategori");
+    const modalInputKategori = document.getElementById("modalInputKategori");
+
     if (e.target === modalSuccess) closeModalSuccess();
     if (e.target === modalEdit) tutupModalSoal();
+    if (e.target === modalKelola) tutupKelolaKategori();
+    if (e.target === modalInputKategori) tutupInputKategori();
   });
 
   document.addEventListener("keydown", function(e) {
     if (e.key === "Escape") {
       const modalEdit = document.getElementById("modalEditSoal");
+      const modalKelola = document.getElementById("modalKelolaKategori");
+      const modalInputKategori = document.getElementById("modalInputKategori");
+
       if (modalEdit.style.display === "flex") tutupModalSoal();
+      if (modalKelola.style.display === "flex") tutupKelolaKategori();
+      if (modalInputKategori.style.display === "flex") tutupInputKategori();
+    }
+
+    if (e.key === "Enter") {
+      const modalInputKategori = document.getElementById("modalInputKategori");
+      if (modalInputKategori && modalInputKategori.style.display === "flex") {
+        simpanKategoriWeb();
+      }
     }
   });
 </script>
