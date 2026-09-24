@@ -1623,36 +1623,38 @@
     const s = soalList[currentIndex];
     if (!s) return;
 
-    document.getElementById("tvSoalKe").innerText = `Soal ${currentIndex + 1}/${soalList.length}`;
-    document.getElementById("tvTeksSoal").innerText = s.question || s.soal || "";
-    document.getElementById("labelA").innerText = "A. " + (s.optionA || s.opsiA || s.a || "");
-    document.getElementById("labelB").innerText = "B. " + (s.optionB || s.opsiB || s.b || "");
-    document.getElementById("labelC").innerText = "C. " + (s.optionC || s.opsiC || s.c || "");
+    document.getElementById("tvSoalKe").innerText =
+        `Soal ${currentIndex + 1}/${soalList.length}`;
+
+    document.getElementById("tvTeksSoal").innerText =
+        s.soal || s.question || "";
+
+    document.getElementById("labelA").innerText =
+        "A. " + (s.pilihanA || s.optionA || s.opsiA || s.a || "");
+
+    document.getElementById("labelB").innerText =
+        "B. " + (s.pilihanB || s.optionB || s.opsiB || s.b || "");
+
+    document.getElementById("labelC").innerText =
+        "C. " + (s.pilihanC || s.optionC || s.opsiC || s.c || "");
 
     const radios = document.getElementsByName("pilihan");
     radios.forEach(r => r.checked = false);
 
     if (jawabanUser[currentIndex]) {
-      const selectedRadio = document.getElementById("rb" + jawabanUser[currentIndex]);
-      if (selectedRadio) selectedRadio.checked = true;
+        const selectedRadio =
+            document.getElementById("rb" + jawabanUser[currentIndex]);
+
+        if (selectedRadio) {
+            selectedRadio.checked = true;
+        }
     }
 
-    document.getElementById("btnLanjut").innerText = currentIndex === soalList.length - 1 ? "SELESAI & KIRIM" : "SELANJUTNYA";
-  }
-
-  function nextSoal() {
-    const selected = document.querySelector('input[name="pilihan"]:checked');
-    if (selected) {
-      jawabanUser[currentIndex] = selected.value;
-    }
-
-    if (currentIndex < soalList.length - 1) {
-      currentIndex++;
-      renderSoal();
-    } else {
-      selesaiQuiz();
-    }
-  }
+    document.getElementById("btnLanjut").innerText =
+        currentIndex === soalList.length - 1
+            ? "SELESAI & KIRIM"
+            : "SELANJUTNYA";
+}
 
   function selesaiQuiz() {
     if (!soalList || soalList.length === 0) return;
