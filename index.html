@@ -660,21 +660,6 @@
             </div>
             <div class="menu-title">Cek Nilai Trainer</div>
           </div>
-          <!-- QR SOAL -->
-          <div class="menu-item" onclick="bukaTrainerLogin('qr_soal')">
-            <div class="menu-card-icon">
-              <span class="material-icons" style="font-size:36px;">qr_code_2</span>
-            </div>
-            <div class="menu-title">Trainer Setting QR Soal</div>
-          </div>
-
-          <!-- QR ABSENSI -->
-          <div class="menu-item" onclick="bukaTrainerLogin('qr_absensi')">
-            <div class="menu-card-icon">
-              <span class="material-icons" style="font-size:36px;">qr_code_scanner</span>
-            </div>
-            <div class="menu-title">Trainer Setting Absensi Pelatihan</div>
-          </div>
         </div>
       </div>
     </div>
@@ -817,67 +802,7 @@
       </div>
     </div>
 
-    <!-- 9. TRAINER SETTING QR SOAL -->
-    <div id="pageQRSoal" class="page">
-      <div class="desktop-card desktop-card-center" style="text-align:center;">
-        <h2 class="text-maroon" style="font-size:22px; margin-bottom:8px;">Trainer Setting QR Soal</h2>
-        <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">
-          Pilih kategori soal, lalu buat QR. Peserta cukup scan QR untuk langsung masuk ke evaluasi.
-        </p>
-
-        <div class="form-group" style="text-align:left;">
-          <label>PILIH KATEGORI SOAL :</label>
-          <select id="spKategoriQRSoal" class="form-control">
-            <option value="">-- Memuat Kategori... --</option>
-          </select>
-        </div>
-
-        <div id="qrcodeSoal"
-             style="width:220px; min-height:220px; margin:20px auto; padding:10px; border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center;">
-          <span style="color:var(--muted); font-size:13px;">QR belum dibuat</span>
-        </div>
-
-        <div id="tvKodeQRSoal"
-             style="font-size:18px; font-weight:700; margin-bottom:10px; color:var(--navy);">
-          KODE EVALUASI: -
-        </div>
-
-        <div id="tvUrlQRSoal"
-             style="font-size:12px; color:var(--muted); word-break:break-all; margin-bottom:20px;">
-          URL peserta: -
-        </div>
-
-        <button id="btnGenerateQRSoal" class="btn" onclick="generateQRSoalWeb()">
-          <span class="material-icons">qr_code_2</span> BUAT QR SOAL
-        </button>
-      </div>
-    </div>
-
-    <!-- 10. TRAINER SETTING QR ABSENSI -->
-    <div id="pageQRAbsensi" class="page">
-      <div class="desktop-card desktop-card-center" style="text-align:center;">
-        <h2 class="text-maroon" style="font-size:22px; margin-bottom:8px;">Trainer Setting Absensi Pelatihan</h2>
-        <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">
-          Buat QR absensi. Peserta cukup scan QR untuk langsung membuka form absensi pelatihan.
-        </p>
-
-        <div id="qrcodeAbsensi"
-             style="width:220px; min-height:220px; margin:20px auto; padding:10px; border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center;">
-          <span style="color:var(--muted); font-size:13px;">QR belum dibuat</span>
-        </div>
-
-        <div id="tvUrlQRAbsensi"
-             style="font-size:12px; color:var(--muted); word-break:break-all; margin-bottom:20px;">
-          URL peserta: -
-        </div>
-
-        <button id="btnGenerateQRAbsensi" class="btn btn-navy" onclick="generateQRAbsensiWeb()">
-          <span class="material-icons">qr_code_scanner</span> BUAT QR ABSENSI
-        </button>
-      </div>
-    </div>
-
-    <!-- 11. TRAINER SETTING -->
+    <!-- 9. TRAINER SETTING -->
     <div id="pageTrainerSetting" class="page">
       <div class="desktop-card desktop-card-center" style="text-align:center;">
         <h2 class="text-maroon" style="font-size:22px; margin-bottom:20px;">Trainer Setting &amp; QR Generator</h2>
@@ -1043,6 +968,30 @@
     </div>
   </div>
 
+  <!-- CEK NILAI -->
+<div class="menu-item" onclick="bukaTrainerLogin('cek_nilai')">
+  <div class="menu-card-icon">
+    <span class="material-icons" style="font-size:36px;">leaderboard</span>
+  </div>
+  <div class="menu-title">Cek Nilai Trainer</div>
+</div>
+
+<!-- QR SOAL -->
+<div class="menu-item" onclick="bukaTrainerLogin('qr_soal')">
+  <div class="menu-card-icon">
+    <span class="material-icons" style="font-size:36px;">qr_code_2</span>
+  </div>
+  <div class="menu-title">Trainer Setting QR Soal</div>
+</div>
+
+<!-- QR ABSENSI -->
+<div class="menu-item" onclick="bukaTrainerLogin('qr_absensi')">
+  <div class="menu-card-icon">
+    <span class="material-icons" style="font-size:36px;">qr_code_scanner</span>
+  </div>
+  <div class="menu-title">Trainer Setting Absensi Pelatihan</div>
+</div>
+  
 <script>
   /* =========================================
      CONFIGURATION
@@ -1165,22 +1114,15 @@
     
     const tanggalEvaluasi = document.getElementById("etTanggalEvaluasi");
     if (tanggalEvaluasi) {
-      tanggalEvaluasi.value = `${mm}/${yyyy}`;
+      tanggalEvaluasi.value = `{mm}/${yyyy}`;
     }
 
     const inputDate = document.getElementById("etTanggal");
     if (inputDate) {
-      inputDate.value = `${yyyy}-${mm}-${dd}`;
+      inputDate.value = `{mm}-${dd}`;
     }
 
-    // Pertahankan query string agar URL QR (?page=soal / ?page=absensi)
-    // tetap dapat diproses ketika halaman dibuka oleh peserta.
-    const currentUrl = window.location.pathname + window.location.search + window.location.hash;
-    history.replaceState({ page: "pageMenu" }, "", currentUrl);
-
-    // Periksa QR terlebih dahulu agar peserta tidak berhenti di dashboard.
-    handleQRWebRoute();
-
+    history.replaceState({ page: "pageMenu" }, "", "");
     muatDaftarKategori();
     muatDaftarLokasi();
   };
@@ -1195,41 +1137,26 @@
       .then(data => {
         const selectTrainer = document.getElementById("spKategoriTrainer");
         const selectEditor = document.getElementById("spKategoriEditor");
-        const selectQRSoal = document.getElementById("spKategoriQRSoal");
-
-        if (selectTrainer) selectTrainer.innerHTML = "";
-        if (selectEditor) selectEditor.innerHTML = "";
-        if (selectQRSoal) selectQRSoal.innerHTML = "";
+        selectTrainer.innerHTML = "";
+        selectEditor.innerHTML = "";
 
         const list = data.categories || data;
         if (Array.isArray(list) && list.length > 0) {
           list.forEach(kat => {
             const namaKategori = typeof kat === "object" ? (kat.nama || kat[0]) : kat;
-            if (!namaKategori) return;
 
-            if (selectTrainer) {
-              const opt1 = document.createElement("option");
-              opt1.value = namaKategori;
-              opt1.textContent = String(namaKategori).toUpperCase();
-              selectTrainer.appendChild(opt1);
-            }
+            const opt1 = document.createElement("option");
+            opt1.value = namaKategori;
+            opt1.textContent = String(namaKategori).toUpperCase();
+            selectTrainer.appendChild(opt1);
 
-            if (selectEditor) {
-              const opt2 = document.createElement("option");
-              opt2.value = namaKategori;
-              opt2.textContent = String(namaKategori).toUpperCase();
-              selectEditor.appendChild(opt2);
-            }
-
-            if (selectQRSoal) {
-              const opt3 = document.createElement("option");
-              opt3.value = namaKategori;
-              opt3.textContent = String(namaKategori).toUpperCase();
-              selectQRSoal.appendChild(opt3);
-            }
+            const opt2 = document.createElement("option");
+            opt2.value = namaKategori;
+            opt2.textContent = String(namaKategori).toUpperCase();
+            selectEditor.appendChild(opt2);
           });
 
-          if (kategoriPilihan && selectEditor) {
+          if (kategoriPilihan) {
             const indexEditor = Array.from(selectEditor.options).findIndex(
               opt => opt.value.toLowerCase() === String(kategoriPilihan).toLowerCase()
             );
@@ -1238,19 +1165,14 @@
             }
           }
         } else {
-          if (selectTrainer) selectTrainer.innerHTML = '<option value="BHD">BHD</option>';
-          if (selectEditor) selectEditor.innerHTML = '<option value="BHD">BHD</option>';
-          if (selectQRSoal) selectQRSoal.innerHTML = '<option value="BHD">BHD</option>';
+          selectTrainer.innerHTML = '<option value="BHD">BHD</option>';
+          selectEditor.innerHTML = '<option value="BHD">BHD</option>';
         }
       })
       .catch(err => {
         console.error("Gagal memuat kategori:", err);
-        const selectTrainer = document.getElementById("spKategoriTrainer");
-        const selectEditor = document.getElementById("spKategoriEditor");
-        const selectQRSoal = document.getElementById("spKategoriQRSoal");
-        if (selectTrainer) selectTrainer.innerHTML = '<option value="BHD">BHD</option>';
-        if (selectEditor) selectEditor.innerHTML = '<option value="BHD">BHD</option>';
-        if (selectQRSoal) selectQRSoal.innerHTML = '<option value="BHD">BHD</option>';
+        document.getElementById("spKategoriTrainer").innerHTML = '<option value="BHD">BHD</option>';
+        document.getElementById("spKategoriEditor").innerHTML = '<option value="BHD">BHD</option>';
       });
   }
 
@@ -1300,9 +1222,6 @@
       if (pageId === "pageQuestionEditor") {
         onCategoryEditorChanged();
       }
-      if (pageId === "pageQRSoal") {
-        muatDaftarKategori();
-      }
     }
   }
 
@@ -1322,18 +1241,7 @@
   });
 
   function bukaTrainerLogin(tujuan) {
-    if (tujuan === "editor_soal") {
-      targetPageAfterLogin = "pageQuestionEditor";
-    } else if (tujuan === "cek_nilai") {
-      targetPageAfterLogin = "pageCekNilai";
-    } else if (tujuan === "qr_soal") {
-      targetPageAfterLogin = "pageQRSoal";
-    } else if (tujuan === "qr_absensi") {
-      targetPageAfterLogin = "pageQRAbsensi";
-    } else {
-      targetPageAfterLogin = "pageTrainerSetting";
-    }
-
+    targetPageAfterLogin = tujuan === "editor_soal" ? "pageQuestionEditor" : tujuan === "cek_nilai" ? "pageCekNilai" : "pageTrainerSetting";
     navigateTo("pageTrainerLogin");
   }
 
@@ -1482,7 +1390,7 @@
     const s = safeTime % 60;
     const timer = document.getElementById("tvTimer");
     if (timer) {
-      timer.innerText = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+      timer.innerText = `{String(s).padStart(2, "0")}`;
     }
   }
 
@@ -1490,7 +1398,7 @@
     const s = soalList[currentIndex];
     if (!s) return;
 
-    document.getElementById("tvSoalKe").innerText = `Soal ${currentIndex + 1}/${soalList.length}`;
+    document.getElementById("tvSoalKe").innerText = `Soal {soalList.length}`;
     document.getElementById("tvTeksSoal").innerText = s.question || s.soal || "";
     document.getElementById("labelA").innerText = "A. " + (s.optionA || s.opsiA || s.a || "");
     document.getElementById("labelB").innerText = "B. " + (s.optionB || s.opsiB || s.b || "");
@@ -1620,7 +1528,7 @@
       const statusText = item.isCorrect ? "BENAR" : "SALAH";
       container.innerHTML += `
         <div class="koreksi-card">
-          <div class="koreksi-status-badge ${badgeClass}">${index + 1}. ${statusText}</div>
+          <div class="koreksi-status-badge {index + 1}. ${statusText}</div>
           <div style="font-weight:700; font-size:15px; margin-bottom:12px;">${escapeHtml(item.soal || "")}</div>
           <div style="font-size:13px; color:#555; margin-bottom:4px;">Jawaban Anda: <b>${escapeHtml(item.userAns || "-")}</b></div>
           <div style="font-size:13px; color:var(--success);">Kunci Jawaban: <b>${escapeHtml(item.kunci || "-")}</b></div>
@@ -1676,23 +1584,14 @@
     const btn = document.getElementById("btnGenerateQr");
     btn.disabled = true;
 
-    // Gunakan GET untuk generate QR agar tidak menunggu POST/CORS dari Apps Script.
-    // Backend GS yang sama memang menyediakan action generateQRCode melalui doGet.
-    const urlGenerate =
-      `${SCRIPT_URL}?action=generateQRCode&kategori=${encodeURIComponent(kategori)}`;
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-    fetch(urlGenerate, {
-      method: "GET",
-      signal: controller.signal
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("Server Google Apps Script tidak merespons dengan baik.");
-        return res.json();
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "generateQRCode",
+        kategori: kategori
       })
-      .finally(() => clearTimeout(timeoutId))
+    })
+      .then(res => res.json())
       .then(data => {
         btn.disabled = false;
         const kode = data.code || data.kode || data.kodeEvaluasi;
@@ -1714,178 +1613,6 @@
         btn.disabled = false;
         alert("Gagal menggenerate kode evaluasi!");
       });
-  }
-
-  /* =========================================
-     QR WEB SOAL & QR ABSENSI
-  ========================================= */
-
-  // Mengambil alamat aplikasi web yang sedang dibuka.
-  // QR akan mengarah ke halaman web aplikasi, bukan ke halaman repository GitHub.
-  function getWebBaseURL() {
-    return window.location.origin + window.location.pathname;
-  }
-
-  function generateQRSoalWeb() {
-    const kategoriEl = document.getElementById("spKategoriQRSoal");
-    const btn = document.getElementById("btnGenerateQRSoal");
-    const qrContainer = document.getElementById("qrcodeSoal");
-
-    const kategori = kategoriEl ? kategoriEl.value.trim() : "";
-
-    if (!kategori) {
-      alert("Silakan pilih kategori soal terlebih dahulu.");
-      return;
-    }
-
-    btn.disabled = true;
-    btn.innerText = "MEMBUAT QR...";
-
-    const urlGenerate =
-      `${SCRIPT_URL}?action=generateQRCode&kategori=${encodeURIComponent(kategori)}`;
-
-    fetch(urlGenerate)
-      .then(res => res.json())
-      .then(data => {
-        const kode = data.code || data.kode || data.kodeEvaluasi;
-
-        if (!kode) {
-          throw new Error("Kode evaluasi tidak diterima dari server.");
-        }
-
-        const urlPeserta =
-          getWebBaseURL() +
-          "#qr-soal?code=" +
-          encodeURIComponent(kode);
-
-        qrContainer.innerHTML = "";
-
-        new QRCode(qrContainer, {
-          text: urlPeserta,
-          width: 200,
-          height: 200,
-          correctLevel: QRCode.CorrectLevel.M
-        });
-
-        document.getElementById("tvKodeQRSoal").innerText =
-          "KODE EVALUASI: " + kode;
-
-        document.getElementById("tvUrlQRSoal").innerText =
-          "URL peserta: " + urlPeserta;
-      })
-      .catch(err => {
-        console.error("QR Soal:", err);
-        qrContainer.innerHTML =
-          '<span style="color:var(--danger); font-size:13px;">QR gagal dibuat</span>';
-
-        const pesan = err.name === "AbortError"
-          ? "Google Apps Script tidak merespons dalam 15 detik."
-          : (err.message || "Periksa koneksi ke Google Apps Script.");
-
-        alert("Gagal membuat QR soal.\n\n" + pesan);
-      })
-      .finally(() => {
-        btn.disabled = false;
-        btn.innerHTML = '<span class="material-icons">qr_code_2</span> BUAT QR SOAL';
-      });
-  }
-
-  function generateQRAbsensiWeb() {
-    const btn = document.getElementById("btnGenerateQRAbsensi");
-    const qrContainer = document.getElementById("qrcodeAbsensi");
-
-    const urlPeserta = getWebBaseURL() + "#qr-absensi";
-
-    qrContainer.innerHTML = "";
-
-    new QRCode(qrContainer, {
-      text: urlPeserta,
-      width: 200,
-      height: 200,
-      correctLevel: QRCode.CorrectLevel.M
-    });
-
-    document.getElementById("tvUrlQRAbsensi").innerText =
-      "URL peserta: " + urlPeserta;
-
-    if (btn) {
-      btn.innerHTML =
-        '<span class="material-icons">check</span> QR ABSENSI SIAP';
-    }
-  }
-
-  // ROUTING KHUSUS QR PESERTA
-  // QR SOAL    : #qr-soal?code=EVL-xxxx -> langsung Form Evaluasi
-  // QR ABSENSI : #qr-absensi            -> langsung Form Absensi
-  // Format lama ?page=soal&code=... dan ?page=absensi tetap didukung.
-  function handleQRWebRoute() {
-    const query = new URLSearchParams(window.location.search);
-    const hash = window.location.hash || "";
-
-    let page = (query.get("page") || "").toLowerCase();
-    let code = (query.get("code") || "").trim();
-
-    if (hash.toLowerCase().startsWith("#qr-soal")) {
-      page = "soal";
-      const hashQuery = hash.includes("?")
-        ? hash.substring(hash.indexOf("?") + 1)
-        : "";
-      const hashParams = new URLSearchParams(hashQuery);
-      code = (hashParams.get("code") || code || "").trim();
-    }
-
-    if (hash.toLowerCase().startsWith("#qr-absensi")) {
-      page = "absensi";
-    }
-
-    if (page === "absensi") {
-      // Langsung Form Absensi Pelatihan.
-      showPageDOM("pageMain");
-      return true;
-    }
-
-    if (page === "soal") {
-      if (!code) {
-        alert("QR soal tidak memiliki kode evaluasi.");
-        showPageDOM("pageEvaluasiCode");
-        return true;
-      }
-
-      // Jangan tampilkan dashboard. Langsung arahkan ke Form Evaluasi.
-      showPageDOM("pageEvaluasiForm");
-
-      fetch(
-        `${SCRIPT_URL}?action=verifyCode&code=${encodeURIComponent(code)}`
-      )
-        .then(res => res.json())
-        .then(data => {
-          if (
-            data.result === "success" ||
-            data.valid ||
-            data.status === "SUCCESS"
-          ) {
-            evaluasiKode = code;
-            evaluasiKategori =
-              data.kategori || data.category || "BHD";
-
-            showPageDOM("pageEvaluasiForm");
-          } else {
-            alert(
-              "QR soal tidak valid atau kode evaluasi sudah tidak tersedia."
-            );
-            showPageDOM("pageEvaluasiCode");
-          }
-        })
-        .catch(err => {
-          console.error("Verifikasi QR soal:", err);
-          alert("Gagal memverifikasi QR soal. Silakan coba lagi.");
-          showPageDOM("pageEvaluasiCode");
-        });
-
-      return true;
-    }
-
-    return false;
   }
 
   /* =========================================
