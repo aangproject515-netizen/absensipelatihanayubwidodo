@@ -889,6 +889,65 @@
       </div>
     </div>
   </div>
+ <!-- 9. TRAINER SETTING QR SOAL -->
+    <div id="pageQRSoal" class="page">
+      <div class="desktop-card desktop-card-center" style="text-align:center;">
+        <h2 class="text-maroon" style="font-size:22px; margin-bottom:8px;">Trainer Setting QR Soal</h2>
+        <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">
+          Pilih kategori soal, lalu buat QR. Peserta cukup scan QR untuk langsung masuk ke evaluasi.
+        </p>
+
+        <div class="form-group" style="text-align:left;">
+          <label>PILIH KATEGORI SOAL :</label>
+          <select id="spKategoriQRSoal" class="form-control">
+            <option value="">-- Memuat Kategori... --</option>
+          </select>
+        </div>
+
+        <div id="qrcodeSoal"
+             style="width:220px; min-height:220px; margin:20px auto; padding:10px; border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center;">
+          <span style="color:var(--muted); font-size:13px;">QR belum dibuat</span>
+        </div>
+
+        <div id="tvKodeQRSoal"
+             style="font-size:18px; font-weight:700; margin-bottom:10px; color:var(--navy);">
+          KODE EVALUASI: -
+        </div>
+
+        <div id="tvUrlQRSoal"
+             style="font-size:12px; color:var(--muted); word-break:break-all; margin-bottom:20px;">
+          URL peserta: -
+        </div>
+
+        <button id="btnGenerateQRSoal" class="btn" onclick="generateQRSoalWeb()">
+          <span class="material-icons">qr_code_2</span> BUAT QR SOAL
+        </button>
+      </div>
+    </div>
+
+    <!-- 10. TRAINER SETTING QR ABSENSI -->
+    <div id="pageQRAbsensi" class="page">
+      <div class="desktop-card desktop-card-center" style="text-align:center;">
+        <h2 class="text-maroon" style="font-size:22px; margin-bottom:8px;">Trainer Setting Absensi Pelatihan</h2>
+        <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">
+          Buat QR absensi. Peserta cukup scan QR untuk langsung membuka form absensi pelatihan.
+        </p>
+
+        <div id="qrcodeAbsensi"
+             style="width:220px; min-height:220px; margin:20px auto; padding:10px; border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center;">
+          <span style="color:var(--muted); font-size:13px;">QR belum dibuat</span>
+        </div>
+
+        <div id="tvUrlQRAbsensi"
+             style="font-size:12px; color:var(--muted); word-break:break-all; margin-bottom:20px;">
+          URL peserta: -
+        </div>
+
+        <button id="btnGenerateQRAbsensi" class="btn btn-navy" onclick="generateQRAbsensiWeb()">
+          <span class="material-icons">qr_code_scanner</span> BUAT QR ABSENSI
+        </button>
+      </div>
+    </div>
 
   <!-- MODAL SUCCESS ABSENSI -->
   <div id="modalSuccess" class="modal">
