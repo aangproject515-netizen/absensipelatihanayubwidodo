@@ -1737,23 +1737,26 @@
     }
 
     btn.disabled = true;
-    btn.innerText = "MEMBUAT QR...";
+    btn.innerHTML = '<span class="material-icons">hourglass_top</span> MEMBUAT QR...';
 
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "generateQRCode",
-        kategori: kategori
-      })
-    })
-      .then(res => res.json())
+    // Gunakan GET karena GS yang sudah ada memang menyediakan
+    // action generateQRCode tanpa perlu mengubah kode GS.
+    const urlGenerate = `${SCRIPT_URL}?action=generateQRCode&kategori=${encodeURIComponent(kategori)}`;
+
+    const timeout = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Google Apps Script tidak merespons dalam 15 detik.")), 15000);
+    });
+
+    Promise.race([fetch(urlGenerate).then(res => res.json()), timeout])
       .then(data => {
         const kode = data.code || data.kode || data.kodeEvaluasi;
 
         if (!kode) {
-          throw new Error("Kode evaluasi tidak diterima dari server.");
+          throw new Error(data.message || "Kode evaluasi tidak diterima dari server.");
         }
 
+        // QR SOAL -> langsung menuju aplikasi web + kode evaluasi.
+        // Peserta tidak perlu mengetik kode evaluasi lagi.
         const urlPeserta =
           getWebBaseURL() +
           "?page=soal&code=" +
@@ -1778,21 +1781,11 @@
         console.error("QR Soal:", err);
         qrContainer.innerHTML =
           '<span style="color:var(--danger); font-size:13px;">QR gagal dibuat</span>';
-
-        const pesan = err.name === "AbortError"
-          ? "Google Apps Script tidak merespons dalam 15 detik."
-          : (err.message || "Periksa koneksi ke Google Apps Script.");
-
-        alert("Gagal membuat QR soal.\n\n" + pesan);
+        alert("Gagal membuat QR soal.\n\n" + (err.message || "Periksa koneksi ke Google Apps Script."));
       })
       .finally(() => {
         btn.disabled = false;
         btn.innerHTML = '<span class="material-icons">qr_code_2</span> BUAT QR SOAL';
-      });
-      .finally(() => {
-        btn.disabled = false;
-        btn.innerHTML =
-          '<span class="material-icons">qr_code_2</span> BUAT QR SOAL';
       });
   }
 
@@ -1800,6 +1793,7 @@
     const btn = document.getElementById("btnGenerateQRAbsensi");
     const qrContainer = document.getElementById("qrcodeAbsensi");
 
+    // QR ABSENSI -> langsung menuju form absensi pelatihan.
     const urlPeserta = getWebBaseURL() + "?page=absensi";
 
     qrContainer.innerHTML = "";
@@ -1820,15 +1814,16 @@
     }
   }
 
-  // Dipanggil ketika aplikasi dibuka melalui QR.
-  // ?page=absensi  -> langsung ke form absensi.
-  // ?page=soal&code=EVL-xxxx -> verifikasi kode lalu masuk ke form evaluasi.
+  // ROUTING DARI QR PESERTA
+  // ?page=absensi -> langsung Form Absensi Pelatihan
+  // ?page=soal&code=EVL-xxxx -> verifikasi otomatis lalu langsung Form Evaluasi
   function handleQRWebRoute() {
     const params = new URLSearchParams(window.location.search);
     const page = (params.get("page") || "").toLowerCase();
     const code = (params.get("code") || "").trim();
 
     if (page === "absensi") {
+      // Tidak melalui menu dan tidak melalui halaman kode.
       showPageDOM("pageMain");
       return;
     }
@@ -1840,34 +1835,23 @@
         return;
       }
 
-      showPageDOM("pageEvaluasiCode");
-
-      fetch(
-        `${SCRIPT_URL}?action=verifyCode&code=${encodeURIComponent(code)}`
-      )
+      // Verifikasi kode di background. Setelah valid, langsung ke Form Evaluasi.
+      fetch(`${SCRIPT_URL}?action=verifyCode&code=${encodeURIComponent(code)}`)
         .then(res => res.json())
         .then(data => {
-          if (
-            data.result === "success" ||
-            data.valid ||
-            data.status === "SUCCESS"
-          ) {
+          if (data.result === "success" || data.valid || data.status === "SUCCESS") {
             evaluasiKode = code;
-            evaluasiKategori =
-              data.kategori || data.category || "BHD";
-
-            navigateTo("pageEvaluasiForm");
+            evaluasiKategori = data.kategori || data.category || "BHD";
+            showPageDOM("pageEvaluasiForm");
           } else {
-            alert(
-              "QR soal tidak valid atau kode evaluasi sudah tidak tersedia."
-            );
+            alert("QR soal tidak valid atau kode evaluasi sudah tidak tersedia.");
+            showPageDOM("pageEvaluasiCode");
           }
         })
         .catch(err => {
           console.error("Verifikasi QR soal:", err);
-          alert(
-            "Gagal memverifikasi QR soal. Silakan coba lagi."
-          );
+          alert("Gagal memverifikasi QR soal. Silakan coba lagi.");
+          showPageDOM("pageEvaluasiCode");
         });
     }
   }
