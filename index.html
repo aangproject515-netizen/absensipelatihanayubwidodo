@@ -1709,6 +1709,43 @@
             : "SELANJUTNYA";
 }
 
+
+
+  /* =========================================
+     NEXT SOAL FIX
+     Perbaikan navigasi quiz
+  ========================================= */
+  function nextSoal(){
+
+    const selected =
+      document.querySelector('input[name="pilihan"]:checked');
+
+
+    if(!selected){
+      alert("Silakan pilih jawaban terlebih dahulu.");
+      return;
+    }
+
+
+    // simpan jawaban peserta
+    jawabanUser[currentIndex] = selected.value;
+
+
+    // pindah soal berikutnya
+    if(currentIndex < soalList.length - 1){
+
+      currentIndex++;
+
+      renderSoal();
+
+    }else{
+
+      selesaiQuiz();
+
+    }
+
+  }
+
   function selesaiQuiz() {
     if (!soalList || soalList.length === 0) return;
 
