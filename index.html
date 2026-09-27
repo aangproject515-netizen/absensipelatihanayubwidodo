@@ -2012,6 +2012,13 @@
       // Tampilkan Form Evaluasi, bukan dashboard. Setelah kode valid, kategori diisi otomatis.
       showPageDOM("pageEvaluasiForm");
 
+document.getElementById("spLokasi").innerHTML =
+`
+<option>
+Memuat data...
+</option>
+`;
+
       fetch(`${SCRIPT_URL}?action=verifyCode&code=${encodeURIComponent(code)}`)
         .then(res => {
           if (!res.ok) throw new Error("Gagal menghubungi server evaluasi.");
