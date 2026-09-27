@@ -1388,36 +1388,54 @@
   }
 
   function muatDaftarLokasi() {
-    const url = `${SCRIPT_URL}?action=getLocations`;
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        const spLokasi = document.getElementById("spLokasi");
-        spLokasi.innerHTML = "";
-        const list = data.locations || data.locationsList || [];
-        if (Array.isArray(list) && list.length > 0) {
-          list.forEach(lok => {
-            const opt = document.createElement("option");
-            opt.value = lok;
-            opt.textContent = lok;
-            spLokasi.appendChild(opt);
-          });
-        } else {
-          spLokasi.innerHTML = `
-            <option value="Ruang Pelatihan Utama">Ruang Pelatihan Utama</option>
-            <option value="Auditorium lantai 3">Auditorium lantai 3</option>
-            <option value="Online / Zoom">Online / Zoom</option>
-          `;
-        }
-      })
-      .catch(() => {
-        document.getElementById("spLokasi").innerHTML = `
-          <option value="Ruang Pelatihan Utama">Ruang Pelatihan Utama</option>
-          <option value="Auditorium lantai 3">Auditorium lantai 3</option>
-          <option value="Online / Zoom">Online / Zoom</option>
+  const spLokasi = document.getElementById("spLokasi");
+
+  if (!spLokasi) return;
+
+  spLokasi.innerHTML = `
+    <option value="">Memuat lokasi...</option>
+  `;
+
+  fetch(`${SCRIPT_URL}?action=getLocations`)
+    .then(res => res.json())
+    .then(data => {
+
+      spLokasi.innerHTML = "";
+
+      const list = data.locations || data.locationsList || [];
+
+      if(Array.isArray(list) && list.length){
+
+        list.forEach(lok => {
+          const option = document.createElement("option");
+          option.value = lok;
+          option.textContent = lok;
+          spLokasi.appendChild(option);
+        });
+
+      } else {
+
+        spLokasi.innerHTML = `
+          <option value="Pesantren Al Kohar">
+          Pesantren Al Kohar
+          </option>
         `;
-      });
-  }
+
+      }
+
+    })
+    .catch(err => {
+
+      console.error(err);
+
+      spLokasi.innerHTML = `
+        <option value="Pesantren Al Kohar">
+        Pesantren Al Kohar
+        </option>
+      `;
+
+    });
+}
 
   /* =========================================
      NAVIGATION
@@ -1559,38 +1577,73 @@
   /* =========================================
      MULAI EVALUASI
   ========================================= */
-  function mulaiEvaluasi() {
-    evaluasiNama = document.getElementById("etNamaEvaluasi").value.trim();
-    evaluasiLokasi = document.getElementById("spLokasi").value;
-    evaluasiTanggal = document.getElementById("etTanggalEvaluasi").value;
+  function mulaiEvaluasi(){
 
-    if (!evaluasiNama) {
-      alert("Nama Lengkap harus diisi!");
+ evaluasiNama =
+ document.getElementById("etNamaEvaluasi").value.trim();
+
+ evaluasiLokasi =
+ document.getElementById("spLokasi").value;
+
+
+ if(!evaluasiNama){
+   alert("Nama Lengkap harus diisi!");
+   return;
+ }
+
+
+ navigateTo("pageQuiz");
+
+
+ document.getElementById("tvTeksSoal").innerHTML =
+ "Memuat soal...";
+
+
+ fetch(
+ `${SCRIPT_URL}?action=getQuestions&kategori=${encodeURIComponent(evaluasiKategori)}`
+ )
+ .then(res=>res.json())
+ .then(data=>{
+
+
+    soalList =
+    data.questions || data.soal || [];
+
+
+    if(!soalList.length){
+
+      alert("Soal tidak ditemukan");
       return;
+
     }
 
-    fetch(`${SCRIPT_URL}?action=getQuestions&kategori=${encodeURIComponent(evaluasiKategori)}`)
-      .then(res => res.json())
-      .then(data => {
-        const questionsList = data.questions || data.soal || [];
-        if (questionsList.length > 0) {
-          soalList = questionsList;
-          timeRemaining = (data.duration || data.durasi || 20) * 60;
-          currentIndex = 0;
-          jawabanUser = {};
-          navigateTo("pageQuiz");
-          renderSoal();
-          startTimer();
-          startBGM();
-        } else {
-          alert("Tidak ada soal untuk kategori ini.");
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Gagal memuat soal evaluasi!");
-      });
-  }
+
+    timeRemaining =
+    (data.duration || 20)*60;
+
+
+    currentIndex=0;
+    jawabanUser={};
+
+
+    renderSoal();
+
+    startTimer();
+
+    startBGM();
+
+
+ })
+ .catch(err=>{
+
+ console.error(err);
+
+ alert("Gagal mengambil soal");
+
+ });
+
+
+}
 
   /* =========================================
      TIMER & QUIZ LOGIC
